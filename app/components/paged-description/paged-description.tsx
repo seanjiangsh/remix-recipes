@@ -1,12 +1,5 @@
-import { LinksFunction } from "@remix-run/node";
-import Header, { links as headerLinks } from "../header/header";
+import Header from "../header/header";
 
-import styles from "./paged-description.css";
-
-export const links: LinksFunction = () => [
-  ...headerLinks(),
-  { rel: "stylesheet", href: styles },
-];
 
 type PagedDescriptionProps = {
   header: string;

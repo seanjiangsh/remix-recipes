@@ -1,10 +1,4 @@
-import { LinksFunction } from "@remix-run/node";
-
-import PagedDescription, {
-  links as pagedDescriptionLinks,
-} from "~/components/paged-description/paged-description";
-
-export const links: LinksFunction = () => [...pagedDescriptionLinks()];
+import PagedDescription from "~/components/paged-description/paged-description";
 
 export default function Index() {
   return (
