@@ -1,5 +1,4 @@
-import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -9,8 +8,24 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import favicon from "~/assets/favicon.ico";
+import styles from "~/tailwind.css";
+import {
+  DiscoverIcon,
+  HomeIcon,
+  RecipeBookIcon,
+  SettingsIcon,
+} from "./components/icons/icons";
+import NavLink from "./components/NavLink/NavLink";
+
+export const meta: MetaFunction = () => [
+  { title: "Remix Recipes" },
+  { name: "description", content: "Welcome to the Remix Recipes app!" },
+];
+
 export const links: LinksFunction = () => [
-  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  { rel: "icon", href: favicon },
+  { rel: "stylesheet", href: styles },
 ];
 
 export default function App() {
@@ -22,8 +37,26 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
-        <Outlet />
+      <body className="md:flex md:h-screen">
+        <nav className="bg-primary text-white">
+          <ul className="flex md:flex-col">
+            <NavLink to="/">
+              <HomeIcon />
+            </NavLink>
+            <NavLink to="discover">
+              <DiscoverIcon />
+            </NavLink>
+            <NavLink to="app">
+              <RecipeBookIcon />
+            </NavLink>
+            <NavLink to="settings">
+              <SettingsIcon />
+            </NavLink>
+          </ul>
+        </nav>
+        <div className="p-4">
+          <Outlet />
+        </div>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
