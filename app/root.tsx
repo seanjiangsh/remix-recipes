@@ -16,7 +16,7 @@ import {
   RecipeBookIcon,
   SettingsIcon,
 } from "./components/icons/icons";
-import NavLink from "./components/NavLink/NavLink";
+import NavLink from "./components/nav-link/nav-link";
 
 export const meta: MetaFunction = () => [
   { title: "Remix Recipes" },
