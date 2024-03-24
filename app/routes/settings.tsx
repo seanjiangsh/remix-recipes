@@ -1,7 +1,10 @@
 import { LoaderFunction, json } from "@remix-run/node";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Link, Outlet } from "@remix-run/react";
+import { ErrorBoundaryComponent } from "@remix-run/react/dist/routeModules";
 
-type LoaderData = { message: string };
+import { useMatchesData } from "~/utils/misc";
+import ErrorBoundaryComp from "~/components/error-boundary/error-boundary";
+
 export const loader: LoaderFunction = async () => {
   const rep = await fetch("https://jsonplaceholder.typicode.com/todos/1");
   const data = await rep.json();
@@ -9,8 +12,13 @@ export const loader: LoaderFunction = async () => {
   // return { message: "Test loader message" };
 };
 
+export const ErrorBoundary: ErrorBoundaryComponent = () => (
+  <ErrorBoundaryComp title="Settings Error" />
+);
+
 export default function Settings() {
-  const data = useLoaderData<LoaderData>();
+  const data = useMatchesData<{ message: string }>("routes/settings");
+  console.log({ settingsData: data });
   return (
     <div>
       <h1>Settings</h1>
