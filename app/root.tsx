@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -6,6 +7,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useMatches,
 } from "@remix-run/react";
 
 import favicon from "~/assets/favicon.ico";
@@ -16,7 +18,7 @@ import {
   RecipeBookIcon,
   SettingsIcon,
 } from "./components/icons/icons";
-import NavLink from "./components/NavLink/NavLink";
+import NavLink from "./components/nav-link/nav-link";
 
 export const meta: MetaFunction = () => [
   { title: "Remix Recipes" },
@@ -29,6 +31,12 @@ export const links: LinksFunction = () => [
 ];
 
 export default function App() {
+  const matches = useMatches();
+
+  useEffect(() => {
+    console.log(matches);
+  }, [matches]);
+
   return (
     <html lang="en">
       <head>
