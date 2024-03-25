@@ -3,6 +3,7 @@ import {
   useNavigation,
   useResolvedPath,
 } from "@remix-run/react";
+import classNames from "classnames";
 
 type NavLinkProps = {
   to: string;
@@ -22,11 +23,12 @@ export default function NavLink(props: NavLinkProps) {
     <li className="w-16">
       <RemixNavLink to={to}>
         {({ isActive }) => {
-          const className = `
-            py-4 flex justify-center
-            hover:bg-primary-light
-            ${isActive ? "bg-primary-light" : ""}
-            ${isLoading ? "animate-pulse bg-primary-light" : ""}`;
+          const className = classNames(
+            "py-4 flex justify-center",
+            "hover:bg-primary-light",
+            isActive ? "bg-primary-light" : "",
+            isLoading ? "animate-pulse bg-primary-light" : ""
+          );
           return <div className={className}>{children}</div>;
         }}
       </RemixNavLink>

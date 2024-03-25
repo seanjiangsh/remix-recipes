@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
@@ -7,7 +6,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useMatches,
 } from "@remix-run/react";
 
 import favicon from "~/assets/favicon.ico";
@@ -30,13 +28,7 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
 ];
 
-export default function App() {
-  const matches = useMatches();
-
-  useEffect(() => {
-    console.log(matches);
-  }, [matches]);
-
+export default function Root() {
   return (
     <html lang="en">
       <head>
@@ -62,7 +54,7 @@ export default function App() {
             </NavLink>
           </ul>
         </nav>
-        <div className="p-4">
+        <div className="p-4 w-full">
           <Outlet />
         </div>
         <ScrollRestoration />
