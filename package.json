@@ -1,5 +1,5 @@
 {
-  "name": "ztm-remix",
+  "name": "remix-recipes",
   "private": true,
   "sideEffects": false,
   "type": "module",
@@ -36,9 +36,13 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "prisma": "^5.11.0",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.7.1",
     "typescript": "^5.1.6"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

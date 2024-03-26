@@ -1,6 +1,26 @@
-# Welcome to Remix!
+# Remix Recipes
 
 - [Remix Docs](https://remix.run/docs)
+
+## Getting Started
+
+1. From your terminal:
+
+   ```sh
+   npm install
+   npx prisma init --datasource-provider postgresql  # init Prisma
+   ```
+
+2. Start the Postgres instance
+3. Modify .env for Postgres connection
+4. Push Prisma schema to Postgres
+   ```sh
+   npx prisma db push
+   ```
+5. Seed the initial pantry data
+   ```sh
+   npx prisma db seed
+   ```
 
 ## Development
 
@@ -11,6 +31,12 @@ npm run dev
 ```
 
 This starts your app in development mode, rebuilding assets on file changes.
+
+## Open Prisma studio for data management
+
+```sh
+npx prisma studio
+```
 
 ## Deployment
 
