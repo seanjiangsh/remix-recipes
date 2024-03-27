@@ -16,7 +16,7 @@ const getShelves = () => [
   {
     name: "Meat",
     items: {
-      create: [{ name: "Chicken" }, { name: "Beef" }, { name: "Pork" }],
+      create: [{ name: "Chicken" }, { name: "Beef" }],
     },
   },
 ];
