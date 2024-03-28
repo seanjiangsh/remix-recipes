@@ -1,6 +1,11 @@
 import db from "~/utils/prisma/server";
 
-export const getAllShelves = () =>
+export const getAllShelves = (query: string | null) =>
   db.pantryShelf.findMany({
-    include: { items: { orderBy: { name: "asc" } } },
+    where: {
+      name: { contains: query ?? "", mode: "insensitive" },
+    },
+    include: {
+      items: { orderBy: { name: "asc" } },
+    },
   });
