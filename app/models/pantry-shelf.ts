@@ -8,4 +8,10 @@ export const getAllShelves = (query: string | null) =>
     include: {
       items: { orderBy: { name: "asc" } },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
+
+export const createShelf = () =>
+  db.pantryShelf.create({ data: { name: "New Shelf" } });

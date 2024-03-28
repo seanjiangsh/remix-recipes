@@ -15,9 +15,9 @@ export default function NavLink(props: NavLinkProps) {
 
   const navigation = useNavigation();
   const path = useResolvedPath(to); // * URL path utility
-  const isLoading =
-    navigation.state === "loading" &&
-    navigation.location.pathname === path.pathname;
+  const { state, location, formData } = navigation;
+  const pathMatch = location?.pathname === path.pathname;
+  const isLoading = state === "loading" && pathMatch && !formData;
 
   return (
     <li className="w-16">

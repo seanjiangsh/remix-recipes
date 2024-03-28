@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
 import {
   Form,
   useLoaderData,
@@ -7,8 +7,18 @@ import {
 } from "@remix-run/react";
 import classNames from "classnames";
 
-import { getAllShelves } from "~/models/pantry-shelf";
-import { SearchIcon } from "~/components/icons/icons";
+import { createShelf, getAllShelves } from "~/models/pantry-shelf";
+import { PlusIcon, SearchIcon } from "~/components/icons/icons";
+import FormButton from "~/components/buttons/Form-button";
+
+// * note: When Remix server recives a non-GET request
+// * 1. Call the action function
+// * 2. Call the loader function
+// * 3. Send the HTML response
+
+export const action: ActionFunction = async () => {
+  return createShelf();
+};
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -23,6 +33,7 @@ export default function Pantry() {
   const navigation = useNavigation();
 
   const isSearching = navigation.formData?.has("q");
+  const isCreatingShelf = navigation.formData?.has("createShelf");
 
   return (
     <div>
@@ -46,9 +57,25 @@ export default function Pantry() {
           className="w-full py-3 px-2 outline-none"
         />
       </Form>
+
+      <Form method="post">
+        <FormButton
+          name="createShelf"
+          className={classNames(
+            "mt-4 w-full md:w-fit",
+            isCreatingShelf ? "bg-primary-light" : ""
+          )}
+        >
+          <PlusIcon />
+          <span className="pl-2">
+            {isCreatingShelf ? "Creating Shelf" : "Create Shelf"}
+          </span>
+        </FormButton>
+      </Form>
+
       <ul
         className={classNames(
-          "flex gap-8 overflow-x-auto mt-4",
+          "flex gap-8 overflow-x-auto mt-4 pb-4",
           "snap-x snap-mandatory",
           "md:snap-none"
         )}
