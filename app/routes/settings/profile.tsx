@@ -2,7 +2,7 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { ErrorBoundaryComponent } from "@remix-run/react/dist/routeModules";
 
-import ErrorBoundaryComp from "~/components/error-boundary/error-boundary";
+import ErrorBoundaryElement from "~/components/error-boundary/error-boundary";
 
 export const loader = () =>
   json({ message: "message from profile" }, { status: 202 });
@@ -10,7 +10,7 @@ export const loader = () =>
 // * note: the error will be caught in parent route
 // * if ErrorBoundary is not defined here
 export const ErrorBoundary: ErrorBoundaryComponent = () => (
-  <ErrorBoundaryComp title="Profile Error" />
+  <ErrorBoundaryElement title="Profile Error" />
 );
 
 export default function Profile() {

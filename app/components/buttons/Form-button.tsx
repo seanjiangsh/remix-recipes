@@ -1,10 +1,8 @@
-import React from "react";
+import { ButtonHTMLAttributes } from "react";
 import classNames from "classnames";
 
-type ButtonProps = {
-  children: React.ReactNode;
-  className?: string;
-  name?: string;
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  isLoading?: boolean;
 };
 
 export const BaseButton = (props: ButtonProps) => {
@@ -21,12 +19,25 @@ export const BaseButton = (props: ButtonProps) => {
   );
 };
 
-export default function FormButton(props: ButtonProps) {
-  const { className } = props;
+export const CreateShelfButton = (props: ButtonProps) => {
+  const { className, isLoading, ...restOfProps } = props;
   const buttonClasses = classNames(
     "text-white bg-primary hover:bg-primary-light",
+    isLoading ? "bg-primary-light" : "",
     className
   );
 
-  return <BaseButton {...props} className={buttonClasses} />;
-}
+  return <BaseButton {...restOfProps} className={buttonClasses} />;
+};
+
+export const DeleteShelfButton = (props: ButtonProps) => {
+  const { className, isLoading, ...restOfProps } = props;
+  const buttonClasses = classNames(
+    "border-2 border-red-600 text-red-600",
+    "hover:bg-red-600 hover:text-white",
+    isLoading ? "border-red-600 text-red-400" : "",
+    className
+  );
+
+  return <BaseButton {...restOfProps} className={buttonClasses} />;
+};

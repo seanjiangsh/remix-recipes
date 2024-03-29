@@ -6,6 +6,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteError,
 } from "@remix-run/react";
 
 import favicon from "~/assets/favicon.ico";
@@ -64,3 +65,28 @@ export default function Root() {
     </html>
   );
 }
+
+export const ErrorBoundary = () => {
+  const error = useRouteError();
+
+  return (
+    <html lang="en">
+      <head>
+        <title>Whoops!</title>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <div className="p-4">
+          <h1 className="text-2xl pb-3">Whoops!</h1>
+          <p>You are seeing this page because an unexpected error occurred.</p>
+          {error instanceof Error && (
+            <p className="my-4 font-bold">{error.message}</p>
+          )}
+        </div>
+      </body>
+    </html>
+  );
+};
