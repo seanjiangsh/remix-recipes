@@ -1,18 +1,16 @@
 import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
 import {
   Form,
+  useFetcher,
   useLoaderData,
-  useNavigation,
   useSearchParams,
 } from "@remix-run/react";
 import classNames from "classnames";
 
 import { createShelf, deleteShelf, getAllShelves } from "~/models/pantry-shelf";
 import { PlusIcon, SearchIcon } from "~/components/icons/icons";
-import {
-  CreateShelfButton,
-  DeleteShelfButton,
-} from "~/components/buttons/Form-button";
+import { CreateShelfButton } from "~/components/buttons/Form-button";
+import Shelf from "~/components/shelf/shelf";
 
 // * note: When Remix server recives a non-GET request
 // * 1. Call the action function
@@ -47,9 +45,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function Pantry() {
   const data = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
-  const navigation = useNavigation();
 
-  const { formData } = navigation;
+  const createShelfFetcher = useFetcher();
+  const { formData } = createShelfFetcher;
   const isSearching = formData?.has("q");
   const isCreatingShelf = formData?.get("_action") === "createShelf";
 
@@ -97,41 +95,9 @@ export default function Pantry() {
           "md:snap-none"
         )}
       >
-        {data.shelves.map(({ id, name, items }) => {
-          const isDeletingShelf =
-            formData?.get("_action") === "deleteShelf" &&
-            formData.get("shelfId") === id;
-          return (
-            <li
-              key={id}
-              className={classNames(
-                "border-2 border-primary rounded-md p-4 h-fit",
-                "w-[calc(100vw-2rem)] flex-none snap-center",
-                "md:w-96"
-              )}
-            >
-              <h1 className="text-2xl font-extrabold mb-2">{name}</h1>
-              <ul>
-                {items.map(({ id, name }) => (
-                  <li key={id} className="py-2">
-                    {name}
-                  </li>
-                ))}
-              </ul>
-              <Form method="post" className="pt-8">
-                <input type="hidden" name="shelfId" value={id} />
-                <DeleteShelfButton
-                  name="_action"
-                  value="deleteShelf"
-                  isLoading={isDeletingShelf}
-                  className={"w-full"}
-                >
-                  {isDeletingShelf ? "Deleting Shelf" : "Delete Shelf"}
-                </DeleteShelfButton>
-              </Form>
-            </li>
-          );
-        })}
+        {data.shelves.map((shelf) => (
+          <Shelf key={shelf.id} shelf={shelf} />
+        ))}
       </ul>
     </div>
   );
