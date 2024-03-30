@@ -20,13 +20,13 @@ import { validateForm } from "~/utils/validation";
 // * 2. Call the loader function
 // * 3. Send the HTML response
 
-const deleteShelfSchema = z.object({
-  shelfId: z.string(),
-});
-
 const saveShelfNameSchema = z.object({
   shelfId: z.string(),
-  shelfName: z.string().min(1),
+  shelfName: z.string().min(1, "Shelf name is required"),
+});
+
+const deleteShelfSchema = z.object({
+  shelfId: z.string(),
 });
 
 export const action: ActionFunction = async ({ request }) => {
@@ -35,19 +35,19 @@ export const action: ActionFunction = async ({ request }) => {
     case "createShelf": {
       return createShelf();
     }
-    case "deleteShelf": {
-      return validateForm(
-        formData,
-        deleteShelfSchema,
-        (data) => deleteShelf(data.shelfId),
-        (errors) => json({ errors }, { status: 400 })
-      );
-    }
     case "saveShelfName": {
       return validateForm(
         formData,
         saveShelfNameSchema,
         (data) => saveShelfName(data.shelfId, data.shelfName),
+        (errors) => json({ errors }, { status: 400 })
+      );
+    }
+    case "deleteShelf": {
+      return validateForm(
+        formData,
+        deleteShelfSchema,
+        (data) => deleteShelf(data.shelfId),
         (errors) => json({ errors }, { status: 400 })
       );
     }
