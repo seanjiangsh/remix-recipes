@@ -1,21 +1,33 @@
 import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
-import {
-  Form,
-  useFetcher,
-  useLoaderData,
-  useSearchParams,
-} from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import classNames from "classnames";
+import { z } from "zod";
 
-import { createShelf, deleteShelf, getAllShelves } from "~/models/pantry-shelf";
-import { PlusIcon, SearchIcon } from "~/components/icons/icons";
-import { CreateShelfButton } from "~/components/buttons/Form-button";
+import {
+  createShelf,
+  deleteShelf,
+  getAllShelves,
+  saveShelfName,
+} from "~/models/pantry-shelf";
+
 import Shelf from "~/components/shelf/shelf";
+import CreateShelf from "~/components/shelf/create-shelf";
+import SearchShelf from "~/components/shelf/search-shelf";
+import { validateForm } from "~/utils/validation";
 
 // * note: When Remix server recives a non-GET request
 // * 1. Call the action function
 // * 2. Call the loader function
 // * 3. Send the HTML response
+
+const deleteShelfSchema = z.object({
+  shelfId: z.string(),
+});
+
+const saveShelfNameSchema = z.object({
+  shelfId: z.string(),
+  shelfName: z.string().min(1),
+});
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -24,10 +36,20 @@ export const action: ActionFunction = async ({ request }) => {
       return createShelf();
     }
     case "deleteShelf": {
-      const shelfId = formData.get("shelfId");
-      if (typeof shelfId !== "string")
-        return json({ error: "Invalid shelfId" }, { status: 400 });
-      return deleteShelf(shelfId);
+      return validateForm(
+        formData,
+        deleteShelfSchema,
+        (data) => deleteShelf(data.shelfId),
+        (errors) => json({ errors }, { status: 400 })
+      );
+    }
+    case "saveShelfName": {
+      return validateForm(
+        formData,
+        saveShelfNameSchema,
+        (data) => saveShelfName(data.shelfId, data.shelfName),
+        (errors) => json({ errors }, { status: 400 })
+      );
     }
     default: {
       return null;
@@ -44,50 +66,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function Pantry() {
   const data = useLoaderData<typeof loader>();
-  const [searchParams] = useSearchParams();
-
-  const createShelfFetcher = useFetcher();
-  const { formData } = createShelfFetcher;
-  const isSearching = formData?.has("q");
-  const isCreatingShelf = formData?.get("_action") === "createShelf";
 
   return (
     <div>
-      <Form
-        className={classNames(
-          "flex border-2 border-gray-300 rounded-md",
-          "focus-within:border-primary",
-          "md:w-80",
-          isSearching ? "animate-pulse" : ""
-        )}
-      >
-        <button className="px-2 mr-1">
-          <SearchIcon />
-        </button>
-        <input
-          type="text"
-          name="q"
-          autoComplete="off"
-          placeholder="Search Shelves..."
-          defaultValue={searchParams.get("q") ?? ""}
-          className="w-full py-3 px-2 outline-none"
-        />
-      </Form>
-
-      <Form method="post">
-        <CreateShelfButton
-          name="_action"
-          value="createShelf"
-          isLoading={isCreatingShelf}
-          className={"mt-4 w-full md:w-fit"}
-        >
-          <PlusIcon />
-          <span className="pl-2">
-            {isCreatingShelf ? "Creating Shelf" : "Create Shelf"}
-          </span>
-        </CreateShelfButton>
-      </Form>
-
+      <SearchShelf />
+      <CreateShelf />
       <ul
         className={classNames(
           "flex gap-8 overflow-x-auto mt-4 pb-4",

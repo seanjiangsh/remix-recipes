@@ -2,6 +2,7 @@ import { useFetcher } from "@remix-run/react";
 import classNames from "classnames";
 
 import { DeleteShelfButton } from "../buttons/Form-button";
+import { SaveIcon } from "../icons/icons";
 
 type ShelfProps = {
   shelf: {
@@ -10,15 +11,14 @@ type ShelfProps = {
     items: { id: string; name: string }[];
   };
 };
-
 export default function Shelf({ shelf }: ShelfProps) {
   const { id, name, items } = shelf;
 
+  const saveShelfNameFetcher = useFetcher();
   const deleteShelfFetcher = useFetcher();
-  const { formData } = deleteShelfFetcher;
   const isDeletingShelf =
-    formData?.get("_action") === "deleteShelf" &&
-    formData.get("shelfId") === id;
+    deleteShelfFetcher.formData?.get("_action") === "deleteShelf" &&
+    deleteShelfFetcher.formData.get("shelfId") === id;
 
   return (
     <li
@@ -29,7 +29,24 @@ export default function Shelf({ shelf }: ShelfProps) {
         "md:w-96"
       )}
     >
-      <h1 className="text-2xl font-extrabold mb-2">{name}</h1>
+      <saveShelfNameFetcher.Form method="post" className="flex">
+        <input
+          type="text"
+          defaultValue={name}
+          name="shelfName"
+          placeholder="Shelf Name"
+          autoComplete="off"
+          className={classNames(
+            "text-2xl font-extrabold mb-2 w-full outline-none",
+            "border-b-2 border-b-background focus:border-b-primary"
+          )}
+        />
+        <button name="_action" value="saveShelfName" className="ml-4">
+          <SaveIcon />
+        </button>
+        <input type="hidden" name="shelfId" value={id} />
+      </saveShelfNameFetcher.Form>
+
       <ul>
         {items.map(({ id, name }) => (
           <li key={id} className="py-2">

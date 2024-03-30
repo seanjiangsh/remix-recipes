@@ -38,7 +38,7 @@ export default function Root() {
         <Meta />
         <Links />
       </head>
-      <body className="md:flex md:h-screen">
+      <body className="md:flex md:h-screen bg-background">
         <nav className="bg-primary text-white">
           <ul className="flex md:flex-col">
             <NavLink to="/">

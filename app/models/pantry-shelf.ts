@@ -32,3 +32,21 @@ export const deleteShelf = async (id: string) => {
     throw err;
   }
 };
+
+export const saveShelfName = async (id: string, name: string) => {
+  try {
+    const updated = await db.pantryShelf.update({
+      where: { id },
+      data: { name },
+    });
+    return updated;
+  } catch (err) {
+    console.log(err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === "P2025") {
+        return json({ error: "Shelf not found" }, { status: 404 });
+      }
+    }
+    throw err;
+  }
+};
