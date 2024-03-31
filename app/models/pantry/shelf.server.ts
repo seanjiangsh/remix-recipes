@@ -1,6 +1,8 @@
 import { json } from "@remix-run/node";
 import { Prisma } from "@prisma/client";
+
 import db from "~/utils/prisma/server";
+import { handleDelete } from "./utils";
 
 export const getAllShelves = (query: string | null) =>
   db.pantryShelf.findMany({
@@ -18,20 +20,8 @@ export const getAllShelves = (query: string | null) =>
 export const createShelf = () =>
   db.pantryShelf.create({ data: { name: "New Shelf" } });
 
-export const deleteShelf = async (id: string) => {
-  try {
-    const deleted = await db.pantryShelf.delete({ where: { id } });
-    return deleted;
-  } catch (err) {
-    console.log(err);
-    if (err instanceof Prisma.PrismaClientKnownRequestError) {
-      if (err.code === "P2025") {
-        return json({ error: "Shelf not found" }, { status: 404 });
-      }
-    }
-    throw err;
-  }
-};
+export const deleteShelf = (id: string) =>
+  handleDelete(() => db.pantryShelf.delete({ where: { id } }));
 
 export const saveShelfName = async (id: string, name: string) => {
   try {

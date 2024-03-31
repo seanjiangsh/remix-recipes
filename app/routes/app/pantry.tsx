@@ -8,12 +8,13 @@ import {
   deleteShelf,
   getAllShelves,
   saveShelfName,
-} from "~/models/pantry-shelf";
+} from "~/models/pantry/shelf.server";
 
 import Shelf from "~/components/shelf/shelf";
 import CreateShelf from "~/components/shelf/create-shelf";
 import SearchShelf from "~/components/shelf/search-shelf";
 import { validateForm } from "~/utils/validation";
+import { createShelfItem, deleteShelfItem } from "~/models/pantry/item.server";
 
 // * note: When Remix server recives a non-GET request
 // * 1. Call the action function
@@ -25,9 +26,14 @@ const saveShelfNameSchema = z.object({
   shelfName: z.string().min(1, "Shelf name is required"),
 });
 
-const deleteShelfSchema = z.object({
+const deleteShelfSchema = z.object({ shelfId: z.string() });
+
+const createShelfItemSchema = z.object({
   shelfId: z.string(),
+  itemName: z.string().min(1, "Item name is required"),
 });
+
+const deleteShelfItemSchema = z.object({ itemId: z.string() });
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -48,6 +54,22 @@ export const action: ActionFunction = async ({ request }) => {
         formData,
         deleteShelfSchema,
         (data) => deleteShelf(data.shelfId),
+        (errors) => json({ errors }, { status: 400 })
+      );
+    }
+    case "createShelfItem": {
+      return validateForm(
+        formData,
+        createShelfItemSchema,
+        (data) => createShelfItem(data.shelfId, data.itemName),
+        (errors) => json({ errors }, { status: 400 })
+      );
+    }
+    case "deleteShelfItem": {
+      return validateForm(
+        formData,
+        deleteShelfItemSchema,
+        (data) => deleteShelfItem(data.itemId),
         (errors) => json({ errors }, { status: 400 })
       );
     }
