@@ -1,34 +1,34 @@
-import { useFetcher } from "@remix-run/react";
+import { FormEventHandler } from "react";
+import { FetcherWithComponents } from "@remix-run/react";
 
 import * as pantryTypes from "~/types/pantry/pantry";
 import { DeleteShelfButton } from "../buttons/Form-button";
 import ErrorMessage from "./error-message";
-import { useEffect } from "react";
+import { DeleteShelfData } from "./shelf";
 
 type DeleteShelfProps = {
   shelf: pantryTypes.Shelf;
-  deletingShelfStatus: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
+  deleteShelfFetcher: FetcherWithComponents<DeleteShelfData>;
 };
-type DeleteShelfData = { errors: { shelfId: string } };
 
 export default function DeleteShelf(props: DeleteShelfProps) {
-  const { shelf, deletingShelfStatus } = props;
-  const [, setIsDeletingShelf] = deletingShelfStatus;
+  const { shelf, deleteShelfFetcher } = props;
   const { id } = shelf;
 
-  const deleteShelfFetcher = useFetcher<DeleteShelfData>();
   const { formData } = deleteShelfFetcher;
   const isDeletingShelf =
     formData?.get("_action") === "deleteShelf" &&
     formData?.get("shelfId") === id;
   const deleteShelfErrMsg = deleteShelfFetcher.data?.errors?.shelfId;
 
-  useEffect(() => {
-    setIsDeletingShelf(isDeletingShelf);
-  }, [isDeletingShelf, setIsDeletingShelf]);
+  const onSubmit: FormEventHandler<HTMLFormElement> = (ev) => {
+    if (!confirm("Are you sure you want to delete this shelf?")) {
+      ev.preventDefault();
+    }
+  };
 
   return (
-    <deleteShelfFetcher.Form method="post" className="pt-8">
+    <deleteShelfFetcher.Form method="post" className="pt-8" onSubmit={onSubmit}>
       <input type="hidden" name="shelfId" value={id} />
       <ErrorMessage className="pb-2">{deleteShelfErrMsg}</ErrorMessage>
       <DeleteShelfButton

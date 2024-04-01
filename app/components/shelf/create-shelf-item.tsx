@@ -1,18 +1,22 @@
 import { FormEventHandler, useRef } from "react";
-import { SubmitOptions, useFetcher } from "@remix-run/react";
+import { FetcherWithComponents, SubmitOptions } from "@remix-run/react";
 import classNames from "classnames";
 
 import * as pantryTypes from "~/types/pantry/pantry";
 import { SaveIcon } from "../icons/icons";
 import ErrorMessage from "./error-message";
-type ShelfProps = { shelf: pantryTypes.Shelf; addItem: (name: string) => void };
-type CreateShelfItemData = { errors: { shelfId: string; itemName: string } };
+import { CreateShelfItemData } from "./shelf";
+
+type ShelfProps = {
+  shelf: pantryTypes.Shelf;
+  addItem: (name: string) => void;
+  createShelfItemFetcher: FetcherWithComponents<CreateShelfItemData>;
+};
 
 export default function CreatShelfItem(props: ShelfProps) {
-  const { shelf, addItem } = props;
+  const { shelf, addItem, createShelfItemFetcher } = props;
   const { id } = shelf;
 
-  const createShelfItemFetcher = useFetcher<CreateShelfItemData>();
   const fetcherData = createShelfItemFetcher.data;
   const createShelfItemIdErrMsg = fetcherData?.errors?.shelfId;
   const createShelfItemNameErrMsg = fetcherData?.errors?.itemName;
@@ -29,9 +33,9 @@ export default function CreatShelfItem(props: ShelfProps) {
     // * submit manually via fetcher
     ev.preventDefault();
     const submitValue = {
-      itemName: itemNameIput.value,
-      shelfId: id,
       _action: "createShelfItem",
+      shelfId: id,
+      itemName: itemNameIput.value,
     };
     const options: SubmitOptions = { method: "post" };
     createShelfItemFetcher.submit(submitValue, options);
@@ -42,13 +46,13 @@ export default function CreatShelfItem(props: ShelfProps) {
 
   return (
     <createShelfItemFetcher.Form
-      method="post"
       className="flex py-2"
       ref={createItemFormRef}
       onSubmit={onSubmit}
     >
-      <div className="w-full mb-2">
+      <div className="w-full mb-2 peer">
         <input
+          required
           type="text"
           name="itemName"
           placeholder="New Item"
@@ -63,7 +67,14 @@ export default function CreatShelfItem(props: ShelfProps) {
           {createShelfItemNameErrMsg}
         </ErrorMessage>
       </div>
-      <button name="_action" value="createShelfItem" className="ml-4">
+      <button
+        name="_action"
+        value="createShelfItem"
+        className={classNames(
+          "ml-4 opacity-0 hover:opacity-100 focus:opacity-100",
+          "peer-focus-within:opacity-100"
+        )}
+      >
         <SaveIcon />
       </button>
       <input type="hidden" name="shelfId" value={id} />

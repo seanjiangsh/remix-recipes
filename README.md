@@ -8,7 +8,6 @@
 
    ```sh
    npm install
-   npx prisma init --datasource-provider postgresql  # init Prisma
    ```
 
 2. Start the Postgres instance

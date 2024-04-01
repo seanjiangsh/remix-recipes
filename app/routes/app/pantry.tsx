@@ -1,6 +1,5 @@
 import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import classNames from "classnames";
 import { z } from "zod";
 
 import {
@@ -10,11 +9,11 @@ import {
   saveShelfName,
 } from "~/models/pantry/shelf.server";
 
-import Shelf from "~/components/shelf/shelf";
 import CreateShelf from "~/components/shelf/create-shelf";
 import SearchShelf from "~/components/shelf/search-shelf";
 import { validateForm } from "~/utils/validation";
 import { createShelfItem, deleteShelfItem } from "~/models/pantry/item.server";
+import Shelves from "~/components/shelf/shelves";
 
 // * note: When Remix server recives a non-GET request
 // * 1. Call the action function
@@ -87,23 +86,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function Pantry() {
-  const data = useLoaderData<typeof loader>();
+  const { shelves } = useLoaderData<typeof loader>();
 
   return (
     <div>
       <SearchShelf />
       <CreateShelf />
-      <ul
-        className={classNames(
-          "flex gap-8 overflow-x-auto mt-4 pb-4",
-          "snap-x snap-mandatory",
-          "md:snap-none"
-        )}
-      >
-        {data.shelves.map((shelf) => (
-          <Shelf key={shelf.id} shelf={shelf} />
-        ))}
-      </ul>
+      <Shelves shelves={shelves} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useFetcher } from "@remix-run/react";
 import classNames from "classnames";
 
 import * as pantryTypes from "~/types/pantry/pantry";
@@ -9,15 +9,27 @@ import DeleteShelf from "./delete-shelf";
 import CreateShelfItem from "./create-shelf-item";
 import ShelfItems from "./shelf-items";
 
+export type CreateShelfItemData = {
+  errors: { shelfId: string; itemName: string };
+};
+export type DeleteShelfData = { errors: { shelfId: string } };
 type ShelfProps = { shelf: pantryTypes.Shelf };
 
 export default function Shelf({ shelf }: ShelfProps) {
   const { id, items } = shelf;
 
-  const { renderedItems, addItem } = useOptimisticItems(items);
+  const createShelfItemFetcher = useFetcher<CreateShelfItemData>();
+  const createShelfItemState = createShelfItemFetcher.state;
+  const { renderedItems, addItem } = useOptimisticItems(
+    items,
+    createShelfItemState
+  );
 
-  const deletingShelfStatus = useState(false);
-  const [isDeletingShelf] = deletingShelfStatus;
+  const deleteShelfFetcher = useFetcher<DeleteShelfData>();
+  const deleteShelfData = deleteShelfFetcher.formData;
+  const isDeletingShelf =
+    deleteShelfData?.get("_action") === "deleteShelf" &&
+    deleteShelfData?.get("shelfId") === id;
 
   return (
     !isDeletingShelf && (
@@ -30,9 +42,13 @@ export default function Shelf({ shelf }: ShelfProps) {
         )}
       >
         <SaveShelfName shelf={shelf} />
-        <CreateShelfItem shelf={shelf} addItem={addItem} />
+        <CreateShelfItem
+          shelf={shelf}
+          addItem={addItem}
+          createShelfItemFetcher={createShelfItemFetcher}
+        />
         <ShelfItems items={renderedItems} />
-        <DeleteShelf shelf={shelf} deletingShelfStatus={deletingShelfStatus} />
+        <DeleteShelf shelf={shelf} deleteShelfFetcher={deleteShelfFetcher} />
       </li>
     )
   );

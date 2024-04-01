@@ -1,6 +1,7 @@
+import { Fetcher } from "@remix-run/react";
 import { useState } from "react";
 
-import { Item, OptimisticItems } from "~/types/pantry/pantry";
+import { Items, OptimisticItems } from "~/types/pantry/pantry";
 import { useServerLayoutEffect } from "~/utils/misc";
 
 // * note about optimistic updates:
@@ -10,15 +11,18 @@ import { useServerLayoutEffect } from "~/utils/misc";
 // * If the action fails, the UI can be updated to reflect the failure.
 // * This is called an optimistic update.
 
-export const useOptimisticItems = (savedItems: Array<Item>) => {
+export const useOptimisticItems = (
+  savedItems: Items,
+  createShelfItemState: Fetcher["state"]
+) => {
   const [optimisticItems, setOptimisticItems] = useState<OptimisticItems>([]);
-  const renderedItems = [...optimisticItems, ...savedItems].sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
+  const items = [...optimisticItems, ...savedItems];
+  const renderedItems = items.sort((a, b) => a.name.localeCompare(b.name));
 
   useServerLayoutEffect(() => {
+    if (createShelfItemState !== "idle") return;
     setOptimisticItems([]);
-  }, [savedItems]);
+  }, [createShelfItemState]);
 
   const addItem = (name: string) => {
     const newItem = { id: createItemId(), name, isOptimistic: true };
