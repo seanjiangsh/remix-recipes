@@ -1,7 +1,7 @@
 import { useFetcher } from "@remix-run/react";
 import classNames from "classnames";
 
-import * as pantryTypes from "~/types/pantry";
+import * as pantryTypes from "~/types/pantry/pantry";
 import { SaveIcon } from "../icons/icons";
 import ErrorMessage from "./error-message";
 

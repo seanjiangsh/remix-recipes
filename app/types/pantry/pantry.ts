@@ -5,3 +5,7 @@ export type Shelf = {
 };
 
 export type Item = { id: string; name: string };
+
+export type OptimisticItem = Item & { isOptimistic?: boolean };
+
+export type OptimisticItems = Array<OptimisticItem>;

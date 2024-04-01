@@ -1,7 +1,9 @@
 import { useState } from "react";
 import classNames from "classnames";
 
-import * as pantryTypes from "~/types/pantry";
+import * as pantryTypes from "~/types/pantry/pantry";
+import { useOptimisticItems } from "~/hooks/pantry/pantry.hooks";
+
 import SaveShelfName from "./save-shelf-name";
 import DeleteShelf from "./delete-shelf";
 import CreateShelfItem from "./create-shelf-item";
@@ -11,6 +13,8 @@ type ShelfProps = { shelf: pantryTypes.Shelf };
 
 export default function Shelf({ shelf }: ShelfProps) {
   const { id, items } = shelf;
+
+  const { renderedItems, addItem } = useOptimisticItems(items);
 
   const deletingShelfStatus = useState(false);
   const [isDeletingShelf] = deletingShelfStatus;
@@ -26,8 +30,8 @@ export default function Shelf({ shelf }: ShelfProps) {
         )}
       >
         <SaveShelfName shelf={shelf} />
-        <CreateShelfItem shelf={shelf} />
-        <ShelfItems items={items} />
+        <CreateShelfItem shelf={shelf} addItem={addItem} />
+        <ShelfItems items={renderedItems} />
         <DeleteShelf shelf={shelf} deletingShelfStatus={deletingShelfStatus} />
       </li>
     )

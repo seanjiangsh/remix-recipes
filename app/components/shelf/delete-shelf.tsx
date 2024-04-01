@@ -1,6 +1,6 @@
 import { useFetcher } from "@remix-run/react";
 
-import * as pantryTypes from "~/types/pantry";
+import * as pantryTypes from "~/types/pantry/pantry";
 import { DeleteShelfButton } from "../buttons/Form-button";
 import ErrorMessage from "./error-message";
 import { useEffect } from "react";
