@@ -3,7 +3,7 @@ import { Link, Outlet } from "@remix-run/react";
 import { ErrorBoundaryComponent } from "@remix-run/react/dist/routeModules";
 
 import { useMatchesData } from "~/utils/misc";
-import ErrorBoundaryComp from "~/components/error-boundary/error-boundary";
+import ErrorBoundaryElement from "~/components/error-boundary/error-boundary";
 
 export const loader: LoaderFunction = async () => {
   const rep = await fetch("https://jsonplaceholder.typicode.com/todos/1");
@@ -13,7 +13,7 @@ export const loader: LoaderFunction = async () => {
 };
 
 export const ErrorBoundary: ErrorBoundaryComponent = () => (
-  <ErrorBoundaryComp title="Settings Error" />
+  <ErrorBoundaryElement title="Settings Error" />
 );
 
 export default function Settings() {

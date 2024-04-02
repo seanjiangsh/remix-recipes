@@ -1,7 +1,7 @@
 import { useRouteError } from "@remix-run/react";
 
 type ErrorBoundaryProps = { title: string };
-export default function ErrorBoundary(props: ErrorBoundaryProps) {
+export default function ErrorBoundaryElement(props: ErrorBoundaryProps) {
   const { title } = props;
   const err = useRouteError();
   const errMsg =
