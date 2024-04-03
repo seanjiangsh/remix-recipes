@@ -2,7 +2,7 @@ import { FormEventHandler } from "react";
 import { FetcherWithComponents } from "@remix-run/react";
 
 import * as pantryTypes from "~/types/pantry/pantry";
-import { DeleteShelfButton } from "../buttons/Form-button";
+import { DeleteShelfButton } from "../buttons/buttons";
 import ErrorMessage from "./error-message";
 import { DeleteShelfData } from "./shelf";
 

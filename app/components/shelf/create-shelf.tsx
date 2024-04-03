@@ -1,6 +1,6 @@
 import { Form, useFetcher } from "@remix-run/react";
 
-import { CreateShelfButton } from "~/components/buttons/Form-button";
+import { PrimaryButton } from "~/components/buttons/buttons";
 import { PlusIcon } from "../icons/icons";
 
 export default function CreateShelf() {
@@ -10,7 +10,7 @@ export default function CreateShelf() {
 
   return (
     <Form method="post">
-      <CreateShelfButton
+      <PrimaryButton
         name="_action"
         value="createShelf"
         isLoading={isCreatingShelf}
@@ -20,7 +20,7 @@ export default function CreateShelf() {
         <span className="pl-2">
           {isCreatingShelf ? "Creating Shelf" : "Create Shelf"}
         </span>
-      </CreateShelfButton>
+      </PrimaryButton>
     </Form>
   );
 }
