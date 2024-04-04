@@ -1,10 +1,14 @@
-import { LoaderFunction, json, redirect } from "@remix-run/node";
+import { LoaderFunction, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import classNames from "classnames";
 import { z } from "zod";
+
+import { getUser } from "~/models/user/user.server";
+import { validateForm } from "~/utils/prisma/validation";
+
 import { PrimaryButton } from "~/components/buttons/buttons";
 import ErrorMessage from "~/components/shelf/error-message";
-import { validateForm } from "~/utils/validation";
+import { userIdCookie } from "~/utils/cookies/cookies";
 
 type LoginData = { email: string; errors: { email: string } };
 
@@ -12,14 +16,31 @@ const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
 });
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const cookies = request.headers.get("cookie");
+  const cookieUserValue = await userIdCookie.parse(cookies);
+  console.log(cookies, cookieUserValue);
+  return null;
+};
+
 export const action: LoaderFunction = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
-  return validateForm(
-    formData,
-    loginSchema,
-    ({ email }) => {},
-    (errors) => json({ errors, email }, { status: 400 })
+  const successFn = async ({ email }: { email: string }) => {
+    const user = await getUser(email);
+    if (user) {
+      const headers = new Headers();
+      headers.append("Set-Cookie", await userIdCookie.serialize(user.id));
+      return json({ user }, { headers });
+    } else {
+      return json(
+        { errors: { email: "User does not exist" }, email },
+        { status: 401 }
+      );
+    }
+  };
+  return validateForm(formData, loginSchema, successFn, (errors) =>
+    json({ errors, email }, { status: 400 })
   );
 };
 
