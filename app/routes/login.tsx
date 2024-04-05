@@ -1,4 +1,4 @@
-import { LoaderFunction, json } from "@remix-run/node";
+import { ActionFunction, LoaderFunction, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import classNames from "classnames";
 import { z } from "zod";
@@ -8,7 +8,7 @@ import { validateForm } from "~/utils/prisma/validation";
 
 import { PrimaryButton } from "~/components/buttons/buttons";
 import ErrorMessage from "~/components/shelf/error-message";
-import { userIdCookie } from "~/utils/cookies/cookies";
+import { commitSession, getSession } from "~/utils/auth/sessions";
 
 type LoginData = { email: string; errors: { email: string } };
 
@@ -18,19 +18,22 @@ const loginSchema = z.object({
 
 export const loader: LoaderFunction = async ({ request }) => {
   const cookies = request.headers.get("cookie");
-  const cookieUserValue = await userIdCookie.parse(cookies);
-  console.log(cookies, cookieUserValue);
+  const session = await getSession(cookies);
+  console.log({ sessionData: session.data });
   return null;
 };
 
-export const action: LoaderFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request }) => {
+  const cookies = request.headers.get("cookie");
+  const session = await getSession(cookies);
   const formData = await request.formData();
   const email = formData.get("email");
   const successFn = async ({ email }: { email: string }) => {
     const user = await getUser(email);
     if (user) {
+      session.set("userId", user.id);
       const headers = new Headers();
-      headers.append("Set-Cookie", await userIdCookie.serialize(user.id));
+      headers.append("Set-Cookie", await commitSession(session));
       return json({ user }, { headers });
     } else {
       return json(
