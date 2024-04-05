@@ -14,10 +14,12 @@ import styles from "~/tailwind.css";
 import {
   DiscoverIcon,
   HomeIcon,
+  LoginIcon,
   RecipeBookIcon,
   SettingsIcon,
 } from "./components/icons/icons";
 import NavLink from "./components/nav-link/nav-link";
+import classNames from "classnames";
 
 export const meta: MetaFunction = () => [
   { title: "Remix Recipes" },
@@ -39,7 +41,12 @@ export default function Root() {
         <Links />
       </head>
       <body className="md:flex md:h-screen bg-background">
-        <nav className="bg-primary text-white">
+        <nav
+          className={classNames(
+            "bg-primary text-white md:w-16",
+            "flex justify-between md:flex-col"
+          )}
+        >
           <ul className="flex md:flex-col">
             <NavLink to="/">
               <HomeIcon />
@@ -52,6 +59,11 @@ export default function Root() {
             </NavLink>
             <NavLink to="settings">
               <SettingsIcon />
+            </NavLink>
+          </ul>
+          <ul>
+            <NavLink to="login">
+              <LoginIcon />
             </NavLink>
           </ul>
         </nav>

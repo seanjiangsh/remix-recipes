@@ -11,7 +11,7 @@ import {
 
 import CreateShelf from "~/components/shelf/create-shelf";
 import SearchShelf from "~/components/shelf/search-shelf";
-import { validateForm } from "~/utils/validation";
+import { validateForm } from "~/utils/prisma/validation";
 import { createShelfItem, deleteShelfItem } from "~/models/pantry/item.server";
 import Shelves from "~/components/shelf/shelves";
 

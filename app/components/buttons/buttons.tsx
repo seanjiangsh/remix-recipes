@@ -19,7 +19,7 @@ export const BaseButton = (props: ButtonProps) => {
   );
 };
 
-export const CreateShelfButton = (props: ButtonProps) => {
+export const PrimaryButton = (props: ButtonProps) => {
   const { className, isLoading, ...restOfProps } = props;
   const buttonClasses = classNames(
     "text-white bg-primary hover:bg-primary-light",
