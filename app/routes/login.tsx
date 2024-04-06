@@ -2,13 +2,15 @@ import { ActionFunction, LoaderFunction, json } from "@remix-run/node";
 import { useActionData } from "@remix-run/react";
 import classNames from "classnames";
 import { z } from "zod";
+import { v4 as uuid } from "uuid";
 
 import { getUser } from "~/models/user/user.server";
 import { validateForm } from "~/utils/prisma/validation";
+import { commitSession, getSession } from "~/utils/auth/sessions";
+import { generateMagicLink } from "~/utils/auth/magin-links.server";
 
 import { PrimaryButton } from "~/components/buttons/buttons";
 import ErrorMessage from "~/components/shelf/error-message";
-import { commitSession, getSession } from "~/utils/auth/sessions";
 
 type LoginData = { email: string; errors: { email: string } };
 
@@ -29,18 +31,9 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const successFn = async ({ email }: { email: string }) => {
-    const user = await getUser(email);
-    if (user) {
-      session.set("userId", user.id);
-      const headers = new Headers();
-      headers.append("Set-Cookie", await commitSession(session));
-      return json({ user }, { headers });
-    } else {
-      return json(
-        { errors: { email: "User does not exist" }, email },
-        { status: 401 }
-      );
-    }
+    const link = generateMagicLink(email, uuid());
+    console.log(link);
+    return null;
   };
   return validateForm(formData, loginSchema, successFn, (errors) =>
     json({ errors, email }, { status: 400 })
