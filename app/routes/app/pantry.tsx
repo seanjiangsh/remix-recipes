@@ -20,6 +20,13 @@ import Shelves from "~/components/shelf/shelves";
 // * 2. Call the loader function
 // * 3. Send the HTML response
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url);
+  const query = url.searchParams.get("q");
+  const shelves = await getAllShelves(query);
+  return json({ shelves });
+};
+
 const saveShelfNameSchema = z.object({
   shelfId: z.string(),
   shelfName: z.string().min(1, "Shelf name is required"),
@@ -76,13 +83,6 @@ export const action: ActionFunction = async ({ request }) => {
       return null;
     }
   }
-};
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const query = url.searchParams.get("q");
-  const shelves = await getAllShelves(query);
-  return json({ shelves });
 };
 
 export default function Pantry() {
