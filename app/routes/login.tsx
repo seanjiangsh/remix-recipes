@@ -5,7 +5,10 @@ import { v4 as uuid } from "uuid";
 
 import { FieldErrors, validateForm } from "~/utils/prisma/validation";
 import { commitSession, getSession } from "~/utils/auth/sessions";
-import { generateMagicLink } from "~/utils/auth/magin-links.server";
+import {
+  generateMagicLink,
+  sendMagicLinkEmail,
+} from "~/utils/auth/magin-links.server";
 
 import { PrimaryInput } from "~/components/form/Inputs";
 import { PrimaryButton } from "~/components/buttons/buttons";
@@ -32,8 +35,16 @@ export const action: ActionFunction = async ({ request }) => {
     session.set("nonce", nonce);
     const repInit = { headers: { "Set-Cookie": await commitSession(session) } };
     const link = generateMagicLink(email, nonce);
-    console.log(nonce, link);
-    return json("ok", repInit);
+    try {
+      await sendMagicLinkEmail(email, link);
+      return json("ok", repInit);
+    } catch (error) {
+      console.error("send email failed", error);
+      const msg =
+        "Sorry, we failed to send the verification email, please try again later.";
+      const errors = { email: msg };
+      return json({ errors }, { status: 500 });
+    }
   };
   const errorFn = (errors: FieldErrors) =>
     json({ errors, email }, { status: 400 });
@@ -44,22 +55,30 @@ export default function Login() {
   const actionData = useActionData<typeof action>();
   const { email, errors } = actionData || {};
 
-  return (
-    <div className="text-center mt-36">
-      <h1 className="text-3xl mb-8">Remix Recipes</h1>
-      <form method="post" className="mx-auto md:w-1/3" action="/login">
-        <div className="text-left pb-4">
-          <PrimaryInput
-            type="email"
-            name="email"
-            placeholder="Email"
-            autoComplete="off"
-            defaultValue={email}
-          />
-          <ErrorMessage>{errors?.email}</ErrorMessage>
-        </div>
-        <PrimaryButton className="w-1/3 mx-auto">Log In</PrimaryButton>
-      </form>
-    </div>
-  );
+  const loginContent =
+    actionData === "ok" ? (
+      <div>
+        <h1 className="text-2xl py-8">Yum!</h1>
+        <p>Check your email and follow the instructions to finish log in.</p>
+      </div>
+    ) : (
+      <div>
+        <h1 className="text-3xl mb-8">Remix Recipes</h1>
+        <form method="post" className="mx-auto md:w-1/3" action="/login">
+          <div className="text-left pb-4">
+            <PrimaryInput
+              type="email"
+              name="email"
+              placeholder="Email"
+              autoComplete="off"
+              defaultValue={email}
+            />
+            <ErrorMessage>{errors?.email}</ErrorMessage>
+          </div>
+          <PrimaryButton className="w-1/3 mx-auto">Log In</PrimaryButton>
+        </form>
+      </div>
+    );
+
+  return <div className="text-center mt-36">{loginContent}</div>;
 }

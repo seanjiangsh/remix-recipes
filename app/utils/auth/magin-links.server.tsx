@@ -1,5 +1,7 @@
 import { json } from "@remix-run/node";
 import Cryptr from "cryptr";
+import { sendEmail } from "../email/email.server";
+import { renderToStaticMarkup } from "react-dom/server";
 
 const { MAGIC_LINK_SECRET, ORIGIN } = process.env;
 
@@ -51,4 +53,26 @@ export const getMagicLinkPayload = (request: Request) => {
     throw invalidMagicLink("Invalid magic link payload");
 
   return magicLinkPayload;
+};
+
+export const sendMagicLinkEmail = async (email: string, link: string) => {
+  if (process.env.NODE_ENV !== "production") {
+    console.log(link);
+    return;
+  }
+  const from = "Remix Recipes <seanjiangsh@gmail.com>";
+  const to = email;
+  const subject = "Log in to Remix Recipes!";
+  const html = renderToStaticMarkup(
+    <div>
+      <h1>Log in to Remix Recipes</h1>
+      <p>
+        Hey there! Click the link below to finish logging in to the Remix
+        Recipes app.
+      </p>
+      <a href={link}>Log In</a>
+    </div>
+  );
+  const senderEmail = "seanjiangsh@gmail.com";
+  return sendEmail({ from, to, subject, html, senderEmail });
 };
