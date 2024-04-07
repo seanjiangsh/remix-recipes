@@ -31,9 +31,13 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const successFn = async ({ email }: { email: string }) => {
-    const link = generateMagicLink(email, uuid());
-    console.log(link);
-    return null;
+    const nonce = uuid();
+    session.flash("nonce", nonce); // * flash sets the session only valid till the next get()
+    const headers = new Headers();
+    headers.append("Set-Cookie", await commitSession(session));
+    const link = generateMagicLink(email, nonce);
+    console.log(nonce, link);
+    return json("ok", { headers });
   };
   return validateForm(formData, loginSchema, successFn, (errors) =>
     json({ errors, email }, { status: 400 })
