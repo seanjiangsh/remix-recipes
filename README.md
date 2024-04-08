@@ -61,3 +61,11 @@ Make sure to deploy the output of `remix build`
 
 - `build/`
 - `public/build/`
+
+## This project utilizes the following technologies:
+
+- [Remix](https://remix.run/): A full-stack web framework for building modern JavaScript applications.
+- [Prisma](https://www.prisma.io/): A modern database toolkit for TypeScript and Node.js that makes it easy to work with databases.
+- [Magic Link Authentication](https://magic.link/): A passwordless authentication method that allows users to log in with a single click using a secure email link.
+- [Typescript](https://www.typescriptlang.org/): A typed superset of JavaScript that compiles to plain JavaScript.
+- Optimistic UI: A technique for providing a smooth user experience by immediately updating the UI optimistically, without waiting for the server response.

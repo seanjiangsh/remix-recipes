@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-type FieldErrors = Record<string, string>;
+export type FieldErrors = Record<string, string>;
 
 export const validateForm = <T>(
   formData: FormData,
