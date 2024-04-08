@@ -9,7 +9,7 @@ import classNames from "classnames";
 import { z } from "zod";
 
 import { FieldErrors, validateForm } from "~/utils/prisma/validation";
-import { createUser, getUser } from "~/models/user/user.server";
+import { createUser, getUserByEmail } from "~/models/user/user.server";
 import {
   getMagicLinkPayload,
   invalidMagicLink,
@@ -39,15 +39,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   // * all good, redirect to the app if the user exists
   const headers = new Headers();
-  headers.append("Set-Cookie", await commitSession(session));
 
-  const user = await getUser(email);
+  const user = await getUserByEmail(email);
   if (user) {
     session.unset("nonce");
     session.set("userId", user.id);
+    headers.append("Set-Cookie", await commitSession(session));
     return redirect("/app", { headers });
   }
 
+  headers.append("Set-Cookie", await commitSession(session));
   return json("ok", { headers });
 };
 
@@ -66,9 +67,9 @@ export const action: ActionFunction = async ({ request }) => {
     const user = await createUser(email, firstName, lastName);
     const cookies = request.headers.get("cookie");
     const session = await getSession(cookies);
-    const repInit = { headers: { "Set-Cookie": await commitSession(session) } };
     session.unset("nonce");
     session.set("userId", user.id);
+    const repInit = { headers: { "Set-Cookie": await commitSession(session) } };
     return redirect("/app", repInit);
   };
   const errorFn = (errors: FieldErrors) =>

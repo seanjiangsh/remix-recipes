@@ -60,7 +60,7 @@ export const sendMagicLinkEmail = async (email: string, link: string) => {
     console.log(link);
     return;
   }
-  const from = "Remix Recipes <seanjiangsh@gmail.com>";
+  const from = "Remix Recipes";
   const to = email;
   const subject = "Log in to Remix Recipes!";
   const html = renderToStaticMarkup(
