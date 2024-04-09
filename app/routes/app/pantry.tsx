@@ -1,5 +1,9 @@
 import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useLoaderData,
+  useRouteError,
+} from "@remix-run/react";
 import { z } from "zod";
 
 import {
@@ -137,3 +141,20 @@ export default function Pantry() {
     </div>
   );
 }
+
+export const ErrorBoundary = () => {
+  const error = useRouteError();
+
+  return isRouteErrorResponse(error) ? (
+    <div className="bg-red-600 text-white rounded-md p-4">
+      <h1 className="mb-2">
+        {error.status} - {error.statusText}
+      </h1>
+      <p>{error.data.message}</p>
+    </div>
+  ) : (
+    <div className="bg-red-600 text-white rounded-md p-4">
+      <h1 className="mb-2">An unexpected error occurred.</h1>
+    </div>
+  );
+};

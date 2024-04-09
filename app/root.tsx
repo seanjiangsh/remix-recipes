@@ -1,15 +1,26 @@
-import type { LinksFunction, MetaFunction } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import {
+  Link,
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  isRouteErrorResponse,
+  json,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react";
+import classNames from "classnames";
 
-import favicon from "~/assets/favicon.ico";
+import { getCurrentUser } from "./utils/auth/auth.server";
+
+// import favicon from "~/assets/favicon.ico";
 import styles from "~/tailwind.css";
 import {
   DiscoverIcon,
@@ -19,7 +30,6 @@ import {
   SettingsIcon,
 } from "./components/icons/icons";
 import NavLink from "./components/nav-link/nav-link";
-import classNames from "classnames";
 
 export const meta: MetaFunction = () => [
   { title: "Remix Recipes" },
@@ -27,11 +37,18 @@ export const meta: MetaFunction = () => [
 ];
 
 export const links: LinksFunction = () => [
-  { rel: "icon", href: favicon },
+  // { rel: "icon", href: favicon },
   { rel: "stylesheet", href: styles },
 ];
 
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const user = getCurrentUser(request);
+  return json({ isLoggedIn: !!user });
+};
+
 export default function Root() {
+  const { isLoggedIn } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en">
       <head>
@@ -54,9 +71,11 @@ export default function Root() {
             <NavLink to="discover">
               <DiscoverIcon />
             </NavLink>
-            <NavLink to="app">
-              <RecipeBookIcon />
-            </NavLink>
+            {isLoggedIn && (
+              <NavLink to="app">
+                <RecipeBookIcon />
+              </NavLink>
+            )}
             <NavLink to="settings">
               <SettingsIcon />
             </NavLink>
@@ -91,13 +110,28 @@ export const ErrorBoundary = () => {
         <Links />
       </head>
       <body>
-        <div className="p-4">
-          <h1 className="text-2xl pb-3">Whoops!</h1>
-          <p>You are seeing this page because an unexpected error occurred.</p>
-          {error instanceof Error && (
-            <p className="my-4 font-bold">{error.message}</p>
-          )}
-        </div>
+        {isRouteErrorResponse(error) ? (
+          <div className="p-4">
+            <h1 className="text-2xl pb-3">
+              {error.status} - {error.statusText}
+            </h1>
+            <p>You are seeing this page because an error occurred.</p>
+            <p className="my-4 font-bold">{error.data.message}</p>
+          </div>
+        ) : (
+          <div className="p-4">
+            <h1 className="text-2xl pb-3">Whoops!</h1>
+            <p>
+              You are seeing this page because an unexpected error occurred.
+            </p>
+            {error instanceof Error ? (
+              <p className="my-4 font-bold">{error.message}</p>
+            ) : null}
+          </div>
+        )}
+        <Link to="/" className="text-primary pl-4">
+          Take me home
+        </Link>
       </body>
     </html>
   );
