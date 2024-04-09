@@ -93,3 +93,15 @@ Make sure to deploy the output of `remix build`
 | ------ | ---------------- | ------------- | ---------------- |
 | read   | login page       | not logged in | redirect to /app |
 | create | magic link email | not logged in | redirect to /app |
+
+### Authorization Rules of the Pantry Page
+
+| Action | Entity            | Condition | Response                                    |
+| ------ | ----------------- | --------- | ------------------------------------------- |
+| CRUD   | pantry/shelf/item | logged in | redirect to /login                          |
+| read   | shelves/items     | owned     | N/A (only display shelves/items user owned) |
+| create | shelf             | owned     | N/A (user cannot create shelf for others)   |
+| create | item              | owned     | N/A (user cannot create item for others)    |
+| delete | shelf             | owned     | throw error response                        |
+| delete | item              | owned     | throw error response                        |
+| update | shelf             | owned     | throw error response                        |

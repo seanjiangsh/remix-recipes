@@ -20,12 +20,12 @@ const loginSchema = z.object({
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
-  await redirectLoggedInUser(request);
+  await redirectLoggedInUser(request); // * redirect to /app if user is already logged in
   return null;
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  await redirectLoggedInUser(request); // * redirect if user is already logged in
+  await redirectLoggedInUser(request); // * redirect to /app if user is already logged in
 
   const cookies = request.headers.get("cookie");
   const session = await getSession(cookies);

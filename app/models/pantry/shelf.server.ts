@@ -4,9 +4,13 @@ import { Prisma } from "@prisma/client";
 import db from "~/utils/prisma/server";
 import { handleDelete } from "./utils";
 
-export const getAllShelves = (query: string | null) =>
+export const getShelf = (shelfId: string) =>
+  db.pantryShelf.findUnique({ where: { id: shelfId } });
+
+export const getAllShelves = (userId: string, query: string | null) =>
   db.pantryShelf.findMany({
     where: {
+      userId,
       name: { contains: query ?? "", mode: "insensitive" },
     },
     include: {
@@ -17,8 +21,8 @@ export const getAllShelves = (query: string | null) =>
     },
   });
 
-export const createShelf = () =>
-  db.pantryShelf.create({ data: { name: "New Shelf" } });
+export const createShelf = (userId: string) =>
+  db.pantryShelf.create({ data: { userId, name: "New Shelf" } });
 
 export const deleteShelf = (id: string) =>
   handleDelete(() => db.pantryShelf.delete({ where: { id } }));
