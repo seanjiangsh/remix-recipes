@@ -58,7 +58,7 @@ export const getMagicLinkPayload = (request: Request) => {
 export const sendMagicLinkEmail = async (email: string, link: string) => {
   if (process.env.NODE_ENV !== "production") {
     console.log(link);
-    // return;
+    return;
   }
   const from = "Remix Recipes";
   const to = email;

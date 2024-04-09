@@ -26,6 +26,7 @@ import {
   DiscoverIcon,
   HomeIcon,
   LoginIcon,
+  LogoutIcon,
   RecipeBookIcon,
   SettingsIcon,
 } from "./components/icons/icons";
@@ -42,7 +43,7 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const user = getCurrentUser(request);
+  const user = await getCurrentUser(request);
   return json({ isLoggedIn: !!user });
 };
 
@@ -81,9 +82,15 @@ export default function Root() {
             </NavLink>
           </ul>
           <ul>
-            <NavLink to="login">
-              <LoginIcon />
-            </NavLink>
+            {isLoggedIn ? (
+              <NavLink to="logout">
+                <LogoutIcon />
+              </NavLink>
+            ) : (
+              <NavLink to="login">
+                <LoginIcon />
+              </NavLink>
+            )}
           </ul>
         </nav>
         <div className="p-4 w-full md:w-[calc(100%-4rem)]">
