@@ -5,6 +5,7 @@ import { v4 as uuid } from "uuid";
 
 import { FieldErrors, validateForm } from "~/utils/prisma/validation";
 import { commitSession, getSession } from "~/utils/auth/sessions";
+import { redirectLoggedInUser } from "~/utils/auth/auth.server";
 import {
   generateMagicLink,
   sendMagicLinkEmail,
@@ -19,13 +20,13 @@ const loginSchema = z.object({
 });
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const cookies = request.headers.get("cookie");
-  const session = await getSession(cookies);
-  console.log({ sessionData: session.data });
+  await redirectLoggedInUser(request); // * redirect to /app if user is already logged in
   return null;
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  await redirectLoggedInUser(request); // * redirect to /app if user is already logged in
+
   const cookies = request.headers.get("cookie");
   const session = await getSession(cookies);
   const formData = await request.formData();

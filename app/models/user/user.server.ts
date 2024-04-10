@@ -1,7 +1,10 @@
 import db from "~/utils/prisma/server";
 
-export const getUser = (email: string) =>
+export const getUserByEmail = (email: string) =>
   db.user.findUnique({ where: { email } });
+
+export const getUserById = (id: string) =>
+  db.user.findUnique({ where: { id } });
 
 export const createUser = (
   email: string,
