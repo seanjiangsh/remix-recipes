@@ -59,12 +59,13 @@ export const action: ActionFunction = async ({ request }) => {
 
   const { id } = user;
   const formData = await request.formData();
+  const action = formData.get("_action") as string;
 
   const errorFn = (errors: FieldErrors) => {
     return json({ errors }, { status: 400 });
   };
 
-  switch (formData.get("_action")) {
+  switch (action) {
     case "createShelf": {
       return createShelf(id);
     }
