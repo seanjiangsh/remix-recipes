@@ -1,22 +1,16 @@
 import classNames from "classnames";
 
+import { Recipe } from "~/types/recipe/recipes";
 import { useDelayedBool } from "~/hooks/recipes/recipes.hooks";
 import { TimeIcon } from "~/components/icons/icons";
 
-type CardProps = {
-  name: string;
-  totalTime: string;
-  imageUrl?: string;
-  isActive?: boolean;
-  isLoading?: boolean;
-};
 export function Card({
   name,
   totalTime,
   imageUrl,
   isActive,
   isLoading,
-}: CardProps) {
+}: Recipe) {
   const delayedLoading = useDelayedBool(isLoading, 500);
   return (
     <div

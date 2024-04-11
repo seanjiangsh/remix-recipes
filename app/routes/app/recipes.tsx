@@ -4,7 +4,7 @@ import {
   json,
   redirect,
 } from "@remix-run/node";
-import { NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
 import { createRecipe, getRecipes } from "~/models/recipes/recipes.server";
@@ -12,12 +12,12 @@ import { redirectUnloggedInUser } from "~/utils/auth/auth.server";
 
 import SearchBar from "~/components/form/search-bar";
 import CreateRecipe from "~/components/recipes/create-recipe";
-import { Card } from "~/components/recipes/card";
 import {
   RecipeDetailWrapper,
   RecipeListWrapper,
   RecipePageWrapper,
 } from "~/components/recipes/wrappers";
+import Cards from "~/components/recipes/cards";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await redirectUnloggedInUser(request);
@@ -34,7 +34,9 @@ export const action: ActionFunction = async ({ request }) => {
   switch (action) {
     case "createRecipe": {
       const recipe = await createRecipe(user.id);
-      return redirect(`/app/recipes/${recipe.id}`);
+      const url = new URL(request.url);
+      url.pathname = `/app/recipes/${recipe.id}`;
+      return redirect(url.toString());
     }
     default:
       break;
@@ -49,22 +51,7 @@ export default function Recipes() {
       <RecipeListWrapper>
         <SearchBar placeholder="Search Recipes..." />
         <CreateRecipe />
-        <ul>
-          {recipes.map(({ id, name, totalTime, imageUrl }) => (
-            <li key={id} className="my-4">
-              <NavLink to={`/app/recipes/${id}`} reloadDocument>
-                {({ isActive }) => (
-                  <Card
-                    name={name}
-                    totalTime={totalTime}
-                    imageUrl={imageUrl}
-                    isActive={isActive}
-                  />
-                )}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+        <Cards recipes={recipes} />
       </RecipeListWrapper>
       <RecipeDetailWrapper>
         <Outlet />

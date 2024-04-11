@@ -13,12 +13,8 @@ export const getAllShelves = (userId: string, query: string | null) =>
       userId,
       name: { contains: query ?? "", mode: "insensitive" },
     },
-    include: {
-      items: { orderBy: { name: "asc" } },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
+    include: { items: { orderBy: { name: "asc" } } },
+    orderBy: { createdAt: "desc" },
   });
 
 export const createShelf = (userId: string) =>
