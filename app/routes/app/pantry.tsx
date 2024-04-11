@@ -13,17 +13,17 @@ import {
   getShelf,
   saveShelfName,
 } from "~/models/pantry/shelf.server";
-
-import CreateShelf from "~/components/shelf/create-shelf";
-import SearchShelf from "~/components/shelf/search-shelf";
-import { FieldErrors, validateForm } from "~/utils/prisma/validation";
 import {
   createShelfItem,
   deleteShelfItem,
   getShelfItem,
 } from "~/models/pantry/item.server";
-import Shelves from "~/components/shelf/shelves";
+import { FieldErrors, validateForm } from "~/utils/prisma/validation";
 import { redirectUnloggedInUser } from "~/utils/auth/auth.server";
+
+import SearchBar from "~/components/form/search-bar";
+import CreateShelf from "~/components/shelf/create-shelf";
+import Shelves from "~/components/shelf/shelves";
 
 // * note: When Remix server recives a non-GET request
 // * 1. Call the action function
@@ -135,7 +135,7 @@ export default function Pantry() {
 
   return (
     <div>
-      <SearchShelf />
+      <SearchBar placeholder="Search Shelves..." className="md:w-80" />
       <CreateShelf />
       <Shelves shelves={shelves} />
     </div>
