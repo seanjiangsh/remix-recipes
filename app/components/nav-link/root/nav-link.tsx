@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import {
   NavLink as RemixNavLink,
   useNavigation,
@@ -7,7 +8,7 @@ import classNames from "classnames";
 
 type NavLinkProps = {
   to: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export default function NavLink(props: NavLinkProps) {
