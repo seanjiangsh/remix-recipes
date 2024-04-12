@@ -5,7 +5,8 @@ import { getRecipe } from "~/models/recipes/recipes.server";
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const recipeId = params.recipeId || "";
   const recipe = await getRecipe(recipeId);
-  return json({ recipe });
+  const headers = { "Cache-Control": "max-age=10" };
+  return json({ recipe }, { headers });
 };
 
 export default function RecipeDetail() {

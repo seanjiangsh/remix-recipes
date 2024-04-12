@@ -18,7 +18,7 @@ export default function Cards(props: CardsProps) {
     const isLoading = navigation.location?.pathname.endsWith(id);
     return (
       <li key={id} className="my-4">
-        <NavLink to={{ pathname: id, search }}>
+        <NavLink to={{ pathname: id, search }} prefetch="intent">
           {({ isActive }) => (
             <Card {...recipe} isActive={isActive} isLoading={isLoading} />
           )}
