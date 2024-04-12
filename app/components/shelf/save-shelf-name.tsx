@@ -6,6 +6,7 @@ import * as pantryTypes from "~/types/pantry/pantry";
 import { SaveIcon } from "../icons/icons";
 import ErrorMessage from "./error-message";
 import { useIsHydrated } from "~/utils/misc";
+import { Input } from "../form/Inputs";
 
 type SaveShelfNameProps = { shelf: pantryTypes.Shelf };
 type SaveShelfData = { errors: { shelfId: string; shelfName: string } };
@@ -35,19 +36,16 @@ export default function SaveShelfName({ shelf }: SaveShelfNameProps) {
   return (
     <saveShelfNameFetcher.Form method="post" className="flex">
       <div className="w-full mb-2 peer">
-        <input
+        <Input
           required
           type="text"
           name="shelfName"
           placeholder="Shelf Name"
           autoComplete="off"
+          className="text-2xl font-extrabold"
           defaultValue={name}
           onChange={onChange}
-          className={classNames(
-            "text-2xl font-extrabold mb-2 w-full outline-none",
-            "border-b-2 border-b-background focus:border-b-primary",
-            saveShelfNameErrMsg && "border-red-600"
-          )}
+          error={!!saveShelfNameErrMsg}
         />
         <ErrorMessage className="pl-2">{saveShelfNameErrMsg}</ErrorMessage>
       </div>

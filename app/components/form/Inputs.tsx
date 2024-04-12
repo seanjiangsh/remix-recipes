@@ -15,3 +15,20 @@ export const PrimaryInput = (props: PrimaryInputProps) => {
     />
   );
 };
+
+type InputProps = InputHTMLAttributes<HTMLInputElement> & { error?: boolean };
+export const Input = (props: InputProps) => {
+  const { className, error, ...restOfProps } = props;
+
+  return (
+    <input
+      className={classNames(
+        "mb-2 w-full outline-none",
+        "border-b-2 border-b-background focus:border-b-primary",
+        error && "border-red-600",
+        className
+      )}
+      {...restOfProps}
+    />
+  );
+};
