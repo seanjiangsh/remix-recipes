@@ -13,7 +13,7 @@ export default function RecipeName(props: RecipeNameProps) {
         placeholder="Recipe Name"
         autoComplete="off"
         className="text-2xl font-extrabold"
-        name="recipeName"
+        name="name"
         defaultValue={name || ""}
       />
       <ErrorMessage></ErrorMessage>

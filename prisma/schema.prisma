@@ -41,8 +41,8 @@ model PantryItem {
 model Recipe {
   id            String      @id @default(cuid())
   name          String
-  instructions  String
-  totalTime     String
+  instructions  String?
+  totalTime     String?
   imageUrl      String
   userId        String
 
@@ -56,7 +56,7 @@ model Recipe {
 model Ingredient {
   id          String      @id @default(cuid())
   name        String
-  amount      String
+  amount      String?
   recipeId    String
 
   createdAt   DateTime    @default(now())

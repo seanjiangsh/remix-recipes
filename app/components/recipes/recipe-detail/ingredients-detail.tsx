@@ -5,7 +5,7 @@ import ErrorMessage from "~/components/form/error-message";
 import { TrashIcon } from "~/components/icons/icons";
 
 type IngredientsDetailProps = {
-  ingredients: Array<{ id: string; name: string; amount: string }>;
+  ingredients: Array<{ id: string; name: string; amount: string | null }>;
 };
 export default function IngredientsDetail(props: IngredientsDetailProps) {
   const { ingredients } = props;
@@ -19,20 +19,20 @@ export default function IngredientsDetail(props: IngredientsDetailProps) {
         <Fragment key={id}>
           <div>
             <Input
-              key={id}
+              key={id} // * key is required to override the default behavior of React Form status persistence
               type="text"
               autoComplete="off"
-              name="ingredientAmount"
+              name="ingredientAmounts[]" // * for objectifying the form data from fromData.getAll(...)
               defaultValue={amount || ""}
             />
             <ErrorMessage></ErrorMessage>
           </div>
           <div>
             <Input
-              key={id}
+              key={id} // * key is required to override the default behavior of React Form status persistence
               type="text"
               autoComplete="off"
-              name="ingredientName"
+              name="ingredientNames[]" // * for objectifying the form data from fromData.getAll(...)
               defaultValue={name || ""}
             />
             <ErrorMessage></ErrorMessage>
@@ -40,6 +40,7 @@ export default function IngredientsDetail(props: IngredientsDetailProps) {
           <button>
             <TrashIcon />
           </button>
+          <input type="hidden" name="ingredientIds[]" value={id} />
         </Fragment>
       ))}
     </div>

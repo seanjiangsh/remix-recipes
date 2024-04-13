@@ -6,8 +6,10 @@ export default function RecipeFooter() {
     <Fragment>
       <hr className="my-4" />
       <div className="flex justify-between">
-        <DeleteButton>Delete this Recipe</DeleteButton>
-        <PrimaryButton>
+        <DeleteButton name="_action" value="deleteRecipe">
+          Delete this Recipe
+        </DeleteButton>
+        <PrimaryButton name="_action" value="saveRecipe">
           <div className="flex flex-col justify-center h-full">Save</div>
         </PrimaryButton>
       </div>

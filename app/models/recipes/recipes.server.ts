@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+import { json } from "@remix-run/node";
 import db from "~/utils/prisma/server";
 
 export const getRecipes = async (userId: string, query: string | null) =>
@@ -25,3 +27,40 @@ export const getRecipe = async (recipeId: string) =>
       ingredients: { select: { id: true, name: true, amount: true } },
     },
   });
+
+type SaveRecipeData = {
+  name: string;
+  totalTime?: string;
+  instructions?: string;
+  ingredientIds?: Array<string>;
+  ingredientNames?: Array<string>;
+  ingredientAmounts?: Array<string | null>;
+};
+export const saveRecipe = (
+  recipeId: string,
+  saveRecipeData: SaveRecipeData
+) => {
+  try {
+    const { ingredientIds, ingredientNames, ingredientAmounts, ...restOfData } =
+      saveRecipeData;
+    const ingredients = {
+      updateMany: ingredientIds?.map((id, idx) => {
+        const name = ingredientNames?.[idx] as string; // * zod already validated this
+        const amount = ingredientAmounts?.[idx];
+        return { where: { id }, data: { name, amount } };
+      }),
+    };
+    return db.recipe.update({
+      where: { id: recipeId },
+      data: { ...restOfData, ingredients },
+    });
+  } catch (err) {
+    console.log(err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === "P2025") {
+        return json({ error: "Recipe not found" }, { status: 404 });
+      }
+    }
+    throw err;
+  }
+};

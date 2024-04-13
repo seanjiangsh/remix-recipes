@@ -23,12 +23,9 @@ export const createShelf = (userId: string) =>
 export const deleteShelf = (id: string) =>
   handleDelete(() => db.pantryShelf.delete({ where: { id } }));
 
-export const saveShelfName = async (id: string, name: string) => {
+export const saveShelfName = (id: string, name: string) => {
   try {
-    const updated = await db.pantryShelf.update({
-      where: { id },
-      data: { name },
-    });
+    const updated = db.pantryShelf.update({ where: { id }, data: { name } });
     return updated;
   } catch (err) {
     console.log(err);

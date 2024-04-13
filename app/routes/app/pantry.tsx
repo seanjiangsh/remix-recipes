@@ -54,16 +54,14 @@ const createShelfItemSchema = z.object({
 
 const deleteShelfItemSchema = z.object({ itemId: z.string() });
 
+const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
+
 export const action: ActionFunction = async ({ request }) => {
   const user = await redirectUnloggedInUser(request); // * redirect to /login if user is not logged in
 
   const { id } = user;
   const formData = await request.formData();
   const action = formData.get("_action") as string;
-
-  const errorFn = (errors: FieldErrors) => {
-    return json({ errors }, { status: 400 });
-  };
 
   switch (action) {
     case "createShelf": {
