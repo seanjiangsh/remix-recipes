@@ -2,7 +2,7 @@ import { Input } from "~/components/form/Inputs";
 import { TimeIcon } from "~/components/icons/icons";
 import ErrorMessage from "~/components/form/error-message";
 
-type RecipeTimeProps = { id: string; totalTime: string | null };
+type RecipeTimeProps = { id: string; totalTime: string };
 export default function RecipeTime(props: RecipeTimeProps) {
   const { id, totalTime } = props;
 
@@ -16,7 +16,7 @@ export default function RecipeTime(props: RecipeTimeProps) {
           placeholder="Time"
           autoComplete="off"
           name="totalTime"
-          defaultValue={totalTime || ""}
+          defaultValue={totalTime}
         />
         <ErrorMessage></ErrorMessage>
       </div>

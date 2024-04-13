@@ -2,7 +2,11 @@ import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
-import { getRecipe, saveRecipe } from "~/models/recipes/recipes.server";
+import {
+  createIngredient,
+  getRecipe,
+  saveRecipe,
+} from "~/models/recipes/recipes.server";
 import { FieldErrors, validateForm } from "~/utils/prisma/validation";
 
 import RecipeName from "~/components/recipes/recipe-detail/recipe-name";
@@ -21,8 +25,8 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 const saveRecipeSchema = z
   .object({
     name: z.string().min(1, "Name is required"),
-    totalTime: z.string().optional(),
-    instructions: z.string().optional(),
+    totalTime: z.string(),
+    instructions: z.string(),
     ingredientIds: z
       .array(z.string().min(1, "Ingredient ID is missing"))
       .optional(),
@@ -41,6 +45,10 @@ const saveRecipeSchema = z
     },
     { message: "Ingredient arrays must all be the same length" }
   );
+const createIngredientSchema = z.object({
+  newIngredientName: z.string().min(1, "Name is required"),
+  newIngredientAmount: z.string().nullable(),
+});
 
 const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
 
@@ -48,13 +56,21 @@ export const action: ActionFunction = async ({ request, params }) => {
   const formData = await request.formData();
   const action = formData.get("_action") as string;
   const recipeId = params.recipeId || "";
-  console.log(formData.getAll("ingredientName"));
   switch (action) {
     case "saveRecipe": {
       return validateForm(
         formData,
         saveRecipeSchema,
         (data) => saveRecipe(recipeId, data),
+        errorFn
+      );
+    }
+    case "createIngredient": {
+      // * createIngredient logic
+      return validateForm(
+        formData,
+        createIngredientSchema,
+        (data) => createIngredient(recipeId, data),
         errorFn
       );
     }

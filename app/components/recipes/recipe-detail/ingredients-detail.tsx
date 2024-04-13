@@ -1,8 +1,9 @@
 import { Fragment } from "react";
 
 import { Input } from "~/components/form/Inputs";
-import ErrorMessage from "~/components/form/error-message";
 import { TrashIcon } from "~/components/icons/icons";
+import CreateIngredient from "./create-ingredient";
+import ErrorMessage from "~/components/form/error-message";
 
 type IngredientsDetailProps = {
   ingredients: Array<{ id: string; name: string; amount: string | null }>;
@@ -43,6 +44,7 @@ export default function IngredientsDetail(props: IngredientsDetailProps) {
           <input type="hidden" name="ingredientIds[]" value={id} />
         </Fragment>
       ))}
+      <CreateIngredient />
     </div>
   );
 }

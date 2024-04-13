@@ -24,14 +24,17 @@ export const getRecipe = async (recipeId: string) =>
   db.recipe.findUnique({
     where: { id: recipeId },
     include: {
-      ingredients: { select: { id: true, name: true, amount: true } },
+      ingredients: {
+        select: { id: true, name: true, amount: true },
+        orderBy: { createdAt: "asc" },
+      },
     },
   });
 
 type SaveRecipeData = {
   name: string;
-  totalTime?: string;
-  instructions?: string;
+  totalTime: string;
+  instructions: string;
   ingredientIds?: Array<string>;
   ingredientNames?: Array<string>;
   ingredientAmounts?: Array<string | null>;
@@ -54,6 +57,29 @@ export const saveRecipe = (
       where: { id: recipeId },
       data: { ...restOfData, ingredients },
     });
+  } catch (err) {
+    console.log(err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === "P2025") {
+        return json({ error: "Recipe not found" }, { status: 404 });
+      }
+    }
+    throw err;
+  }
+};
+
+type CreateIngredientData = {
+  newIngredientName: string;
+  newIngredientAmount: string | null;
+};
+export const createIngredient = async (
+  recipeId: string,
+  createIngredientDatadata: CreateIngredientData
+) => {
+  try {
+    const { newIngredientAmount: amount, newIngredientName: name } =
+      createIngredientDatadata;
+    return await db.ingredient.create({ data: { recipeId, name, amount } });
   } catch (err) {
     console.log(err);
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
