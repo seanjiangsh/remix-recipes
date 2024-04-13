@@ -18,7 +18,7 @@ import { commitSession, getSession } from "~/utils/auth/sessions";
 
 import { PrimaryInput } from "~/components/form/Inputs";
 import { PrimaryButton } from "~/components/buttons/buttons";
-import ErrorMessage from "~/components/shelf/error-message";
+import ErrorMessage from "~/components/form/error-message";
 
 const magicLinkMaxAge = 1000 * 60 * 10; // 10 minutes
 

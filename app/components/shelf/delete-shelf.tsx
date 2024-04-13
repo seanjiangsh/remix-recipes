@@ -2,8 +2,8 @@ import { FormEventHandler } from "react";
 import { FetcherWithComponents } from "@remix-run/react";
 
 import * as pantryTypes from "~/types/pantry/pantry";
-import { DeleteShelfButton } from "../buttons/buttons";
-import ErrorMessage from "./error-message";
+import { DeleteButton } from "../buttons/buttons";
+import ErrorMessage from "../form/error-message";
 import { DeleteShelfData } from "./shelf";
 
 type DeleteShelfProps = {
@@ -31,14 +31,14 @@ export default function DeleteShelf(props: DeleteShelfProps) {
     <deleteShelfFetcher.Form method="post" className="pt-8" onSubmit={onSubmit}>
       <input type="hidden" name="shelfId" value={id} />
       <ErrorMessage className="pb-2">{deleteShelfErrMsg}</ErrorMessage>
-      <DeleteShelfButton
+      <DeleteButton
         name="_action"
         value="deleteShelf"
         isLoading={isDeletingShelf}
         className="w-full"
       >
         Delete Shelf
-      </DeleteShelfButton>
+      </DeleteButton>
     </deleteShelfFetcher.Form>
   );
 }

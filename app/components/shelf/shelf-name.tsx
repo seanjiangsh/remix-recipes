@@ -4,20 +4,20 @@ import classNames from "classnames";
 
 import * as pantryTypes from "~/types/pantry/pantry";
 import { SaveIcon } from "../icons/icons";
-import ErrorMessage from "./error-message";
+import ErrorMessage from "../form/error-message";
 import { useIsHydrated } from "~/utils/misc";
 import { Input } from "../form/Inputs";
 
-type SaveShelfNameProps = { shelf: pantryTypes.Shelf };
-type SaveShelfData = { errors: { shelfId: string; shelfName: string } };
+type ShelfNameProps = { shelf: pantryTypes.Shelf };
+type ShelfData = { errors: { shelfId: string; shelfName: string } };
 
-export default function SaveShelfName({ shelf }: SaveShelfNameProps) {
+export default function ShelfName({ shelf }: ShelfNameProps) {
   const { id, name } = shelf;
 
-  const saveShelfNameFetcher = useFetcher<SaveShelfData>();
-  const fetcherData = saveShelfNameFetcher.data;
-  const saveShelfNameErrMsg = fetcherData?.errors?.shelfName;
-  const saveShelfIdErrMsg = fetcherData?.errors?.shelfId;
+  const shelfNameFetcher = useFetcher<ShelfData>();
+  const fetcherData = shelfNameFetcher.data;
+  const shelfNameErrMsg = fetcherData?.errors?.shelfName;
+  const shelfIdErrMsg = fetcherData?.errors?.shelfId;
 
   const isHydrated = useIsHydrated();
 
@@ -30,11 +30,11 @@ export default function SaveShelfName({ shelf }: SaveShelfNameProps) {
       shelfName: value,
     };
     const options: SubmitOptions = { method: "post" };
-    saveShelfNameFetcher.submit(submitValue, options);
+    shelfNameFetcher.submit(submitValue, options);
   };
 
   return (
-    <saveShelfNameFetcher.Form method="post" className="flex">
+    <shelfNameFetcher.Form method="post" className="flex">
       <div className="w-full mb-2 peer">
         <Input
           required
@@ -45,9 +45,9 @@ export default function SaveShelfName({ shelf }: SaveShelfNameProps) {
           className="text-2xl font-extrabold"
           defaultValue={name}
           onChange={onChange}
-          error={!!saveShelfNameErrMsg}
+          error={!!shelfNameErrMsg}
         />
-        <ErrorMessage className="pl-2">{saveShelfNameErrMsg}</ErrorMessage>
+        <ErrorMessage className="pl-2">{shelfNameErrMsg}</ErrorMessage>
       </div>
       {!isHydrated && (
         <button
@@ -62,7 +62,7 @@ export default function SaveShelfName({ shelf }: SaveShelfNameProps) {
         </button>
       )}
       <input type="hidden" name="shelfId" value={id} />
-      <ErrorMessage className="pl-2">{saveShelfIdErrMsg}</ErrorMessage>
-    </saveShelfNameFetcher.Form>
+      <ErrorMessage className="pl-2">{shelfIdErrMsg}</ErrorMessage>
+    </shelfNameFetcher.Form>
   );
 }

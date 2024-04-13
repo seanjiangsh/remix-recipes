@@ -13,7 +13,7 @@ import {
 
 import { PrimaryInput } from "~/components/form/Inputs";
 import { PrimaryButton } from "~/components/buttons/buttons";
-import ErrorMessage from "~/components/shelf/error-message";
+import ErrorMessage from "~/components/form/error-message";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),

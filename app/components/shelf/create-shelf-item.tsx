@@ -4,7 +4,7 @@ import classNames from "classnames";
 
 import * as pantryTypes from "~/types/pantry/pantry";
 import { SaveIcon } from "../icons/icons";
-import ErrorMessage from "./error-message";
+import ErrorMessage from "../form/error-message";
 import { CreateShelfItemData } from "./shelf";
 
 type ShelfProps = {

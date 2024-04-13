@@ -2,7 +2,7 @@ import { useFetcher } from "@remix-run/react";
 
 import * as pantryTypes from "~/types/pantry/pantry";
 import { TrashIcon } from "../icons/icons";
-import ErrorMessage from "./error-message";
+import ErrorMessage from "../form/error-message";
 
 type ShelfItemProps = { item: pantryTypes.OptimisticItem };
 type DeleteItemData = { errors: { itemId: string } };

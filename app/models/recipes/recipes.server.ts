@@ -19,4 +19,9 @@ export const createRecipe = async (userId: string) =>
   });
 
 export const getRecipe = async (recipeId: string) =>
-  db.recipe.findUnique({ where: { id: recipeId } });
+  db.recipe.findUnique({
+    where: { id: recipeId },
+    include: {
+      ingredients: { select: { id: true, name: true, amount: true } },
+    },
+  });
