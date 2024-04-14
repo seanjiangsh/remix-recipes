@@ -1,9 +1,16 @@
-import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
+import {
+  ActionFunction,
+  LoaderFunctionArgs,
+  json,
+  redirect,
+} from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
 import {
   createIngredient,
+  deleteIngredient,
+  deleteRecipe,
   getRecipe,
   saveRecipe,
 } from "~/models/recipes/recipes.server";
@@ -55,7 +62,13 @@ const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
 export const action: ActionFunction = async ({ request, params }) => {
   const formData = await request.formData();
   const action = formData.get("_action") as string;
-  const recipeId = params.recipeId || "";
+  const recipeId = params.recipeId as string; // * from the route
+
+  if (typeof action === "string" && action.startsWith("deleteIngredient")) {
+    const [, ingredientId] = action.split(".");
+    return deleteIngredient(ingredientId);
+  }
+
   switch (action) {
     case "saveRecipe": {
       return validateForm(
@@ -72,6 +85,10 @@ export const action: ActionFunction = async ({ request, params }) => {
         (data) => createIngredient(recipeId, data),
         errorFn
       );
+    }
+    case "deleteRecipe": {
+      await deleteRecipe(recipeId);
+      return redirect("/app/recipes");
     }
     default: {
       return null;

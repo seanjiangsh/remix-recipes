@@ -1,6 +1,8 @@
 import { Prisma } from "@prisma/client";
 import { json } from "@remix-run/node";
+
 import db from "~/utils/prisma/server";
+import { handleDelete } from "~/utils/prisma/utils";
 
 export const getRecipes = async (userId: string, query: string | null) =>
   db.recipe.findMany({
@@ -90,3 +92,9 @@ export const createIngredient = async (
     throw err;
   }
 };
+
+export const deleteRecipe = async (recipeId: string) =>
+  handleDelete(() => db.recipe.delete({ where: { id: recipeId } }));
+
+export const deleteIngredient = async (ingredientId: string) =>
+  handleDelete(() => db.ingredient.delete({ where: { id: ingredientId } }));

@@ -47,7 +47,7 @@ export default function IngredientsDetail(props: IngredientsDetailProps) {
               />
               <ErrorMessage>{nameError}</ErrorMessage>
             </div>
-            <button>
+            <button name="_action" value={`deleteIngredient.${id}`}>
               <TrashIcon />
             </button>
             <input type="hidden" name="ingredientIds[]" value={id} />

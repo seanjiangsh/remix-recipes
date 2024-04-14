@@ -2,7 +2,7 @@ import { json } from "@remix-run/node";
 import { Prisma } from "@prisma/client";
 
 import db from "~/utils/prisma/server";
-import { handleDelete } from "./utils";
+import { handleDelete } from "../../utils/prisma/utils";
 
 export const getShelf = (shelfId: string) =>
   db.pantryShelf.findUnique({ where: { id: shelfId } });
