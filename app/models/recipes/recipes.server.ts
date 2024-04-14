@@ -4,14 +4,14 @@ import { json } from "@remix-run/node";
 import db from "~/utils/prisma/server";
 import { handleDelete } from "~/utils/prisma/utils";
 
-export const getRecipes = async (userId: string, query: string | null) =>
+export const getRecipes = (userId: string, query: string | null) =>
   db.recipe.findMany({
     select: { id: true, name: true, totalTime: true, imageUrl: true },
     where: { userId, name: { contains: query ?? "", mode: "insensitive" } },
     orderBy: { createdAt: "desc" },
   });
 
-export const createRecipe = async (userId: string) =>
+export const createRecipe = (userId: string) =>
   db.recipe.create({
     data: {
       userId,
@@ -22,7 +22,10 @@ export const createRecipe = async (userId: string) =>
     },
   });
 
-export const getRecipe = async (recipeId: string) =>
+export const getRecipe = (recipeId: string) =>
+  db.recipe.findUnique({ where: { id: recipeId } });
+
+export const getRecipeWithIngredients = (recipeId: string) =>
   db.recipe.findUnique({
     where: { id: recipeId },
     include: {
@@ -74,14 +77,14 @@ type CreateIngredientData = {
   newIngredientName: string;
   newIngredientAmount: string | null;
 };
-export const createIngredient = async (
+export const createIngredient = (
   recipeId: string,
   createIngredientDatadata: CreateIngredientData
 ) => {
   try {
     const { newIngredientAmount: amount, newIngredientName: name } =
       createIngredientDatadata;
-    return await db.ingredient.create({ data: { recipeId, name, amount } });
+    return db.ingredient.create({ data: { recipeId, name, amount } });
   } catch (err) {
     console.log(err);
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -93,8 +96,8 @@ export const createIngredient = async (
   }
 };
 
-export const deleteRecipe = async (recipeId: string) =>
+export const deleteRecipe = (recipeId: string) =>
   handleDelete(() => db.recipe.delete({ where: { id: recipeId } }));
 
-export const deleteIngredient = async (ingredientId: string) =>
+export const deleteIngredient = (ingredientId: string) =>
   handleDelete(() => db.ingredient.delete({ where: { id: ingredientId } }));

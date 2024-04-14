@@ -4,7 +4,13 @@ import {
   json,
   redirect,
 } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  isRouteErrorResponse,
+  useActionData,
+  useLoaderData,
+  useRouteError,
+} from "@remix-run/react";
 import { z } from "zod";
 
 import {
@@ -12,9 +18,11 @@ import {
   deleteIngredient,
   deleteRecipe,
   getRecipe,
+  getRecipeWithIngredients,
   saveRecipe,
 } from "~/models/recipes/recipes.server";
 import { FieldErrors, validateForm } from "~/utils/prisma/validation";
+import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
 import RecipeName from "~/components/recipes/recipe-detail/recipe-name";
 import RecipeTime from "~/components/recipes/recipe-detail/recipe-time";
@@ -22,10 +30,18 @@ import IngredientsDetail from "~/components/recipes/recipe-detail/ingredients-de
 import Instructions from "~/components/recipes/recipe-detail/instructions";
 import RecipeFooter from "~/components/recipes/recipe-detail/recipe-footer";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  const user = await requireLoggedInUser(request);
   const recipeId = params.recipeId || "";
-  const recipe = await getRecipe(recipeId);
+  const recipe = await getRecipeWithIngredients(recipeId);
   const headers = { "Cache-Control": "max-age=10" };
+  if (!recipe) {
+    throw json({ message: "Recipe not found" }, { status: 404 });
+  }
+  if (recipe.userId !== user.id) {
+    const message = "You are not authorized to view this recipe";
+    throw json({ message }, { status: 401 });
+  }
   return json({ recipe }, { headers });
 };
 
@@ -60,9 +76,19 @@ const createIngredientSchema = z.object({
 const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
 
 export const action: ActionFunction = async ({ request, params }) => {
+  const user = await requireLoggedInUser(request);
+  const recipeId = params.recipeId as string; // * from the route
+  const recipe = await getRecipe(recipeId);
+  if (!recipe) {
+    throw json({ message: "Recipe not found" }, { status: 404 });
+  }
+  if (recipe.userId !== user.id) {
+    const message = "You are not authorized to make changes this recipe";
+    throw json({ message }, { status: 401 });
+  }
+
   const formData = await request.formData();
   const action = formData.get("_action") as string;
-  const recipeId = params.recipeId as string; // * from the route
 
   if (typeof action === "string" && action.startsWith("deleteIngredient")) {
     const [, ingredientId] = action.split(".");
@@ -114,3 +140,20 @@ export default function RecipeDetail() {
     </Form>
   );
 }
+
+export const ErrorBoundary = () => {
+  const error = useRouteError();
+
+  return isRouteErrorResponse(error) ? (
+    <div className="bg-red-600 text-white rounded-md p-4">
+      <h1 className="mb-2">
+        {error.status} - {error.statusText}
+      </h1>
+      <p>{error.data.message}</p>
+    </div>
+  ) : (
+    <div className="bg-red-600 text-white rounded-md p-4">
+      <h1 className="mb-2">An unexpected error occurred.</h1>
+    </div>
+  );
+};

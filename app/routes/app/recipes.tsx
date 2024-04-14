@@ -7,7 +7,7 @@ import {
 import { Outlet, useLoaderData } from "@remix-run/react";
 
 import { createRecipe, getRecipes } from "~/models/recipes/recipes.server";
-import { redirectUnloggedInUser } from "~/utils/auth/auth.server";
+import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
 import SearchBar from "~/components/form/search-bar";
 import CreateRecipe from "~/components/recipes/create-recipe";
@@ -19,7 +19,7 @@ import {
 import Cards from "~/components/recipes/cards";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const user = await redirectUnloggedInUser(request);
+  const user = await requireLoggedInUser(request);
   const url = new URL(request.url);
   const query = url.searchParams.get("q");
   const recipes = await getRecipes(user.id, query);
@@ -27,7 +27,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  const user = await redirectUnloggedInUser(request);
+  const user = await requireLoggedInUser(request);
   const formData = await request.formData();
   const action = formData.get("_action") as string;
   switch (action) {

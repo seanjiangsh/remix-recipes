@@ -19,7 +19,7 @@ import {
   getShelfItem,
 } from "~/models/pantry/item.server";
 import { FieldErrors, validateForm } from "~/utils/prisma/validation";
-import { redirectUnloggedInUser } from "~/utils/auth/auth.server";
+import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
 import SearchBar from "~/components/form/search-bar";
 import CreateShelf from "~/components/shelf/create-shelf";
@@ -31,7 +31,7 @@ import Shelves from "~/components/shelf/shelves";
 // * 3. Send the HTML response
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const user = await redirectUnloggedInUser(request); // * redirect to /login if user is not logged in
+  const user = await requireLoggedInUser(request); // * redirect to /login if user is not logged in
 
   const { id } = user;
   const url = new URL(request.url);
@@ -57,7 +57,7 @@ const deleteShelfItemSchema = z.object({ itemId: z.string() });
 const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
 
 export const action: ActionFunction = async ({ request }) => {
-  const user = await redirectUnloggedInUser(request); // * redirect to /login if user is not logged in
+  const user = await requireLoggedInUser(request); // * redirect to /login if user is not logged in
 
   const { id } = user;
   const formData = await request.formData();
@@ -72,7 +72,7 @@ export const action: ActionFunction = async ({ request }) => {
         const { shelfId, shelfName } = args;
         const shelf = await getShelf(shelfId);
         if (!shelf) {
-          return json({ message: "Shelf not found" }, { status: 404 });
+          throw json({ message: "Shelf not found" }, { status: 404 });
         }
         if (shelf.userId !== id) {
           const message =
@@ -88,7 +88,7 @@ export const action: ActionFunction = async ({ request }) => {
         const { shelfId } = args;
         const shelf = await getShelf(shelfId);
         if (!shelf) {
-          return json({ message: "Shelf not found" }, { status: 404 });
+          throw json({ message: "Shelf not found" }, { status: 404 });
         }
         if (shelf.userId !== id) {
           const message =
@@ -112,7 +112,7 @@ export const action: ActionFunction = async ({ request }) => {
         const { itemId } = args;
         const item = await getShelfItem(itemId);
         if (!item) {
-          return json({ message: "Shelf item not found" }, { status: 404 });
+          throw json({ message: "Shelf item not found" }, { status: 404 });
         }
         if (item.userId !== id) {
           const message =
