@@ -1,5 +1,5 @@
 import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
 import {
@@ -25,8 +25,8 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 const saveRecipeSchema = z
   .object({
     name: z.string().min(1, "Name is required"),
-    totalTime: z.string(),
-    instructions: z.string(),
+    totalTime: z.string().min(1, "Total time is required"),
+    instructions: z.string().min(1, "Instructions is required"),
     ingredientIds: z
       .array(z.string().min(1, "Ingredient ID is missing"))
       .optional(),
@@ -46,7 +46,7 @@ const saveRecipeSchema = z
     { message: "Ingredient arrays must all be the same length" }
   );
 const createIngredientSchema = z.object({
-  newIngredientName: z.string().min(1, "Name is required"),
+  newIngredientName: z.string().min(1, "Ingredient name is required"),
   newIngredientAmount: z.string().nullable(),
 });
 
@@ -66,7 +66,6 @@ export const action: ActionFunction = async ({ request, params }) => {
       );
     }
     case "createIngredient": {
-      // * createIngredient logic
       return validateForm(
         formData,
         createIngredientSchema,
@@ -82,16 +81,18 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export default function RecipeDetail() {
   const { recipe } = useLoaderData<typeof loader>();
+  const actionData = useActionData<typeof action>();
   if (!recipe) return null;
 
   const { id, name, totalTime, ingredients, instructions } = recipe;
+  const { errors } = actionData || {};
 
   return (
     <Form method="post">
-      <RecipeName id={id} name={name} />
-      <RecipeTime totalTime={totalTime} id={id} />
-      <IngredientsDetail ingredients={ingredients} />
-      <Instructions id={id} instructions={instructions} />
+      <RecipeName id={id} name={name} errors={errors} />
+      <RecipeTime totalTime={totalTime} id={id} errors={errors} />
+      <IngredientsDetail ingredients={ingredients} errors={errors} />
+      <Instructions id={id} instructions={instructions} errors={errors} />
       <RecipeFooter />
     </Form>
   );

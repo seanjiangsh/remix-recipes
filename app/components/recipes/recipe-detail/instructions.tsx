@@ -3,9 +3,14 @@ import classNames from "classnames";
 
 import ErrorMessage from "~/components/form/error-message";
 
-type InstructionsProps = { id: string; instructions: string | null };
+type InstructionsProps = {
+  id: string;
+  instructions: string;
+  errors?: { instructions: string };
+};
 export default function Instructions(props: InstructionsProps) {
-  const { id, instructions } = props;
+  const { id, instructions, errors } = props;
+  const { instructions: instructionsError } = errors || {};
 
   return (
     <Fragment>
@@ -23,11 +28,12 @@ export default function Instructions(props: InstructionsProps) {
         placeholder="Instructions go here"
         className={classNames(
           "w-full h-56 rounded-md outline-none",
-          "focus:border-2 focus:p-3 focus:border-primary duration-300"
+          "focus:border-2 focus:p-3 focus:border-primary duration-300",
+          !!instructionsError && "border-2 border-red-500 p-3"
         )}
         defaultValue={instructions || ""}
       />
-      <ErrorMessage></ErrorMessage>
+      <ErrorMessage>{instructionsError}</ErrorMessage>
     </Fragment>
   );
 }

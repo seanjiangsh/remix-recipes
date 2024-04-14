@@ -2,9 +2,14 @@ import { Input } from "~/components/form/Inputs";
 import { TimeIcon } from "~/components/icons/icons";
 import ErrorMessage from "~/components/form/error-message";
 
-type RecipeTimeProps = { id: string; totalTime: string };
+type RecipeTimeProps = {
+  id: string;
+  totalTime: string;
+  errors?: { totalTime: string };
+};
 export default function RecipeTime(props: RecipeTimeProps) {
-  const { id, totalTime } = props;
+  const { id, totalTime, errors } = props;
+  const { totalTime: totalTimeError } = errors || {};
 
   return (
     <div className="flex">
@@ -17,8 +22,9 @@ export default function RecipeTime(props: RecipeTimeProps) {
           autoComplete="off"
           name="totalTime"
           defaultValue={totalTime}
+          error={!!totalTimeError}
         />
-        <ErrorMessage></ErrorMessage>
+        <ErrorMessage>{totalTimeError}</ErrorMessage>
       </div>
     </div>
   );

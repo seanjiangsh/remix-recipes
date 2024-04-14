@@ -1,9 +1,10 @@
 import { Input } from "~/components/form/Inputs";
 import ErrorMessage from "~/components/form/error-message";
 
-type RecipeNameProps = { id: string; name: string };
+type RecipeNameProps = { id: string; name: string; errors?: { name: string } };
 export default function RecipeName(props: RecipeNameProps) {
-  const { id, name } = props;
+  const { id, name, errors } = props;
+  const { name: nameError } = errors || {};
 
   return (
     <div className="mb-2">
@@ -15,8 +16,9 @@ export default function RecipeName(props: RecipeNameProps) {
         className="text-2xl font-extrabold"
         name="name"
         defaultValue={name || ""}
+        error={!!nameError}
       />
-      <ErrorMessage></ErrorMessage>
+      <ErrorMessage>{nameError}</ErrorMessage>
     </div>
   );
 }
