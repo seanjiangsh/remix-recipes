@@ -1,4 +1,5 @@
-import { Fragment } from "react";
+import { ChangeEventHandler, Fragment } from "react";
+import { SubmitOptions, useFetcher } from "@remix-run/react";
 import classNames from "classnames";
 
 import ErrorMessage from "~/components/form/error-message";
@@ -8,9 +9,29 @@ type InstructionsProps = {
   instructions: string;
   errors?: { instructions: string };
 };
+type RecipeInstructionsData = {
+  errors: { recipeId: string; instructions: string };
+};
+
 export default function Instructions(props: InstructionsProps) {
   const { id, instructions, errors } = props;
-  const { instructions: instructionsError } = errors || {};
+
+  const saveInstructionsFetcher = useFetcher<RecipeInstructionsData>();
+  const fetcherData = saveInstructionsFetcher.data;
+  const instructionsError =
+    errors?.instructions || fetcherData?.errors?.instructions;
+
+  const onChange: ChangeEventHandler<HTMLTextAreaElement> = (ev) => {
+    const { value } = ev.currentTarget;
+    if (!value) return;
+    const submitValue = {
+      _action: "saveRecipeInstructions",
+      recipeId: id,
+      instructions: value,
+    };
+    const options: SubmitOptions = { method: "post" };
+    saveInstructionsFetcher.submit(submitValue, options);
+  };
 
   return (
     <Fragment>
@@ -32,6 +53,7 @@ export default function Instructions(props: InstructionsProps) {
           !!instructionsError && "border-2 border-red-500 p-3"
         )}
         defaultValue={instructions || ""}
+        onChange={onChange}
       />
       <ErrorMessage>{instructionsError}</ErrorMessage>
     </Fragment>

@@ -6,3 +6,9 @@ export type Recipe = {
   isActive?: boolean;
   isLoading?: boolean;
 };
+
+export type Ingredient = {
+  id: string;
+  name: string;
+  amount: string | null;
+};

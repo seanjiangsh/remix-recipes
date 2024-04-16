@@ -1,3 +1,6 @@
+import { ChangeEventHandler } from "react";
+import { SubmitOptions, useFetcher } from "@remix-run/react";
+
 import { Input } from "~/components/form/Inputs";
 import { TimeIcon } from "~/components/icons/icons";
 import ErrorMessage from "~/components/form/error-message";
@@ -7,9 +10,26 @@ type RecipeTimeProps = {
   totalTime: string;
   errors?: { totalTime: string };
 };
+type RecipeTimeData = { errors: { recipeId: string; totalTime: string } };
+
 export default function RecipeTime(props: RecipeTimeProps) {
   const { id, totalTime, errors } = props;
-  const { totalTime: totalTimeError } = errors || {};
+
+  const saveTotolTimeFetcher = useFetcher<RecipeTimeData>();
+  const fetcherData = saveTotolTimeFetcher.data;
+  const totalTimeError = errors?.totalTime || fetcherData?.errors?.totalTime;
+
+  const onChange: ChangeEventHandler<HTMLInputElement> = (ev) => {
+    const { value } = ev.currentTarget;
+    if (!value) return;
+    const submitValue = {
+      _action: "saveRecipeTotalTime",
+      recipeId: id,
+      totalTime: value,
+    };
+    const options: SubmitOptions = { method: "post" };
+    saveTotolTimeFetcher.submit(submitValue, options);
+  };
 
   return (
     <div className="flex">
@@ -22,6 +42,7 @@ export default function RecipeTime(props: RecipeTimeProps) {
           autoComplete="off"
           name="totalTime"
           defaultValue={totalTime}
+          onChange={onChange}
           error={!!totalTimeError}
         />
         <ErrorMessage>{totalTimeError}</ErrorMessage>
