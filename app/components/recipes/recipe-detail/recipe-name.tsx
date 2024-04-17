@@ -1,6 +1,6 @@
-import { ChangeEventHandler } from "react";
-import { SubmitOptions, useFetcher } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 
+import { useDebounce } from "~/hooks/misc/debounce";
 import { Input } from "~/components/form/Inputs";
 import ErrorMessage from "~/components/form/error-message";
 
@@ -14,13 +14,11 @@ export default function RecipeName(props: RecipeNameProps) {
   const fetcherData = saveNameFetcher.data;
   const nameError = errors?.name || fetcherData?.errors?.name;
 
-  const onChange: ChangeEventHandler<HTMLInputElement> = (ev) => {
-    const { value } = ev.currentTarget;
-    const name = value ?? "";
-    const submitValue = { _action: "saveName", name };
-    const options: SubmitOptions = { method: "post" };
-    saveNameFetcher.submit(submitValue, options);
-  };
+  const saveName = useDebounce(
+    (name: string) =>
+      saveNameFetcher.submit({ _action: "saveName", name }, { method: "post" }),
+    500
+  );
 
   return (
     <div className="mb-2">
@@ -32,7 +30,7 @@ export default function RecipeName(props: RecipeNameProps) {
         className="text-2xl font-extrabold"
         name="name"
         defaultValue={name || ""}
-        onChange={onChange}
+        onChange={(e) => saveName(e.target.value)}
         error={!!nameError}
       />
       <ErrorMessage>{nameError}</ErrorMessage>

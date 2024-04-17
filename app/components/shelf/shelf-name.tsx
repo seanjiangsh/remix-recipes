@@ -1,4 +1,3 @@
-import { ChangeEventHandler } from "react";
 import { SubmitOptions, useFetcher } from "@remix-run/react";
 import classNames from "classnames";
 
@@ -7,6 +6,7 @@ import { SaveIcon } from "../icons/icons";
 import ErrorMessage from "../form/error-message";
 import { useIsHydrated } from "~/utils/misc";
 import { Input } from "../form/Inputs";
+import { useDebounce } from "~/hooks/misc/debounce";
 
 type ShelfNameProps = { shelf: pantryTypes.Shelf };
 type ResponseData = { errors?: { shelfId: string; shelfName: string } };
@@ -21,13 +21,11 @@ export default function ShelfName({ shelf }: ShelfNameProps) {
 
   const isHydrated = useIsHydrated();
 
-  const onChange: ChangeEventHandler<HTMLInputElement> = (ev) => {
-    const { value } = ev.currentTarget;
-    const shelfName = value ?? "";
+  const saveShelfName = useDebounce((shelfName: string) => {
     const submitValue = { _action: "saveShelfName", shelfId: id, shelfName };
     const options: SubmitOptions = { method: "post" };
     shelfNameFetcher.submit(submitValue, options);
-  };
+  }, 500);
 
   return (
     <shelfNameFetcher.Form method="post" className="flex">
@@ -40,7 +38,7 @@ export default function ShelfName({ shelf }: ShelfNameProps) {
           autoComplete="off"
           className="text-2xl font-extrabold"
           defaultValue={name}
-          onChange={onChange}
+          onChange={(e) => saveShelfName(e.target.value)}
           error={!!shelfNameErrMsg}
         />
         <ErrorMessage className="pl-2">{shelfNameErrMsg}</ErrorMessage>

@@ -1,7 +1,9 @@
-import { ChangeEventHandler, Fragment } from "react";
-import { SubmitOptions, useFetcher } from "@remix-run/react";
+import { Fragment } from "react";
+import { useFetcher } from "@remix-run/react";
 
 import { Ingredient } from "~/types/recipe/recipes";
+import { useDebounce } from "~/hooks/misc/debounce";
+
 import { Input } from "~/components/form/Inputs";
 import { TrashIcon } from "~/components/icons/icons";
 import ErrorMessage from "~/components/form/error-message";
@@ -31,23 +33,23 @@ export default function IngredientRow(props: IngredientRowProps) {
   const nameError =
     errors?.ingredientName || saveNameFetcher.data?.errors?.name;
 
-  const saveAmount: ChangeEventHandler<HTMLInputElement> = (ev) => {
-    const { value } = ev.currentTarget;
-    const amount = value ?? "";
-    console.log("saveAmount", amount);
-    const submitValue = { _action: "saveIngredientAmount", id, amount };
-    const options: SubmitOptions = { method: "post" };
-    saveAmountFetcher.submit(submitValue, options);
-  };
+  const saveAmount = useDebounce(
+    (amount: string) =>
+      saveAmountFetcher.submit(
+        { _action: "saveIngredientAmount", amount, id },
+        { method: "post" }
+      ),
+    500
+  );
 
-  const saveName: ChangeEventHandler<HTMLInputElement> = (ev) => {
-    const { value } = ev.currentTarget;
-    const name = value ?? "";
-    console.log("saveName", name);
-    const submitValue = { _action: "saveIngredientName", id, name };
-    const options: SubmitOptions = { method: "post" };
-    saveNameFetcher.submit(submitValue, options);
-  };
+  const saveName = useDebounce(
+    (name: string) =>
+      saveNameFetcher.submit(
+        { _action: "saveIngredientName", name, id },
+        { method: "post" }
+      ),
+    500
+  );
 
   return (
     <Fragment key={id}>
@@ -58,7 +60,7 @@ export default function IngredientRow(props: IngredientRowProps) {
           autoComplete="off"
           name="ingredientAmounts[]" // * for objectifying the form data from fromData.getAll(...)
           defaultValue={amount || ""}
-          onChange={saveAmount}
+          onChange={(e) => saveAmount(e.target.value)}
           error={!!amountError}
         />
         <ErrorMessage>{amountError}</ErrorMessage>
@@ -70,7 +72,7 @@ export default function IngredientRow(props: IngredientRowProps) {
           autoComplete="off"
           name="ingredientNames[]" // * for objectifying the form data from fromData.getAll(...)
           defaultValue={name || ""}
-          onChange={saveName}
+          onChange={(e) => saveName(e.target.value)}
           error={!!nameError}
         />
         <ErrorMessage>{nameError}</ErrorMessage>

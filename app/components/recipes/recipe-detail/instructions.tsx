@@ -1,7 +1,8 @@
-import { ChangeEventHandler, Fragment } from "react";
-import { SubmitOptions, useFetcher } from "@remix-run/react";
+import { Fragment } from "react";
+import { useFetcher } from "@remix-run/react";
 import classNames from "classnames";
 
+import { useDebounce } from "~/hooks/misc/debounce";
 import ErrorMessage from "~/components/form/error-message";
 
 type InstructionsProps = {
@@ -19,13 +20,14 @@ export default function Instructions(props: InstructionsProps) {
   const instructionsError =
     errors?.instructions || fetcherData?.errors?.instructions;
 
-  const onChange: ChangeEventHandler<HTMLTextAreaElement> = (ev) => {
-    const { value } = ev.currentTarget;
-    const instructions = value ?? "";
-    const submitValue = { _action: "saveInstructions", instructions };
-    const options: SubmitOptions = { method: "post" };
-    saveInstructionsFetcher.submit(submitValue, options);
-  };
+  const saveInstructions = useDebounce(
+    (instructions: string) =>
+      saveInstructionsFetcher.submit(
+        { _action: "saveInstructions", instructions },
+        { method: "post" }
+      ),
+    500
+  );
 
   return (
     <Fragment>
@@ -47,7 +49,7 @@ export default function Instructions(props: InstructionsProps) {
           !!instructionsError && "border-2 border-red-500 p-3"
         )}
         defaultValue={instructions || ""}
-        onChange={onChange}
+        onChange={(e) => saveInstructions(e.target.value)}
       />
       <ErrorMessage>{instructionsError}</ErrorMessage>
     </Fragment>

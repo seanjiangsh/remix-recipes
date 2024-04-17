@@ -1,6 +1,6 @@
-import { ChangeEventHandler } from "react";
-import { SubmitOptions, useFetcher } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 
+import { useDebounce } from "~/hooks/misc/debounce";
 import { Input } from "~/components/form/Inputs";
 import { TimeIcon } from "~/components/icons/icons";
 import ErrorMessage from "~/components/form/error-message";
@@ -15,17 +15,18 @@ type ResponseData = { errors?: { totalTime: string } };
 export default function RecipeTotalTime(props: RecipeTimeProps) {
   const { id, totalTime, errors } = props;
 
-  const saveTotolTimeFetcher = useFetcher<ResponseData>();
-  const fetcherData = saveTotolTimeFetcher.data;
+  const saveTotalTimeFetcher = useFetcher<ResponseData>();
+  const fetcherData = saveTotalTimeFetcher.data;
   const totalTimeError = errors?.totalTime || fetcherData?.errors?.totalTime;
 
-  const onChange: ChangeEventHandler<HTMLInputElement> = (ev) => {
-    const { value } = ev.currentTarget;
-    const totalTime = value ?? "";
-    const submitValue = { _action: "saveTotalTime", totalTime };
-    const options: SubmitOptions = { method: "post" };
-    saveTotolTimeFetcher.submit(submitValue, options);
-  };
+  const saveTotalTime = useDebounce(
+    (totalTime: string) =>
+      saveTotalTimeFetcher.submit(
+        { _action: "saveTotalTime", totalTime },
+        { method: "post" }
+      ),
+    500
+  );
 
   return (
     <div className="flex">
@@ -38,7 +39,7 @@ export default function RecipeTotalTime(props: RecipeTimeProps) {
           autoComplete="off"
           name="totalTime"
           defaultValue={totalTime}
-          onChange={onChange}
+          onChange={(e) => saveTotalTime(e.target.value)}
           error={!!totalTimeError}
         />
         <ErrorMessage>{totalTimeError}</ErrorMessage>
