@@ -30,7 +30,7 @@ export const getRecipeWithIngredients = (recipeId: string) =>
     where: { id: recipeId },
     include: {
       ingredients: {
-        select: { id: true, name: true, amount: true },
+        select: { id: true, amount: true, name: true },
         orderBy: { createdAt: "asc" },
       },
     },
@@ -53,9 +53,9 @@ export const saveRecipe = (
       saveRecipeData;
     const ingredients = {
       updateMany: ingredientIds?.map((id, idx) => {
-        const name = ingredientNames?.[idx] as string; // * zod already validated this
         const amount = ingredientAmounts?.[idx];
-        return { where: { id }, data: { name, amount } };
+        const name = ingredientNames?.[idx] as string; // * zod already validated this
+        return { where: { id }, data: { amount, name } };
       }),
     };
     return db.recipe.update({
@@ -84,7 +84,7 @@ export const createIngredient = (
   try {
     const { newIngredientAmount: amount, newIngredientName: name } =
       createIngredientDatadata;
-    return db.ingredient.create({ data: { recipeId, name, amount } });
+    return db.ingredient.create({ data: { recipeId, amount, name } });
   } catch (err) {
     console.log(err);
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -101,3 +101,52 @@ export const deleteRecipe = (recipeId: string) =>
 
 export const deleteIngredient = (ingredientId: string) =>
   handleDelete(() => db.ingredient.delete({ where: { id: ingredientId } }));
+
+type SaveRecipeFieldData =
+  | { name: string }
+  | { totalTime: string }
+  | { instructions: string };
+export const saveRecipeField = async (
+  recipeId: string,
+  data: SaveRecipeFieldData
+) => {
+  try {
+    return db.recipe.update({ where: { id: recipeId }, data });
+  } catch (err) {
+    console.log(err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === "P2025") {
+        return json({ error: "Recipe not found" }, { status: 404 });
+      }
+    }
+    throw err;
+  }
+};
+
+export const saveIngredientAmount = (id: string, amount: string | null) => {
+  try {
+    return db.ingredient.update({ where: { id }, data: { amount } });
+  } catch (err) {
+    console.log(err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === "P2025") {
+        return json({ error: "Ingredient not found" }, { status: 404 });
+      }
+    }
+    throw err;
+  }
+};
+
+export const saveIngredientName = (id: string, name: string) => {
+  try {
+    return db.ingredient.update({ where: { id }, data: { name } });
+  } catch (err) {
+    console.log(err);
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      if (err.code === "P2025") {
+        return json({ error: "Ingredient not found" }, { status: 404 });
+      }
+    }
+    throw err;
+  }
+};

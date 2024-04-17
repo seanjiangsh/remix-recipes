@@ -9,12 +9,12 @@ import { useIsHydrated } from "~/utils/misc";
 import { Input } from "../form/Inputs";
 
 type ShelfNameProps = { shelf: pantryTypes.Shelf };
-type ShelfData = { errors: { shelfId: string; shelfName: string } };
+type ResponseData = { errors?: { shelfId: string; shelfName: string } };
 
 export default function ShelfName({ shelf }: ShelfNameProps) {
   const { id, name } = shelf;
 
-  const shelfNameFetcher = useFetcher<ShelfData>();
+  const shelfNameFetcher = useFetcher<ResponseData>();
   const fetcherData = shelfNameFetcher.data;
   const shelfNameErrMsg = fetcherData?.errors?.shelfName;
   const shelfIdErrMsg = fetcherData?.errors?.shelfId;
@@ -23,12 +23,8 @@ export default function ShelfName({ shelf }: ShelfNameProps) {
 
   const onChange: ChangeEventHandler<HTMLInputElement> = (ev) => {
     const { value } = ev.currentTarget;
-    if (!value) return;
-    const submitValue = {
-      _action: "saveShelfName",
-      shelfId: id,
-      shelfName: value,
-    };
+    const shelfName = value ?? "";
+    const submitValue = { _action: "saveShelfName", shelfId: id, shelfName };
     const options: SubmitOptions = { method: "post" };
     shelfNameFetcher.submit(submitValue, options);
   };

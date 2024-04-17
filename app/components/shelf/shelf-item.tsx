@@ -5,12 +5,12 @@ import { TrashIcon } from "../icons/icons";
 import ErrorMessage from "../form/error-message";
 
 type ShelfItemProps = { item: pantryTypes.OptimisticItem };
-type DeleteItemData = { errors: { itemId: string } };
+type ResponseData = { errors?: { itemId: string } };
 
 export default function ShelfItem({ item }: ShelfItemProps) {
   const { id, name, isOptimistic } = item;
 
-  const deleteItemFetcher = useFetcher<DeleteItemData>();
+  const deleteItemFetcher = useFetcher<ResponseData>();
   const isDeletingItem = !!deleteItemFetcher.formData;
   const deleteItemIdErrMsg = deleteItemFetcher.data?.errors?.itemId;
 

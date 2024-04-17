@@ -10,23 +10,19 @@ type RecipeTimeProps = {
   totalTime: string;
   errors?: { totalTime: string };
 };
-type RecipeTimeData = { errors: { recipeId: string; totalTime: string } };
+type ResponseData = { errors?: { totalTime: string } };
 
-export default function RecipeTime(props: RecipeTimeProps) {
+export default function RecipeTotalTime(props: RecipeTimeProps) {
   const { id, totalTime, errors } = props;
 
-  const saveTotolTimeFetcher = useFetcher<RecipeTimeData>();
+  const saveTotolTimeFetcher = useFetcher<ResponseData>();
   const fetcherData = saveTotolTimeFetcher.data;
   const totalTimeError = errors?.totalTime || fetcherData?.errors?.totalTime;
 
   const onChange: ChangeEventHandler<HTMLInputElement> = (ev) => {
     const { value } = ev.currentTarget;
-    if (!value) return;
-    const submitValue = {
-      _action: "saveRecipeTotalTime",
-      recipeId: id,
-      totalTime: value,
-    };
+    const totalTime = value ?? "";
+    const submitValue = { _action: "saveTotalTime", totalTime };
     const options: SubmitOptions = { method: "post" };
     saveTotolTimeFetcher.submit(submitValue, options);
   };

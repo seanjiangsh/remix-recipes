@@ -9,26 +9,20 @@ type InstructionsProps = {
   instructions: string;
   errors?: { instructions: string };
 };
-type RecipeInstructionsData = {
-  errors: { recipeId: string; instructions: string };
-};
+type ResponseData = { errors?: { instructions: string } };
 
 export default function Instructions(props: InstructionsProps) {
   const { id, instructions, errors } = props;
 
-  const saveInstructionsFetcher = useFetcher<RecipeInstructionsData>();
+  const saveInstructionsFetcher = useFetcher<ResponseData>();
   const fetcherData = saveInstructionsFetcher.data;
   const instructionsError =
     errors?.instructions || fetcherData?.errors?.instructions;
 
   const onChange: ChangeEventHandler<HTMLTextAreaElement> = (ev) => {
     const { value } = ev.currentTarget;
-    if (!value) return;
-    const submitValue = {
-      _action: "saveRecipeInstructions",
-      recipeId: id,
-      instructions: value,
-    };
+    const instructions = value ?? "";
+    const submitValue = { _action: "saveInstructions", instructions };
     const options: SubmitOptions = { method: "post" };
     saveInstructionsFetcher.submit(submitValue, options);
   };

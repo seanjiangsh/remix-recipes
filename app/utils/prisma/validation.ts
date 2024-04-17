@@ -1,9 +1,10 @@
 import { z } from "zod";
 
-export type FieldErrors = Record<string, string>;
+export type FieldErrors = { [key: string]: string };
 export type FormFields = {
   [key: string]: FormDataEntryValue | Array<FormDataEntryValue>;
 };
+
 // * Convert FormData to Object,
 const objectify = (formData: FormData) => {
   const entries = Array.from(formData.entries());
@@ -17,11 +18,11 @@ const objectify = (formData: FormData) => {
   return formFields;
 };
 
-export const validateForm = <T>(
+export const validateForm = <T, R, E>(
   formData: FormData,
   schema: z.Schema<T>,
-  successFn: (data: T) => unknown,
-  failedFn: (errors: FieldErrors) => unknown
+  successFn: (data: T) => R,
+  failedFn: (errors: FieldErrors) => E
 ) => {
   const fields = objectify(formData);
   const parsed = schema.safeParse(fields);

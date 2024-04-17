@@ -19,13 +19,16 @@ import {
   deleteRecipe,
   getRecipe,
   getRecipeWithIngredients,
+  saveIngredientAmount,
+  saveIngredientName,
   saveRecipe,
+  saveRecipeField,
 } from "~/models/recipes/recipes.server";
 import { FieldErrors, validateForm } from "~/utils/prisma/validation";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
 import RecipeName from "~/components/recipes/recipe-detail/recipe-name";
-import RecipeTime from "~/components/recipes/recipe-detail/recipe-time";
+import RecipeTotalTime from "~/components/recipes/recipe-detail/recipe-total-time";
 import IngredientsDetail from "~/components/recipes/recipe-detail/ingredients-detail";
 import Instructions from "~/components/recipes/recipe-detail/instructions";
 import RecipeFooter from "~/components/recipes/recipe-detail/recipe-footer";
@@ -45,19 +48,35 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return json({ recipe }, { headers });
 };
 
+const saveNameSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+});
+const saveTotalTimeSchema = z.object({
+  totalTime: z.string().min(1, "Total time is required"),
+});
+const saveInstructionsSchema = z.object({
+  instructions: z.string().min(1, "Instructions is required"),
+});
+const ingredientIdSchema = z.string().min(1, "Ingredient ID is missing");
+const ingredientAmountSchema = z.string().nullable();
+const saveIngredientAmountSchema = z.object({
+  id: ingredientIdSchema,
+  amount: ingredientAmountSchema,
+});
+const ingredientNameSchema = z.string().min(1, "Ingredient name is required");
+const saveIngredientNameSchema = z.object({
+  id: ingredientIdSchema,
+  name: ingredientNameSchema,
+});
 const saveRecipeSchema = z
   .object({
-    name: z.string().min(1, "Name is required"),
-    totalTime: z.string().min(1, "Total time is required"),
-    instructions: z.string().min(1, "Instructions is required"),
-    ingredientIds: z
-      .array(z.string().min(1, "Ingredient ID is missing"))
-      .optional(),
-    ingredientNames: z
-      .array(z.string().min(1, "Ingredient name is required"))
-      .optional(),
-    ingredientAmounts: z.array(z.string().nullable()).optional(),
+    ingredientIds: z.array(ingredientIdSchema).optional(),
+    ingredientNames: z.array(ingredientNameSchema).optional(),
+    ingredientAmounts: z.array(ingredientAmountSchema).optional(),
   })
+  .and(saveNameSchema)
+  .and(saveTotalTimeSchema)
+  .and(saveInstructionsSchema)
   .refine(
     (data) => {
       const { ingredientIds, ingredientNames, ingredientAmounts } = data;
@@ -96,6 +115,30 @@ export const action: ActionFunction = async ({ request, params }) => {
   }
 
   switch (action) {
+    case "saveName": {
+      return validateForm(
+        formData,
+        saveNameSchema,
+        (data) => saveRecipeField(recipeId, data),
+        errorFn
+      );
+    }
+    case "saveTotalTime": {
+      return validateForm(
+        formData,
+        saveTotalTimeSchema,
+        (data) => saveRecipeField(recipeId, data),
+        errorFn
+      );
+    }
+    case "saveInstructions": {
+      return validateForm(
+        formData,
+        saveInstructionsSchema,
+        (data) => saveRecipeField(recipeId, data),
+        errorFn
+      );
+    }
     case "saveRecipe": {
       return validateForm(
         formData,
@@ -116,6 +159,22 @@ export const action: ActionFunction = async ({ request, params }) => {
       await deleteRecipe(recipeId);
       return redirect("/app/recipes");
     }
+    case "saveIngredientAmount": {
+      return validateForm(
+        formData,
+        saveIngredientAmountSchema,
+        ({ id, amount }) => saveIngredientAmount(id, amount),
+        errorFn
+      );
+    }
+    case "saveIngredientName": {
+      return validateForm(
+        formData,
+        saveIngredientNameSchema,
+        ({ id, name }) => saveIngredientName(id, name),
+        errorFn
+      );
+    }
     default: {
       return null;
     }
@@ -133,7 +192,7 @@ export default function RecipeDetail() {
   return (
     <Form method="post">
       <RecipeName id={id} name={name} errors={errors} />
-      <RecipeTime totalTime={totalTime} id={id} errors={errors} />
+      <RecipeTotalTime totalTime={totalTime} id={id} errors={errors} />
       <IngredientsDetail ingredients={ingredients} errors={errors} />
       <Instructions id={id} instructions={instructions} errors={errors} />
       <RecipeFooter />

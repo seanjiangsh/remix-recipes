@@ -8,48 +8,43 @@ import ErrorMessage from "~/components/form/error-message";
 
 type IngredientRowProps = {
   ingredient: Ingredient;
-  errors?: { ingredientName?: string; ingredientAmount?: string };
+  errors?: { ingredientAmount?: string; ingredientName?: string };
 };
-type SaveIngredientAmountData = {
+type AmountResponseData = {
   errors: { ingredientId: string; amount: string };
 };
-type SaveIngredientNameData = {
+type NameResponseData = {
   errors: { ingredientId: string; name: string };
 };
 
 export default function IngredientRow(props: IngredientRowProps) {
   const {
-    ingredient: { id, name, amount },
+    ingredient: { id, amount, name },
     errors,
   } = props;
 
-  const saveNameFetcher = useFetcher<SaveIngredientNameData>();
-  const saveAmountFetcher = useFetcher<SaveIngredientAmountData>();
+  const saveAmountFetcher = useFetcher<AmountResponseData>();
+  const saveNameFetcher = useFetcher<NameResponseData>();
 
-  const nameError =
-    errors?.ingredientName || saveNameFetcher.data?.errors?.name;
   const amountError =
     errors?.ingredientAmount || saveAmountFetcher.data?.errors?.amount;
+  const nameError =
+    errors?.ingredientName || saveNameFetcher.data?.errors?.name;
 
-  const saveIngredientAmount: ChangeEventHandler<HTMLInputElement> = (ev) => {
+  const saveAmount: ChangeEventHandler<HTMLInputElement> = (ev) => {
     const { value } = ev.currentTarget;
-    if (!value) return;
-    const submitValue = {
-      _action: "saveIngredientAmount",
-      ingredientId: id,
-      amount: value,
-    };
+    const amount = value ?? "";
+    console.log("saveAmount", amount);
+    const submitValue = { _action: "saveIngredientAmount", id, amount };
     const options: SubmitOptions = { method: "post" };
     saveAmountFetcher.submit(submitValue, options);
   };
-  const saveIngredientName: ChangeEventHandler<HTMLInputElement> = (ev) => {
+
+  const saveName: ChangeEventHandler<HTMLInputElement> = (ev) => {
     const { value } = ev.currentTarget;
-    if (!value) return;
-    const submitValue = {
-      _action: "saveIngredientName",
-      ingredientId: id,
-      name: value,
-    };
+    const name = value ?? "";
+    console.log("saveName", name);
+    const submitValue = { _action: "saveIngredientName", id, name };
     const options: SubmitOptions = { method: "post" };
     saveNameFetcher.submit(submitValue, options);
   };
@@ -63,7 +58,7 @@ export default function IngredientRow(props: IngredientRowProps) {
           autoComplete="off"
           name="ingredientAmounts[]" // * for objectifying the form data from fromData.getAll(...)
           defaultValue={amount || ""}
-          onChange={saveIngredientAmount}
+          onChange={saveAmount}
           error={!!amountError}
         />
         <ErrorMessage>{amountError}</ErrorMessage>
@@ -75,7 +70,7 @@ export default function IngredientRow(props: IngredientRowProps) {
           autoComplete="off"
           name="ingredientNames[]" // * for objectifying the form data from fromData.getAll(...)
           defaultValue={name || ""}
-          onChange={saveIngredientName}
+          onChange={saveName}
           error={!!nameError}
         />
         <ErrorMessage>{nameError}</ErrorMessage>

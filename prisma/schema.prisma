@@ -55,8 +55,8 @@ model Recipe {
 
 model Ingredient {
   id          String      @id @default(cuid())
-  name        String
   amount      String?
+  name        String
   recipeId    String
 
   createdAt   DateTime    @default(now())

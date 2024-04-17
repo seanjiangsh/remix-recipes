@@ -5,23 +5,19 @@ import { Input } from "~/components/form/Inputs";
 import ErrorMessage from "~/components/form/error-message";
 
 type RecipeNameProps = { id: string; name: string; errors?: { name: string } };
-type RecipeData = { errors: { recipeId: string; recipeName: string } };
+type ResponseData = { errors?: { name?: string } };
 
 export default function RecipeName(props: RecipeNameProps) {
   const { id, name, errors } = props;
 
-  const saveNameFetcher = useFetcher<RecipeData>();
+  const saveNameFetcher = useFetcher<ResponseData>();
   const fetcherData = saveNameFetcher.data;
-  const nameError = errors?.name || fetcherData?.errors?.recipeName;
+  const nameError = errors?.name || fetcherData?.errors?.name;
 
   const onChange: ChangeEventHandler<HTMLInputElement> = (ev) => {
     const { value } = ev.currentTarget;
-    if (!value) return;
-    const submitValue = {
-      _action: "saveRecipeName",
-      recipeId: id,
-      recipeName: value,
-    };
+    const name = value ?? "";
+    const submitValue = { _action: "saveName", name };
     const options: SubmitOptions = { method: "post" };
     saveNameFetcher.submit(submitValue, options);
   };

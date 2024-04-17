@@ -9,6 +9,6 @@ export type Recipe = {
 
 export type Ingredient = {
   id: string;
-  name: string;
   amount: string | null;
+  name: string;
 };
