@@ -1,17 +1,28 @@
+import { useFetchers } from "@remix-run/react";
 import classNames from "classnames";
 
 import { Recipe } from "~/types/recipe/recipes";
 import { useDelayedBool } from "~/hooks/recipes/recipes.hooks";
 import { TimeIcon } from "~/components/icons/icons";
 
-export function Card({
-  name,
-  totalTime,
-  imageUrl,
-  isActive,
-  isLoading,
-}: Recipe) {
+export function Card(props: Recipe) {
+  const { id, imageUrl, isActive, isLoading } = props;
+  const fetchers = useFetchers();
   const delayedLoading = useDelayedBool(isLoading, 500);
+
+  const optimisticData = fetchers.reduce<{ [k: string]: string }>((p, c) => {
+    const { formAction, formData } = c;
+    const isCurrentRecipe = !!formAction?.includes(id);
+    const action = formData?.get("_action");
+    if (!isCurrentRecipe || typeof action !== "string") return p;
+    const name = formData?.get("name")?.toString() || "";
+    const totalTime = formData?.get("totalTime")?.toString() || "";
+    return { ...p, name, totalTime };
+  }, {});
+
+  const name = optimisticData.name || props.name;
+  const totalTime = optimisticData.totalTime || props.totalTime;
+
   return (
     <div
       className={classNames(

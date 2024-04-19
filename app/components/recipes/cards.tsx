@@ -14,6 +14,7 @@ export default function Cards(props: CardsProps) {
   const cards = recipes.map((recipe) => {
     const { id } = recipe;
     const isLoading = navigation.location?.pathname.endsWith(id);
+
     return (
       <li key={id} className="my-4">
         <NavLink to={{ pathname: id, search }} prefetch="intent">
