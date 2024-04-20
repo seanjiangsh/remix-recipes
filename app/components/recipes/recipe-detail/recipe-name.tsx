@@ -4,7 +4,7 @@ import { useDebounce } from "~/hooks/misc/debounce";
 import { Input } from "~/components/form/Inputs";
 import ErrorMessage from "~/components/form/error-message";
 
-type RecipeNameProps = { id: string; name: string; errors?: { name: string } };
+type RecipeNameProps = { id: string; name: string; errors?: { name?: string } };
 type ResponseData = { errors?: { name?: string } };
 
 export default function RecipeName(props: RecipeNameProps) {

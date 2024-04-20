@@ -5,7 +5,7 @@ import { TrashIcon } from "../icons/icons";
 import ErrorMessage from "../form/error-message";
 
 type ShelfItemProps = { item: pantryTypes.OptimisticItem };
-type ResponseData = { errors?: { itemId: string } };
+type ResponseData = { errors?: { itemId?: string } };
 
 export default function ShelfItem({ item }: ShelfItemProps) {
   const { id, name, isOptimistic } = item;

@@ -5,8 +5,8 @@ import IngredientRow from "./ingredient-row";
 type IngredientsDetailProps = {
   ingredients: Array<Ingredient>;
   errors?: {
-    ingredientNames: `ingredientNames.${number}`;
-    ingredientAmounts: `ingredientAmounts.${number}`;
+    ingredientNames?: `ingredientNames.${number}`;
+    ingredientAmounts?: `ingredientAmounts.${number}`;
   } & CreateIngredientProps["errors"];
 };
 export default function IngredientsDetail(props: IngredientsDetailProps) {

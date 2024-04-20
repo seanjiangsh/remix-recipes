@@ -10,9 +10,9 @@ import CreateShelfItem from "./create-shelf-item";
 import ShelfItems from "./shelf-items";
 
 export type CreateShelfItemData = {
-  errors: { shelfId: string; itemName: string };
+  errors: { shelfId?: string; itemName?: string };
 };
-export type DeleteShelfData = { errors?: { shelfId: string } };
+export type DeleteShelfData = { errors?: { shelfId?: string } };
 type ShelfProps = { shelf: pantryTypes.Shelf };
 
 export default function Shelf({ shelf }: ShelfProps) {

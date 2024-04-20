@@ -9,7 +9,7 @@ import { Input } from "../form/Inputs";
 import { useDebounce } from "~/hooks/misc/debounce";
 
 type ShelfNameProps = { shelf: pantryTypes.Shelf };
-type ResponseData = { errors?: { shelfId: string; shelfName: string } };
+type ResponseData = { errors?: { shelfId?: string; shelfName?: string } };
 
 export default function ShelfName({ shelf }: ShelfNameProps) {
   const { id, name } = shelf;

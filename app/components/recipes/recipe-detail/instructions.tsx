@@ -10,7 +10,7 @@ type InstructionsProps = {
   instructions: string;
   errors?: { instructions: string };
 };
-type ResponseData = { errors?: { instructions: string } };
+type ResponseData = { errors?: { instructions?: string } };
 
 export default function Instructions(props: InstructionsProps) {
   const { id, instructions, errors } = props;

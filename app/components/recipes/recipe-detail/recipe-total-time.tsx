@@ -10,7 +10,7 @@ type RecipeTimeProps = {
   totalTime: string;
   errors?: { totalTime: string };
 };
-type ResponseData = { errors?: { totalTime: string } };
+type ResponseData = { errors?: { totalTime?: string } };
 
 export default function RecipeTotalTime(props: RecipeTimeProps) {
   const { id, totalTime, errors } = props;

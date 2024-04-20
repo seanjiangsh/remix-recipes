@@ -88,8 +88,8 @@ const saveRecipeSchema = z
     { message: "Ingredient arrays must all be the same length" }
   );
 const createIngredientSchema = z.object({
-  newIngredientName: z.string().min(1, "Ingredient name is required"),
   newIngredientAmount: z.string().nullable(),
+  newIngredientName: z.string().min(1, "Ingredient name is required"),
 });
 
 const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });

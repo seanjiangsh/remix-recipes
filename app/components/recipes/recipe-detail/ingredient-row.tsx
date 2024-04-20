@@ -13,10 +13,10 @@ type IngredientRowProps = {
   errors?: { ingredientAmount?: string; ingredientName?: string };
 };
 type AmountResponseData = {
-  errors: { ingredientId: string; amount: string };
+  errors: { ingredientId?: string; amount?: string };
 };
 type NameResponseData = {
-  errors: { ingredientId: string; name: string };
+  errors: { ingredientId?: string; name?: string };
 };
 
 export default function IngredientRow(props: IngredientRowProps) {
