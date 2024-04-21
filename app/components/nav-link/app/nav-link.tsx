@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import {
   NavLink as RemixNavLink,
   useNavigation,
@@ -7,7 +8,7 @@ import classNames from "classnames";
 
 type NavLinkProps = {
   to: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export default function NavLink(props: NavLinkProps) {
@@ -20,18 +21,17 @@ export default function NavLink(props: NavLinkProps) {
   const isLoading = state === "loading" && pathMatch && !formData;
 
   return (
-    <li className="w-16">
-      <RemixNavLink to={to}>
-        {({ isActive }) => {
-          const className = classNames(
-            "py-4 flex justify-center",
-            "hover:bg-primary-light",
-            isActive ? "bg-primary-light" : "",
-            isLoading ? "animate-pulse bg-primary-light" : ""
-          );
-          return <div className={className}>{children}</div>;
-        }}
-      </RemixNavLink>
-    </li>
+    <RemixNavLink
+      to={to}
+      className={({ isActive }) =>
+        classNames(
+          "hover:text-gray-500 pb-2.5 px-2 md:px-4",
+          isActive ? "border-b-2 border-b-primary" : "",
+          isLoading ? "animate-pulse" : ""
+        )
+      }
+    >
+      {children}
+    </RemixNavLink>
   );
 }

@@ -2,7 +2,7 @@ import { json } from "@remix-run/node";
 import { Prisma } from "@prisma/client";
 
 import db from "~/utils/prisma/server";
-import { handleDelete } from "./utils";
+import { handleDelete } from "../../utils/prisma/utils";
 
 export const getShelf = (shelfId: string) =>
   db.pantryShelf.findUnique({ where: { id: shelfId } });
@@ -13,12 +13,8 @@ export const getAllShelves = (userId: string, query: string | null) =>
       userId,
       name: { contains: query ?? "", mode: "insensitive" },
     },
-    include: {
-      items: { orderBy: { name: "asc" } },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
+    include: { items: { orderBy: { name: "asc" } } },
+    orderBy: { createdAt: "desc" },
   });
 
 export const createShelf = (userId: string) =>
@@ -27,12 +23,9 @@ export const createShelf = (userId: string) =>
 export const deleteShelf = (id: string) =>
   handleDelete(() => db.pantryShelf.delete({ where: { id } }));
 
-export const saveShelfName = async (id: string, name: string) => {
+export const saveShelfName = (id: string, name: string) => {
   try {
-    const updated = await db.pantryShelf.update({
-      where: { id },
-      data: { name },
-    });
+    const updated = db.pantryShelf.update({ where: { id }, data: { name } });
     return updated;
   } catch (err) {
     console.log(err);

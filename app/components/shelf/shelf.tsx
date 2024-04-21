@@ -4,15 +4,15 @@ import classNames from "classnames";
 import * as pantryTypes from "~/types/pantry/pantry";
 import { useOptimisticItems } from "~/hooks/pantry/pantry.hooks";
 
-import SaveShelfName from "./save-shelf-name";
+import ShelfName from "./shelf-name";
 import DeleteShelf from "./delete-shelf";
 import CreateShelfItem from "./create-shelf-item";
 import ShelfItems from "./shelf-items";
 
 export type CreateShelfItemData = {
-  errors: { shelfId: string; itemName: string };
+  errors: { shelfId?: string; itemName?: string };
 };
-export type DeleteShelfData = { errors: { shelfId: string } };
+export type DeleteShelfData = { errors?: { shelfId?: string } };
 type ShelfProps = { shelf: pantryTypes.Shelf };
 
 export default function Shelf({ shelf }: ShelfProps) {
@@ -41,7 +41,7 @@ export default function Shelf({ shelf }: ShelfProps) {
           "md:w-96"
         )}
       >
-        <SaveShelfName shelf={shelf} />
+        <ShelfName shelf={shelf} />
         <CreateShelfItem
           shelf={shelf}
           addItem={addItem}

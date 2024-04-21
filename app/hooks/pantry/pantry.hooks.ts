@@ -2,7 +2,7 @@ import { Fetcher } from "@remix-run/react";
 import { useState } from "react";
 
 import { Items, OptimisticItems } from "~/types/pantry/pantry";
-import { useServerLayoutEffect } from "~/utils/misc";
+import { createItemId, useServerLayoutEffect } from "~/utils/misc";
 
 // * note about optimistic updates:
 // * When a user performs an action, such as deleting a shelf,
@@ -31,7 +31,3 @@ export const useOptimisticItems = (
 
   return { renderedItems, addItem };
 };
-
-function createItemId() {
-  return `${Math.round(Math.random() * 1_000_000)}`;
-}

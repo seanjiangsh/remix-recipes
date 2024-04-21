@@ -1,5 +1,5 @@
 import db from "~/utils/prisma/server";
-import { handleCreate, handleDelete } from "./utils";
+import { handleCreate, handleDelete } from "../../utils/prisma/utils";
 
 export const getShelfItem = (itemId: string) =>
   db.pantryItem.findUnique({ where: { id: itemId } });

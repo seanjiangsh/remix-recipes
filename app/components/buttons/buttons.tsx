@@ -30,7 +30,7 @@ export const PrimaryButton = (props: ButtonProps) => {
   return <BaseButton {...restOfProps} className={buttonClasses} />;
 };
 
-export const DeleteShelfButton = (props: ButtonProps) => {
+export const DeleteButton = (props: ButtonProps) => {
   const { className, isLoading, ...restOfProps } = props;
   const buttonClasses = classNames(
     "border-2 border-red-600 text-red-600",

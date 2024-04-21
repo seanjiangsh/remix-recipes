@@ -15,7 +15,7 @@ export const redirectLoggedInUser = async (request: Request) => {
   if (user) throw redirect("/app");
 };
 
-export const redirectUnloggedInUser = async (request: Request) => {
+export const requireLoggedInUser = async (request: Request) => {
   const user = await getCurrentUser(request);
   if (user) return user;
   else throw redirect("/login");

@@ -9,6 +9,8 @@ export const useMatchesData = <T>(id: string) => {
 
 export const isRunningOnServer = () => typeof window === "undefined";
 
+export const createItemId = () => `${Math.round(Math.random() * 1_000_000)}`;
+
 export const useServerLayoutEffect = isRunningOnServer()
   ? useEffect
   : useLayoutEffect;

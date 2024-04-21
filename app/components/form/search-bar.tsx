@@ -3,7 +3,14 @@ import classNames from "classnames";
 
 import { SearchIcon } from "../icons/icons";
 
-export default function SearchShelf() {
+type SearchBarProps = {
+  placeholder: string;
+  className?: string;
+};
+
+export default function SearchBar(props: SearchBarProps) {
+  const { placeholder, className } = props;
+
   const [searchParams] = useSearchParams();
   const navigation = useNavigation();
 
@@ -16,8 +23,8 @@ export default function SearchShelf() {
         className={classNames(
           "flex border-2 border-gray-300 rounded-md",
           "focus-within:border-primary",
-          "md:w-80",
-          isSearching ? "animate-pulse" : ""
+          isSearching ? "animate-pulse" : "",
+          className
         )}
       >
         <button className="px-2 mr-1">
@@ -27,9 +34,9 @@ export default function SearchShelf() {
           type="text"
           name="q"
           autoComplete="off"
-          placeholder="Search Shelves..."
+          placeholder={placeholder}
           defaultValue={searchParams.get("q") ?? ""}
-          className="w-full py-3 px-2 outline-none"
+          className="w-full py-3 px-2 outline-none rounded-md"
         />
       </Form>
     </div>
