@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import { useFetcher } from "@remix-run/react";
 
-import { Ingredient } from "~/types/recipe/recipes";
+import { OptimisticIngredient } from "~/types/recipe/recipes";
 import { useDebounce } from "~/hooks/misc/debounce";
 
 import { Input } from "~/components/form/Inputs";
@@ -9,7 +9,7 @@ import { TrashIcon } from "~/components/icons/icons";
 import ErrorMessage from "~/components/form/error-message";
 
 type IngredientRowProps = {
-  ingredient: Ingredient;
+  ingredient: OptimisticIngredient;
   errors?: { ingredientAmount?: string; ingredientName?: string };
 };
 type AmountResponseData = {
@@ -21,7 +21,7 @@ type NameResponseData = {
 
 export default function IngredientRow(props: IngredientRowProps) {
   const {
-    ingredient: { id, amount, name },
+    ingredient: { id, amount, name, isOptimistic },
     errors,
   } = props;
 
@@ -60,6 +60,7 @@ export default function IngredientRow(props: IngredientRowProps) {
           autoComplete="off"
           name="ingredientAmounts[]" // * for objectifying the form data from fromData.getAll(...)
           defaultValue={amount || ""}
+          disabled={isOptimistic}
           onChange={(e) => saveAmount(e.target.value)}
           error={!!amountError}
         />
@@ -72,6 +73,7 @@ export default function IngredientRow(props: IngredientRowProps) {
           autoComplete="off"
           name="ingredientNames[]" // * for objectifying the form data from fromData.getAll(...)
           defaultValue={name || ""}
+          disabled={isOptimistic}
           onChange={(e) => saveName(e.target.value)}
           error={!!nameError}
         />

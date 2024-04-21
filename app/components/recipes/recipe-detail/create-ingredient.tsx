@@ -1,25 +1,25 @@
 import { Fragment, MouseEventHandler, useState } from "react";
-import { useFetcher } from "@remix-run/react";
+import { FetcherWithComponents } from "@remix-run/react";
 
 import { Input } from "~/components/form/Inputs";
 import { SaveIcon } from "~/components/icons/icons";
 import ErrorMessage from "~/components/form/error-message";
+import { CreateIngredientResponseData } from "./ingredients-detail";
 
 export type CreateIngredientProps = {
+  createIngredientFetcher: FetcherWithComponents<CreateIngredientResponseData>;
+  addIngredient: (amount: string | null, name: string) => void;
   errors?: {
     newIngredientAmount?: string;
     newIngredientName?: string;
   };
 };
-type ResponseData = {
-  errors?: { newIngredientAmount?: string; newIngredientName?: string };
-};
 export default function CreateIngredient(props: CreateIngredientProps) {
-  const { errors } = props;
+  const { createIngredientFetcher, addIngredient, errors } = props;
 
   const [amount, setAmount] = useState("");
   const [name, setName] = useState("");
-  const createIngredientFetcher = useFetcher<ResponseData>();
+
   const fetcherErrors = createIngredientFetcher.data?.errors;
   const amountError =
     errors?.newIngredientAmount || fetcherErrors?.newIngredientAmount;
@@ -28,6 +28,7 @@ export default function CreateIngredient(props: CreateIngredientProps) {
 
   const createIngredient: MouseEventHandler<HTMLButtonElement> = (ev) => {
     ev.preventDefault();
+    addIngredient(amount, name);
     const newIngredientAmount = amount;
     const newIngredientName = name;
     createIngredientFetcher.submit(
