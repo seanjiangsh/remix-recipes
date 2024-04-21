@@ -191,6 +191,7 @@ export default function RecipeDetail() {
 
   return (
     <Form method="post">
+      <button name="_action" value="saveRecipe" className="hidden" />
       <RecipeName id={id} name={name} errors={errors} />
       <RecipeTotalTime totalTime={totalTime} id={id} errors={errors} />
       <IngredientsDetail ingredients={ingredients} errors={errors} />

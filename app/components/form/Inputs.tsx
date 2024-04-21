@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from "react";
+import { InputHTMLAttributes, forwardRef } from "react";
 import classNames from "classnames";
 
 type PrimaryInputProps = InputHTMLAttributes<HTMLInputElement>;
@@ -17,18 +17,21 @@ export const PrimaryInput = (props: PrimaryInputProps) => {
 };
 
 type InputProps = InputHTMLAttributes<HTMLInputElement> & { error?: boolean };
-export const Input = (props: InputProps) => {
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  props,
+  ref
+) {
   const { className, error, ...restOfProps } = props;
-
   return (
     <input
+      ref={ref}
       className={classNames(
-        "mb-2 w-full outline-none",
+        "w-full outline-none",
         "border-b-2 border-b-background focus:border-b-primary",
-        error && "border-red-600",
+        error ? "border-b-red-600" : "",
         className
       )}
       {...restOfProps}
     />
   );
-};
+});

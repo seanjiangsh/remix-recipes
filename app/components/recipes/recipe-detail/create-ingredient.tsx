@@ -1,4 +1,10 @@
-import { Fragment, MouseEventHandler, useState } from "react";
+import {
+  EventHandler,
+  Fragment,
+  KeyboardEventHandler,
+  useRef,
+  useState,
+} from "react";
 import { FetcherWithComponents } from "@remix-run/react";
 
 import { Input } from "~/components/form/Inputs";
@@ -26,7 +32,9 @@ export default function CreateIngredient(props: CreateIngredientProps) {
   const nameError =
     errors?.newIngredientName || fetcherErrors?.newIngredientName;
 
-  const createIngredient: MouseEventHandler<HTMLButtonElement> = (ev) => {
+  const newIngredientAmountRef = useRef<HTMLInputElement>(null);
+
+  const createIngredient: EventHandler<any> = (ev) => {
     ev.preventDefault();
     addIngredient(amount, name);
     const newIngredientAmount = amount;
@@ -37,18 +45,24 @@ export default function CreateIngredient(props: CreateIngredientProps) {
     );
     setAmount("");
     setName("");
+    newIngredientAmountRef.current?.focus();
+  };
+  const onKeyDown: KeyboardEventHandler<HTMLInputElement> = (ev) => {
+    if (ev.key === "Enter") createIngredient(ev);
   };
 
   return (
     <Fragment>
       <div>
         <Input
+          ref={newIngredientAmountRef}
           type="text"
           autoComplete="off"
           name="newIngredientAmount"
           className="border-b-gray-200"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
+          onKeyDown={onKeyDown}
           error={!!amountError}
         />
         <ErrorMessage>{amountError}</ErrorMessage>
@@ -61,6 +75,7 @@ export default function CreateIngredient(props: CreateIngredientProps) {
           className="border-b-gray-200"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onKeyDown={onKeyDown}
           error={!!nameError}
         />
         <ErrorMessage>{nameError}</ErrorMessage>

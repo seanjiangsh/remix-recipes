@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, MouseEventHandler } from "react";
 import { useFetcher } from "@remix-run/react";
 
 import { OptimisticIngredient } from "~/types/recipe/recipes";
@@ -18,6 +18,9 @@ type AmountResponseData = {
 type NameResponseData = {
   errors: { ingredientId?: string; name?: string };
 };
+type DeleteIngredientResponseData = {
+  errors?: { ingredientId?: string };
+};
 
 export default function IngredientRow(props: IngredientRowProps) {
   const {
@@ -27,6 +30,8 @@ export default function IngredientRow(props: IngredientRowProps) {
 
   const saveAmountFetcher = useFetcher<AmountResponseData>();
   const saveNameFetcher = useFetcher<NameResponseData>();
+  const deleteIngredientFetcher = useFetcher<DeleteIngredientResponseData>();
+  const deleteIngredientFetcherIdle = deleteIngredientFetcher.state === "idle";
 
   const amountError =
     errors?.ingredientAmount || saveAmountFetcher.data?.errors?.amount;
@@ -41,7 +46,6 @@ export default function IngredientRow(props: IngredientRowProps) {
       ),
     500
   );
-
   const saveName = useDebounce(
     (name: string) =>
       saveNameFetcher.submit(
@@ -50,39 +54,52 @@ export default function IngredientRow(props: IngredientRowProps) {
       ),
     500
   );
+  const deleteIngredient: MouseEventHandler = (ev) => {
+    ev.preventDefault();
+    deleteIngredientFetcher.submit(
+      { _action: `deleteIngredient.${id}` },
+      { method: "post" }
+    );
+  };
 
   return (
-    <Fragment key={id}>
-      <div>
-        <Input
-          key={id} // * key is required to override the default behavior of React Form status persistence
-          type="text"
-          autoComplete="off"
-          name="ingredientAmounts[]" // * for objectifying the form data from fromData.getAll(...)
-          defaultValue={amount || ""}
-          disabled={isOptimistic}
-          onChange={(e) => saveAmount(e.target.value)}
-          error={!!amountError}
-        />
-        <ErrorMessage>{amountError}</ErrorMessage>
-      </div>
-      <div>
-        <Input
-          key={id} // * key is required to override the default behavior of React Form status persistence
-          type="text"
-          autoComplete="off"
-          name="ingredientNames[]" // * for objectifying the form data from fromData.getAll(...)
-          defaultValue={name || ""}
-          disabled={isOptimistic}
-          onChange={(e) => saveName(e.target.value)}
-          error={!!nameError}
-        />
-        <ErrorMessage>{nameError}</ErrorMessage>
-      </div>
-      <button name="_action" value={`deleteIngredient.${id}`}>
-        <TrashIcon />
-      </button>
-      <input type="hidden" name="ingredientIds[]" value={id} />
-    </Fragment>
+    deleteIngredientFetcherIdle && (
+      <Fragment key={id}>
+        <div>
+          <Input
+            key={id} // * key is required to override the default behavior of React Form status persistence
+            type="text"
+            autoComplete="off"
+            name="ingredientAmounts[]" // * for objectifying the form data from fromData.getAll(...)
+            defaultValue={amount || ""}
+            disabled={isOptimistic}
+            onChange={(e) => saveAmount(e.target.value)}
+            error={!!amountError}
+          />
+          <ErrorMessage>{amountError}</ErrorMessage>
+        </div>
+        <div>
+          <Input
+            key={id} // * key is required to override the default behavior of React Form status persistence
+            type="text"
+            autoComplete="off"
+            name="ingredientNames[]" // * for objectifying the form data from fromData.getAll(...)
+            defaultValue={name || ""}
+            disabled={isOptimistic}
+            onChange={(e) => saveName(e.target.value)}
+            error={!!nameError}
+          />
+          <ErrorMessage>{nameError}</ErrorMessage>
+        </div>
+        <button
+          name="_action"
+          value={`deleteIngredient.${id}`}
+          onClick={deleteIngredient}
+        >
+          <TrashIcon />
+        </button>
+        <input type="hidden" name="ingredientIds[]" value={id} />
+      </Fragment>
+    )
   );
 }

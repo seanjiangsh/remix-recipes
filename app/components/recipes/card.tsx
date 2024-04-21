@@ -15,7 +15,7 @@ export function Card(props: Recipe) {
     const isCurrentRecipe = !!formAction?.includes(id);
     const action = formData?.get("_action");
     if (!isCurrentRecipe || typeof action !== "string") return p;
-    const name = formData?.get("name")?.toString() || "";
+    const name = formData?.get("saveName")?.toString() || "";
     const totalTime = formData?.get("totalTime")?.toString() || "";
     return { ...p, name, totalTime };
   }, {});
