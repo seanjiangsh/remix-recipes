@@ -32,6 +32,7 @@ import RecipeTotalTime from "~/components/recipes/recipe-detail/recipe-total-tim
 import IngredientsDetail from "~/components/recipes/recipe-detail/ingredients-detail";
 import Instructions from "~/components/recipes/recipe-detail/instructions";
 import RecipeFooter from "~/components/recipes/recipe-detail/recipe-footer";
+import { FileInput } from "~/components/form/Inputs";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
@@ -190,12 +191,13 @@ export default function RecipeDetail() {
   const { errors } = actionData || {};
 
   return (
-    <Form method="post">
+    <Form method="post" encType="multipart/form-data">
       <button name="_action" value="saveRecipe" className="hidden" />
       <RecipeName id={id} name={name} errors={errors} />
       <RecipeTotalTime totalTime={totalTime} id={id} errors={errors} />
       <IngredientsDetail ingredients={ingredients} errors={errors} />
       <Instructions id={id} instructions={instructions} errors={errors} />
+      <FileInput key={id} />
       <RecipeFooter />
     </Form>
   );
