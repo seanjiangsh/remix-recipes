@@ -3,6 +3,10 @@ import {
   LoaderFunctionArgs,
   json,
   redirect,
+  unstable_composeUploadHandlers,
+  unstable_createFileUploadHandler,
+  unstable_createMemoryUploadHandler,
+  unstable_parseMultipartFormData,
 } from "@remix-run/node";
 import {
   Form,
@@ -71,6 +75,7 @@ const saveIngredientNameSchema = z.object({
 });
 const saveRecipeSchema = z
   .object({
+    imageUrl: z.string().optional(),
     ingredientIds: z.array(ingredientIdSchema).optional(),
     ingredientNames: z.array(ingredientNameSchema).optional(),
     ingredientAmounts: z.array(ingredientAmountSchema).optional(),
@@ -106,8 +111,22 @@ export const action: ActionFunction = async ({ request, params }) => {
     const message = "You are not authorized to make changes this recipe";
     throw json({ message }, { status: 401 });
   }
-
-  const formData = await request.formData();
+  const contentType = request.headers.get("Content-Type");
+  const isMuliPartFormData = contentType?.startsWith("multipart/form-data");
+  let formData: FormData;
+  if (isMuliPartFormData) {
+    const uploadHandler = unstable_composeUploadHandlers(
+      unstable_createFileUploadHandler({ directory: "public/images" }),
+      unstable_createMemoryUploadHandler()
+    );
+    formData = await unstable_parseMultipartFormData(request, uploadHandler);
+    const image = formData.get("image") as File;
+    if (image && image.size > 0) {
+      formData.set("imageUrl", `/images/${image.name}`);
+    }
+  } else {
+    formData = await request.formData();
+  }
   const action = formData.get("_action") as string;
 
   if (typeof action === "string" && action.startsWith("deleteIngredient")) {
