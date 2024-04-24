@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import {
   ActionFunction,
   LoaderFunctionArgs,
@@ -10,6 +11,7 @@ import {
 } from "@remix-run/node";
 import {
   Form,
+  Outlet,
   isRouteErrorResponse,
   useActionData,
   useLoaderData,
@@ -210,15 +212,18 @@ export default function RecipeDetail() {
   const { errors } = actionData || {};
 
   return (
-    <Form method="post" encType="multipart/form-data">
-      <button name="_action" value="saveRecipe" className="hidden" />
-      <RecipeName id={id} name={name} errors={errors} />
-      <RecipeTotalTime totalTime={totalTime} id={id} errors={errors} />
-      <IngredientsDetail ingredients={ingredients} errors={errors} />
-      <Instructions id={id} instructions={instructions} errors={errors} />
-      <FileInput key={id} />
-      <RecipeFooter />
-    </Form>
+    <Fragment>
+      <Outlet />
+      <Form method="post" encType="multipart/form-data">
+        <button name="_action" value="saveRecipe" className="hidden" />
+        <RecipeName id={id} name={name} errors={errors} />
+        <RecipeTotalTime totalTime={totalTime} id={id} errors={errors} />
+        <IngredientsDetail ingredients={ingredients} errors={errors} />
+        <Instructions id={id} instructions={instructions} errors={errors} />
+        <FileInput recipeId={id} />
+        <RecipeFooter />
+      </Form>
+    </Fragment>
   );
 }
 

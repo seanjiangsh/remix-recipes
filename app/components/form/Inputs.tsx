@@ -36,9 +36,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   );
 });
 
-type FileInputProps = InputHTMLAttributes<HTMLInputElement> & { key: string };
+type FileInputProps = InputHTMLAttributes<HTMLInputElement> & {
+  recipeId: string;
+};
 export const FileInput = (props: FileInputProps) => {
-  const { key } = props;
+  const { recipeId } = props;
   return (
     <Fragment>
       <label
@@ -47,7 +49,7 @@ export const FileInput = (props: FileInputProps) => {
       >
         Image
       </label>
-      <input id="image" type="file" name="image" key={key} />
+      <input id="image" type="file" name="image" key={recipeId} />
     </Fragment>
   );
 };
