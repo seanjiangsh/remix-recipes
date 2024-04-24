@@ -3,6 +3,10 @@ import {
   LoaderFunctionArgs,
   json,
   redirect,
+  unstable_composeUploadHandlers,
+  unstable_createFileUploadHandler,
+  unstable_createMemoryUploadHandler,
+  unstable_parseMultipartFormData,
 } from "@remix-run/node";
 import {
   Form,
@@ -32,6 +36,7 @@ import RecipeTotalTime from "~/components/recipes/recipe-detail/recipe-total-tim
 import IngredientsDetail from "~/components/recipes/recipe-detail/ingredients-detail";
 import Instructions from "~/components/recipes/recipe-detail/instructions";
 import RecipeFooter from "~/components/recipes/recipe-detail/recipe-footer";
+import { FileInput } from "~/components/form/Inputs";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
@@ -70,6 +75,7 @@ const saveIngredientNameSchema = z.object({
 });
 const saveRecipeSchema = z
   .object({
+    imageUrl: z.string().optional(),
     ingredientIds: z.array(ingredientIdSchema).optional(),
     ingredientNames: z.array(ingredientNameSchema).optional(),
     ingredientAmounts: z.array(ingredientAmountSchema).optional(),
@@ -105,8 +111,22 @@ export const action: ActionFunction = async ({ request, params }) => {
     const message = "You are not authorized to make changes this recipe";
     throw json({ message }, { status: 401 });
   }
-
-  const formData = await request.formData();
+  const contentType = request.headers.get("Content-Type");
+  const isMuliPartFormData = contentType?.startsWith("multipart/form-data");
+  let formData: FormData;
+  if (isMuliPartFormData) {
+    const uploadHandler = unstable_composeUploadHandlers(
+      unstable_createFileUploadHandler({ directory: "public/images" }),
+      unstable_createMemoryUploadHandler()
+    );
+    formData = await unstable_parseMultipartFormData(request, uploadHandler);
+    const image = formData.get("image") as File;
+    if (image && image.size > 0) {
+      formData.set("imageUrl", `/images/${image.name}`);
+    }
+  } else {
+    formData = await request.formData();
+  }
   const action = formData.get("_action") as string;
 
   if (typeof action === "string" && action.startsWith("deleteIngredient")) {
@@ -190,12 +210,13 @@ export default function RecipeDetail() {
   const { errors } = actionData || {};
 
   return (
-    <Form method="post">
+    <Form method="post" encType="multipart/form-data">
       <button name="_action" value="saveRecipe" className="hidden" />
       <RecipeName id={id} name={name} errors={errors} />
       <RecipeTotalTime totalTime={totalTime} id={id} errors={errors} />
       <IngredientsDetail ingredients={ingredients} errors={errors} />
       <Instructions id={id} instructions={instructions} errors={errors} />
+      <FileInput key={id} />
       <RecipeFooter />
     </Form>
   );

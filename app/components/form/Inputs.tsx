@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, forwardRef } from "react";
+import { Fragment, InputHTMLAttributes, forwardRef } from "react";
 import classNames from "classnames";
 
 type PrimaryInputProps = InputHTMLAttributes<HTMLInputElement>;
@@ -35,3 +35,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     />
   );
 });
+
+type FileInputProps = InputHTMLAttributes<HTMLInputElement> & { key: string };
+export const FileInput = (props: FileInputProps) => {
+  const { key } = props;
+  return (
+    <Fragment>
+      <label
+        htmlFor="image"
+        className="block font-bold text-sm pb-2 w-fit mt-4"
+      >
+        Image
+      </label>
+      <input id="image" type="file" name="image" key={key} />
+    </Fragment>
+  );
+};
