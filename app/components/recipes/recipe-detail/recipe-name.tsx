@@ -1,8 +1,9 @@
-import { useFetcher } from "@remix-run/react";
+import { Link, useFetcher } from "@remix-run/react";
 
 import { useDebounce } from "~/hooks/misc/debounce";
 import { Input } from "~/components/form/Inputs";
 import ErrorMessage from "~/components/form/error-message";
+import { CalendarIcon } from "~/components/icons/icons";
 
 type RecipeNameProps = { id: string; name: string; errors?: { name?: string } };
 type ResponseData = { errors?: { name?: string } };
@@ -21,18 +22,27 @@ export default function RecipeName(props: RecipeNameProps) {
   );
 
   return (
-    <div className="mb-2">
-      <Input
-        key={id} // * key is required to override the default behavior of React Form status persistence
-        type="text"
-        placeholder="Recipe Name"
-        autoComplete="off"
-        className="text-2xl font-extrabold"
-        name="name"
-        defaultValue={name || ""}
-        onChange={(e) => saveName(e.target.value)}
-        error={!!nameError}
-      />
+    <div className="flex mb-2">
+      <Link
+        replace
+        to="update-meal-plan"
+        className="flex flex-col justify-center"
+      >
+        <CalendarIcon />
+      </Link>
+      <div className="ml-2 flex-grow">
+        <Input
+          key={id} // * key is required to override the default behavior of React Form status persistence
+          type="text"
+          placeholder="Recipe Name"
+          autoComplete="off"
+          className="text-2xl font-extrabold"
+          name="name"
+          defaultValue={name || ""}
+          onChange={(e) => saveName(e.target.value)}
+          error={!!nameError}
+        />
+      </div>
       <ErrorMessage>{nameError}</ErrorMessage>
     </div>
   );

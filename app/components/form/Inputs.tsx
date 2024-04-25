@@ -1,4 +1,4 @@
-import { Fragment, InputHTMLAttributes, forwardRef } from "react";
+import { Fragment, InputHTMLAttributes, ReactNode, forwardRef } from "react";
 import classNames from "classnames";
 
 type PrimaryInputProps = InputHTMLAttributes<HTMLInputElement>;
@@ -51,5 +51,26 @@ export const FileInput = (props: FileInputProps) => {
       </label>
       <input id="image" type="file" name="image" key={recipeId} />
     </Fragment>
+  );
+};
+
+type IconInputProps = InputHTMLAttributes<HTMLInputElement> & {
+  icon: ReactNode;
+};
+export const IconInput = (props: IconInputProps) => {
+  const { icon, ...restOfProps } = props;
+  return (
+    <div
+      className={classNames(
+        "flex items-stretch border-2 border-gray-00 rounded-md",
+        "focus-within:border-primary"
+      )}
+    >
+      <div className="px-2 flex flex-col justify-center">{icon}</div>
+      <input
+        className="w-full px-2 py-3 outline-none rounded-md"
+        {...restOfProps}
+      />
+    </div>
   );
 };
