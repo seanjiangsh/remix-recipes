@@ -208,12 +208,14 @@ export default function RecipeDetail() {
   const actionData = useActionData<typeof action>();
   if (!recipe) return null;
 
-  const { id, name, totalTime, ingredients, instructions } = recipe;
+  const { id, name, totalTime, ingredients, instructions, mealPlanMultiplier } =
+    recipe;
   const { errors } = actionData || {};
+  const outletCtx = { recipeName: name, mealPlanMultiplier };
 
   return (
     <Fragment>
-      <Outlet />
+      <Outlet context={outletCtx} />
       <Form method="post" encType="multipart/form-data">
         <button name="_action" value="saveRecipe" className="hidden" />
         <RecipeName id={id} name={name} errors={errors} />

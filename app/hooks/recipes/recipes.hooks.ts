@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Fetcher } from "@remix-run/react";
+import { Fetcher, useOutletContext } from "@remix-run/react";
 
 import { OptimisticIngredients } from "~/types/recipe/recipes";
 import { createItemId, useServerLayoutEffect } from "~/utils/misc";
@@ -43,4 +43,12 @@ export const useOptimisticIngredients = (
   };
 
   return { renderedIngredients, addIngredient };
+};
+
+export const useRecipeContext = () => {
+  type OutletContext = {
+    recipeName: string;
+    mealPlanMultiplier: number | null;
+  };
+  return useOutletContext<OutletContext>();
 };
