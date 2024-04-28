@@ -23,7 +23,6 @@ import {
   createIngredient,
   deleteIngredient,
   deleteRecipe,
-  getRecipe,
   getRecipeWithIngredients,
   saveIngredientAmount,
   saveIngredientName,
@@ -39,6 +38,7 @@ import IngredientsDetail from "~/components/recipes/recipe-detail/ingredients-de
 import Instructions from "~/components/recipes/recipe-detail/instructions";
 import RecipeFooter from "~/components/recipes/recipe-detail/recipe-footer";
 import { FileInput } from "~/components/form/Inputs";
+import { canCangeRecipe } from "~/utils/abilities.server";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
@@ -103,16 +103,9 @@ const createIngredientSchema = z.object({
 const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
 
 export const action: ActionFunction = async ({ request, params }) => {
-  const user = await requireLoggedInUser(request);
   const recipeId = params.recipeId as string; // * from the route
-  const recipe = await getRecipe(recipeId);
-  if (!recipe) {
-    throw json({ message: "Recipe not found" }, { status: 404 });
-  }
-  if (recipe.userId !== user.id) {
-    const message = "You are not authorized to make changes this recipe";
-    throw json({ message }, { status: 401 });
-  }
+  await canCangeRecipe(request, recipeId);
+
   const contentType = request.headers.get("Content-Type");
   const isMuliPartFormData = contentType?.startsWith("multipart/form-data");
   let formData: FormData;

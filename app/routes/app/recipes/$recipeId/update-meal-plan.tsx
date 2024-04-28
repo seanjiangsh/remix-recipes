@@ -1,14 +1,45 @@
-import { Form, Link } from "@remix-run/react";
+import {
+  ActionFunction,
+  ActionFunctionArgs,
+  json,
+  redirect,
+} from "@remix-run/node";
+import { Form, Link, useActionData } from "@remix-run/react";
 import ReactModal from "react-modal";
 
+import { canCangeRecipe } from "~/utils/abilities.server";
 import { useRecipeContext } from "~/hooks/recipes/recipes.hooks";
+import { removeRecipeFromMealPlan } from "~/models/recipes/recipes.server";
+
 import { DeleteButton, PrimaryButton } from "~/components/buttons/buttons";
 import { IconInput } from "~/components/form/Inputs";
 import { CloseIcon } from "~/components/icons/icons";
 
 if (typeof window !== "undefined") ReactModal.setAppElement("body");
 
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+  const recipeId = params.recipeId as string; // * from the route
+  await canCangeRecipe(request, recipeId);
+
+  const formData = await request.formData();
+  const action = formData.get("_action") as string;
+  switch (action) {
+    case "updateMealPlan": {
+      // todo: Save the meal plan multiplier
+      return null;
+    }
+    case "removeFormMealPlan": {
+      await removeRecipeFromMealPlan(recipeId);
+      return redirect("..");
+    }
+    default: {
+      return null;
+    }
+  }
+};
+
 export default function UpdateMealPlanModel() {
+  const actionData = useActionData<typeof action>();
   const { recipeName, mealPlanMultiplier } = useRecipeContext();
 
   return (

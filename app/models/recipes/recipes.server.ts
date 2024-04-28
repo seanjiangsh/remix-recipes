@@ -150,3 +150,9 @@ export const saveIngredientName = (id: string, name: string) => {
     throw err;
   }
 };
+
+export const removeRecipeFromMealPlan = (recipeId: string) =>
+  db.recipe.update({
+    where: { id: recipeId },
+    data: { mealPlanMultiplier: null },
+  });
