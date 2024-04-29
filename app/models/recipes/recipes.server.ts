@@ -156,3 +156,12 @@ export const removeRecipeFromMealPlan = (recipeId: string) =>
     where: { id: recipeId },
     data: { mealPlanMultiplier: null },
   });
+
+export const updateRecipeMealPlan = (
+  recipeId: string,
+  mealPlanMultiplier: number
+) =>
+  db.recipe.update({
+    where: { id: recipeId },
+    data: { mealPlanMultiplier },
+  });
