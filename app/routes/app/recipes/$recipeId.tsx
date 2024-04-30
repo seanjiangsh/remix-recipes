@@ -211,7 +211,12 @@ export default function RecipeDetail() {
       <Outlet context={outletCtx} />
       <Form method="post" encType="multipart/form-data">
         <button name="_action" value="saveRecipe" className="hidden" />
-        <RecipeName id={id} name={name} errors={errors} />
+        <RecipeName
+          id={id}
+          name={name}
+          mealPlanMultiplier={mealPlanMultiplier}
+          errors={errors}
+        />
         <RecipeTotalTime totalTime={totalTime} id={id} errors={errors} />
         <IngredientsDetail ingredients={ingredients} errors={errors} />
         <Instructions id={id} instructions={instructions} errors={errors} />

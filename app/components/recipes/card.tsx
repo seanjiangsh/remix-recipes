@@ -6,7 +6,7 @@ import { useDelayedBool } from "~/hooks/recipes/recipes.hooks";
 import { TimeIcon } from "~/components/icons/icons";
 
 export function Card(props: Recipe) {
-  const { id, imageUrl, isActive, isLoading } = props;
+  const { id, imageUrl, isActive, isLoading, mealPlanMultiplier } = props;
   const fetchers = useFetchers();
   const delayedLoading = useDelayedBool(isLoading, 500);
 
@@ -42,6 +42,11 @@ export function Card(props: Recipe) {
       <div className="p-4 flex-grow">
         <h3 className="font-semibold mb-1 text-left">
           {name}
+          {mealPlanMultiplier && (
+            <span className="text-primary-light ml-1">
+              (x{mealPlanMultiplier})
+            </span>
+          )}
           {delayedLoading ? "..." : ""}
         </h3>
         <div

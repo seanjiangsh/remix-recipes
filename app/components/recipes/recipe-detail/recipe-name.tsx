@@ -1,15 +1,22 @@
 import { Link, useFetcher } from "@remix-run/react";
+import classNames from "classnames";
 
 import { useDebounce } from "~/hooks/misc/debounce";
+
 import { Input } from "~/components/form/Inputs";
 import ErrorMessage from "~/components/form/error-message";
 import { CalendarIcon } from "~/components/icons/icons";
 
-type RecipeNameProps = { id: string; name: string; errors?: { name?: string } };
+type RecipeNameProps = {
+  id: string;
+  name: string;
+  mealPlanMultiplier: number | null;
+  errors?: { name?: string };
+};
 type ResponseData = { errors?: { name?: string } };
 
 export default function RecipeName(props: RecipeNameProps) {
-  const { id, name, errors } = props;
+  const { id, name, mealPlanMultiplier, errors } = props;
 
   const saveNameFetcher = useFetcher<ResponseData>();
   const fetcherData = saveNameFetcher.data;
@@ -26,7 +33,10 @@ export default function RecipeName(props: RecipeNameProps) {
       <Link
         replace
         to="update-meal-plan"
-        className="flex flex-col justify-center"
+        className={classNames(
+          "flex flex-col justify-center",
+          mealPlanMultiplier && "text-primary"
+        )}
       >
         <CalendarIcon />
       </Link>

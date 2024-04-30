@@ -5,6 +5,7 @@ export type Recipe = {
   imageUrl?: string;
   isActive?: boolean;
   isLoading?: boolean;
+  mealPlanMultiplier: number | null;
 };
 
 export type Ingredient = {

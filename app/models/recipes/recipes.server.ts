@@ -6,7 +6,13 @@ import { handleDelete } from "~/utils/prisma/utils";
 
 export const getRecipes = (userId: string, query: string | null) =>
   db.recipe.findMany({
-    select: { id: true, name: true, totalTime: true, imageUrl: true },
+    select: {
+      id: true,
+      name: true,
+      totalTime: true,
+      imageUrl: true,
+      mealPlanMultiplier: true,
+    },
     where: { userId, name: { contains: query ?? "", mode: "insensitive" } },
     orderBy: { createdAt: "desc" },
   });
