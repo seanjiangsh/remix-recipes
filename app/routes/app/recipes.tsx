@@ -48,7 +48,7 @@ export default function Recipes() {
   return (
     <RecipePageWrapper>
       <RecipeListWrapper>
-        <SearchBar placeholder="Search Recipes..." />
+        <SearchBar />
         <CreateRecipe />
         <Cards recipes={recipes} />
       </RecipeListWrapper>
