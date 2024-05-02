@@ -4,7 +4,11 @@ import { json } from "@remix-run/node";
 import db from "~/utils/prisma/server";
 import { handleDelete } from "~/utils/prisma/utils";
 
-export const getRecipes = (userId: string, query: string | null) =>
+export const getRecipes = (
+  userId: string,
+  query: string | null,
+  filter: string | null
+) =>
   db.recipe.findMany({
     select: {
       id: true,
@@ -13,7 +17,11 @@ export const getRecipes = (userId: string, query: string | null) =>
       imageUrl: true,
       mealPlanMultiplier: true,
     },
-    where: { userId, name: { contains: query ?? "", mode: "insensitive" } },
+    where: {
+      userId,
+      name: { contains: query ?? "", mode: "insensitive" },
+      mealPlanMultiplier: filter === "mealPlanOnly" ? { not: null } : {},
+    },
     orderBy: { createdAt: "desc" },
   });
 

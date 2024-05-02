@@ -22,7 +22,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
   const url = new URL(request.url);
   const query = url.searchParams.get("q");
-  const recipes = await getRecipes(user.id, query);
+  const filter = url.searchParams.get("filter");
+  const recipes = await getRecipes(user.id, query, filter);
   return json({ recipes });
 };
 
