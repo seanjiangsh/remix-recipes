@@ -9,7 +9,6 @@ import { Outlet, useLoaderData } from "@remix-run/react";
 import { createRecipe, getRecipes } from "~/models/recipes/recipes.server";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
-import SearchBar from "~/components/form/search-bar";
 import CreateRecipe from "~/components/recipes/create-recipe";
 import {
   RecipeDetailWrapper,
@@ -17,6 +16,7 @@ import {
   RecipePageWrapper,
 } from "~/components/recipes/wrappers";
 import Cards from "~/components/recipes/cards";
+import RecipeSearchBar from "~/components/recipes/seasrch-bar";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
@@ -49,7 +49,7 @@ export default function Recipes() {
   return (
     <RecipePageWrapper>
       <RecipeListWrapper>
-        <SearchBar />
+        <RecipeSearchBar />
         <CreateRecipe />
         <Cards recipes={recipes} />
       </RecipeListWrapper>
