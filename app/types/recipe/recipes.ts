@@ -16,3 +16,14 @@ export type Ingredient = {
 
 export type OptimisticIngredient = Ingredient & { isOptimistic?: boolean };
 export type OptimisticIngredients = Array<OptimisticIngredient>;
+
+export type GroceryListItem = {
+  id: string;
+  name: string;
+  uses: Array<{
+    id: string;
+    amount: string | null;
+    recipeName: string;
+    multiplier: number;
+  }>;
+};
