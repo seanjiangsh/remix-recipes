@@ -179,3 +179,16 @@ export const updateRecipeMealPlan = (
     where: { id: recipeId },
     data: { mealPlanMultiplier },
   });
+
+export const getIngredientsByUserId = (userId: string) =>
+  db.ingredient.findMany({
+    where: {
+      recipe: {
+        userId,
+        mealPlanMultiplier: { not: null },
+      },
+    },
+  });
+
+export const getPantryItemsByUserId = (userId: string) =>
+  db.pantryItem.findMany({ where: { userId } });

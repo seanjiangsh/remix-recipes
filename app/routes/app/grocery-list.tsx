@@ -1,7 +1,27 @@
+import { LoaderFunctionArgs } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 
 import * as recipeTypes from "~/types/recipe/recipes";
+import {
+  getIngredientsByUserId,
+  getPantryItemsByUserId,
+} from "~/models/recipes/recipes.server";
+import { requireLoggedInUser } from "~/utils/auth/auth.server";
+
 import { CheckIcon } from "~/components/icons/icons";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const user = await requireLoggedInUser(request);
+  const ingredients = await getIngredientsByUserId(user.id);
+  const pantryItems = await getPantryItemsByUserId(user.id);
+  const missingIngredients = ingredients.find(
+    (ingredient) =>
+      !pantryItems.find(
+        ({ name }) => name.toLowerCase() === ingredient.name.toLowerCase()
+      )
+  );
+  return { missingIngredients };
+};
 
 const GroceryListItem = ({ item }: { item: recipeTypes.GroceryListItem }) => {
   const { name, uses } = item;
