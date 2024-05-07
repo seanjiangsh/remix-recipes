@@ -188,6 +188,7 @@ export const getIngredientsByUserId = (userId: string) =>
         mealPlanMultiplier: { not: null },
       },
     },
+    include: { recipe: { select: { name: true, mealPlanMultiplier: true } } },
   });
 
 export const getPantryItemsByUserId = (userId: string) =>

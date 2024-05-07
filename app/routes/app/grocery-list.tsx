@@ -14,13 +14,25 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
   const ingredients = await getIngredientsByUserId(user.id);
   const pantryItems = await getPantryItemsByUserId(user.id);
-  const missingIngredients = ingredients.find(
+  const missingIngredients = ingredients.filter(
     (ingredient) =>
       !pantryItems.find(
         ({ name }) => name.toLowerCase() === ingredient.name.toLowerCase()
       )
   );
-  return { missingIngredients };
+  const groceryListItems = missingIngredients.reduce<{
+    [key: string]: recipeTypes.GroceryListItem;
+  }>((p, c) => {
+    const { id, recipe, amount } = c;
+    const name = c.name.toLowerCase();
+    const { name: recipeName, mealPlanMultiplier: multiplier } = recipe;
+    if (multiplier === null) throw new Error("Multiplier is unexpectedly null");
+    const exitsing = p[name] ?? { uses: [] };
+    const uses = [...exitsing.uses, { id, amount, recipeName, multiplier }];
+    return { ...p, [name]: { id, name, uses } };
+  }, {});
+
+  return { groceryList: Object.values(groceryListItems) };
 };
 
 const GroceryListItem = ({ item }: { item: recipeTypes.GroceryListItem }) => {
