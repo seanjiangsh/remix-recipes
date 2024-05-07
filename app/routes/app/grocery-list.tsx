@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 
 import * as recipeTypes from "~/types/recipe/recipes";
 import {
@@ -69,5 +69,13 @@ const GroceryListItem = ({ item }: { item: recipeTypes.GroceryListItem }) => {
 };
 
 export default function GroceryList() {
-  return <div>Grocery List</div>;
+  const { groceryList } = useLoaderData<typeof loader>();
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {groceryList.map((item) => (
+        <GroceryListItem key={item.id} item={item} />
+      ))}
+    </div>
+  );
 }
