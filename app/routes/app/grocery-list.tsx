@@ -1,5 +1,6 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
+import { z } from "zod";
 
 import * as recipeTypes from "~/types/recipe/recipes";
 import {
@@ -7,6 +8,7 @@ import {
   getPantryItemsByUserId,
 } from "~/models/recipes/recipes.server";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
+import { FieldErrors, validateForm } from "~/utils/prisma/validation";
 
 import { CheckIcon } from "~/components/icons/icons";
 
@@ -35,6 +37,25 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { groceryList: Object.values(groceryListItems) };
 };
 
+const checkOffItemSchema = z.object({
+  name: z.string(),
+});
+const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
+
+export const action: ActionFunction = async ({ request }) => {
+  const user = await requireLoggedInUser(request);
+  const formData = await request.formData();
+  const action = formData.get("_action") as string;
+  switch (action) {
+    case "checkOffItem": {
+      return validateForm(formData, checkOffItemSchema, () => {}, errorFn);
+    }
+    default: {
+      return null;
+    }
+  }
+};
+
 const GroceryListItem = ({ item }: { item: recipeTypes.GroceryListItem }) => {
   const { name, uses } = item;
 
@@ -55,6 +76,7 @@ const GroceryListItem = ({ item }: { item: recipeTypes.GroceryListItem }) => {
           </ul>
         </div>
         <fetcher.Form method="post" className="flex flex-col justify-center">
+          <input type="hidden" name="name" value={name} />
           <button
             name="_action"
             value="checkOffItem"
