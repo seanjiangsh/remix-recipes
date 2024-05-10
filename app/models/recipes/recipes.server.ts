@@ -193,3 +193,15 @@ export const getIngredientsByUserId = (userId: string) =>
 
 export const getPantryItemsByUserId = (userId: string) =>
   db.pantryItem.findMany({ where: { userId } });
+
+export const createPantryItem = (
+  userId: string,
+  name: string,
+  shelfId: string
+) => db.pantryItem.create({ data: { userId, name, shelfId } });
+
+export const getPantryShelfByName = (userId: string, shelfName: string) =>
+  db.pantryShelf.findFirst({ where: { userId, name: shelfName } });
+
+export const createPantryShelf = (userId: string, shelfName: string) =>
+  db.pantryShelf.create({ data: { userId, name: shelfName } });

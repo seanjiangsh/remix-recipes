@@ -4,8 +4,11 @@ import { z } from "zod";
 
 import * as recipeTypes from "~/types/recipe/recipes";
 import {
+  createPantryItem,
+  createPantryShelf,
   getIngredientsByUserId,
   getPantryItemsByUserId,
+  getPantryShelfByName,
 } from "~/models/recipes/recipes.server";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 import { FieldErrors, validateForm } from "~/utils/prisma/validation";
@@ -37,10 +40,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { groceryList: Object.values(groceryListItems) };
 };
 
-const checkOffItemSchema = z.object({
-  name: z.string(),
-});
+const checkOffItemSchema = z.object({ name: z.string() });
+
 const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
+
+const getGroceryTripShelfName = () => {
+  const config = ["en-us", { month: "short", day: "numeric" }] as const;
+  const date = new Date().toLocaleDateString(...config);
+  return `Grocery Trip - ${date}`;
+};
 
 export const action: ActionFunction = async ({ request }) => {
   const user = await requireLoggedInUser(request);
@@ -48,7 +56,14 @@ export const action: ActionFunction = async ({ request }) => {
   const action = formData.get("_action") as string;
   switch (action) {
     case "checkOffItem": {
-      return validateForm(formData, checkOffItemSchema, () => {}, errorFn);
+      const successFn = async ({ name }: { name: string }) => {
+        const shelfName = getGroceryTripShelfName();
+        const { id: shelfId } =
+          (await getPantryShelfByName(user.id, shelfName)) ||
+          (await createPantryShelf(user.id, shelfName));
+        return await createPantryItem(user.id, name, shelfId);
+      };
+      return validateForm(formData, checkOffItemSchema, successFn, errorFn);
     }
     default: {
       return null;
