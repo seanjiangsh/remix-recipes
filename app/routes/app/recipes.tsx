@@ -6,7 +6,11 @@ import {
 } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 
-import { createRecipe, getRecipes } from "~/models/recipes/recipes.server";
+import {
+  clearMealPlan,
+  createRecipe,
+  getRecipes,
+} from "~/models/recipes/recipes.server";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
 import CreateRecipe from "~/components/recipes/create-recipe";
@@ -37,6 +41,10 @@ export const action: ActionFunction = async ({ request }) => {
       const url = new URL(request.url);
       url.pathname = `/app/recipes/${recipe.id}`;
       return redirect(url.toString());
+    }
+    case "clearMealPlan": {
+      await clearMealPlan(user.id);
+      return redirect("/app/recipes");
     }
     default:
       break;

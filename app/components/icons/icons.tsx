@@ -224,14 +224,14 @@ export const CloseIcon = () => (
   </svg>
 );
 
-export const CheckIcon = () => (
+export const CheckCircleIcon = ({ large }: { large?: boolean }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
     strokeWidth={1.5}
     stroke="currentColor"
-    className="w-8 h-8"
+    className={large ? "w-14 h-14" : "w-8 h-8"}
   >
     <path
       strokeLinecap="round"

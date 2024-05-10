@@ -205,3 +205,9 @@ export const getPantryShelfByName = (userId: string, shelfName: string) =>
 
 export const createPantryShelf = (userId: string, shelfName: string) =>
   db.pantryShelf.create({ data: { userId, name: shelfName } });
+
+export const clearMealPlan = (userId: string) =>
+  db.recipe.updateMany({
+    where: { userId, mealPlanMultiplier: { not: null } },
+    data: { mealPlanMultiplier: null },
+  });

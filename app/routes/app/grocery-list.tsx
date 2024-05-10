@@ -13,7 +13,7 @@ import {
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 import { FieldErrors, validateForm } from "~/utils/prisma/validation";
 
-import { CheckIcon } from "~/components/icons/icons";
+import { CheckCircleIcon } from "~/components/icons/icons";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
@@ -97,7 +97,7 @@ const GroceryListItem = ({ item }: { item: recipeTypes.GroceryListItem }) => {
             value="checkOffItem"
             className="hover:text-primary"
           >
-            <CheckIcon />
+            <CheckCircleIcon />
           </button>
         </fetcher.Form>
       </div>
@@ -108,11 +108,21 @@ const GroceryListItem = ({ item }: { item: recipeTypes.GroceryListItem }) => {
 export default function GroceryList() {
   const { groceryList } = useLoaderData<typeof loader>();
 
-  return (
+  const groceryListElement = (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {groceryList.map((item) => (
         <GroceryListItem key={item.id} item={item} />
       ))}
     </div>
   );
+  const allSetElement = (
+    <div className="w-fit m-auto text-center py-16">
+      <h1 className="text-3xl">All Set!</h1>
+      <div className="text-primary flex justify-center py-4">
+        <CheckCircleIcon large />
+      </div>
+      <p>You have everything you need.</p>
+    </div>
+  );
+  return groceryList.length > 0 ? groceryListElement : allSetElement;
 }
