@@ -6,10 +6,13 @@ import {
 } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
 
-import { createRecipe, getRecipes } from "~/models/recipes/recipes.server";
+import {
+  clearMealPlan,
+  createRecipe,
+  getRecipes,
+} from "~/models/recipes/recipes.server";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
-import SearchBar from "~/components/form/search-bar";
 import CreateRecipe from "~/components/recipes/create-recipe";
 import {
   RecipeDetailWrapper,
@@ -17,12 +20,14 @@ import {
   RecipePageWrapper,
 } from "~/components/recipes/wrappers";
 import Cards from "~/components/recipes/cards";
+import RecipeSearchBar from "~/components/recipes/seasrch-bar";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
   const url = new URL(request.url);
   const query = url.searchParams.get("q");
-  const recipes = await getRecipes(user.id, query);
+  const filter = url.searchParams.get("filter");
+  const recipes = await getRecipes(user.id, query, filter);
   return json({ recipes });
 };
 
@@ -37,6 +42,10 @@ export const action: ActionFunction = async ({ request }) => {
       url.pathname = `/app/recipes/${recipe.id}`;
       return redirect(url.toString());
     }
+    case "clearMealPlan": {
+      await clearMealPlan(user.id);
+      return redirect("/app/recipes");
+    }
     default:
       break;
   }
@@ -48,7 +57,7 @@ export default function Recipes() {
   return (
     <RecipePageWrapper>
       <RecipeListWrapper>
-        <SearchBar placeholder="Search Recipes..." />
+        <RecipeSearchBar />
         <CreateRecipe />
         <Cards recipes={recipes} />
       </RecipeListWrapper>

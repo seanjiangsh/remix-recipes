@@ -4,10 +4,24 @@ import { json } from "@remix-run/node";
 import db from "~/utils/prisma/server";
 import { handleDelete } from "~/utils/prisma/utils";
 
-export const getRecipes = (userId: string, query: string | null) =>
+export const getRecipes = (
+  userId: string,
+  query: string | null,
+  filter: string | null
+) =>
   db.recipe.findMany({
-    select: { id: true, name: true, totalTime: true, imageUrl: true },
-    where: { userId, name: { contains: query ?? "", mode: "insensitive" } },
+    select: {
+      id: true,
+      name: true,
+      totalTime: true,
+      imageUrl: true,
+      mealPlanMultiplier: true,
+    },
+    where: {
+      userId,
+      name: { contains: query ?? "", mode: "insensitive" },
+      mealPlanMultiplier: filter === "mealPlanOnly" ? { not: null } : {},
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -150,3 +164,50 @@ export const saveIngredientName = (id: string, name: string) => {
     throw err;
   }
 };
+
+export const removeRecipeFromMealPlan = (recipeId: string) =>
+  db.recipe.update({
+    where: { id: recipeId },
+    data: { mealPlanMultiplier: null },
+  });
+
+export const updateRecipeMealPlan = (
+  recipeId: string,
+  mealPlanMultiplier: number
+) =>
+  db.recipe.update({
+    where: { id: recipeId },
+    data: { mealPlanMultiplier },
+  });
+
+export const getIngredientsByUserId = (userId: string) =>
+  db.ingredient.findMany({
+    where: {
+      recipe: {
+        userId,
+        mealPlanMultiplier: { not: null },
+      },
+    },
+    include: { recipe: { select: { name: true, mealPlanMultiplier: true } } },
+  });
+
+export const getPantryItemsByUserId = (userId: string) =>
+  db.pantryItem.findMany({ where: { userId } });
+
+export const createPantryItem = (
+  userId: string,
+  name: string,
+  shelfId: string
+) => db.pantryItem.create({ data: { userId, name, shelfId } });
+
+export const getPantryShelfByName = (userId: string, shelfName: string) =>
+  db.pantryShelf.findFirst({ where: { userId, name: shelfName } });
+
+export const createPantryShelf = (userId: string, shelfName: string) =>
+  db.pantryShelf.create({ data: { userId, name: shelfName } });
+
+export const clearMealPlan = (userId: string) =>
+  db.recipe.updateMany({
+    where: { userId, mealPlanMultiplier: { not: null } },
+    data: { mealPlanMultiplier: null },
+  });

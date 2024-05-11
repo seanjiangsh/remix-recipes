@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { useMatches } from "@remix-run/react";
+import { useLocation, useMatches } from "@remix-run/react";
 
 export const useMatchesData = <T>(id: string) => {
   const matches = useMatches();
@@ -23,4 +23,13 @@ export const useIsHydrated = () => {
     setIsHydrated(true);
   }, []);
   return isHydrated;
+};
+
+export const useBuildSearchParams = () => {
+  const location = useLocation();
+  return (name: string, value: string) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set(name, value);
+    return `?${searchParams.toString()}`;
+  };
 };

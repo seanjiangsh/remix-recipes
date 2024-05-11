@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import {
   ActionFunction,
   LoaderFunctionArgs,
@@ -10,6 +11,7 @@ import {
 } from "@remix-run/node";
 import {
   Form,
+  Outlet,
   isRouteErrorResponse,
   useActionData,
   useLoaderData,
@@ -21,7 +23,6 @@ import {
   createIngredient,
   deleteIngredient,
   deleteRecipe,
-  getRecipe,
   getRecipeWithIngredients,
   saveIngredientAmount,
   saveIngredientName,
@@ -37,6 +38,7 @@ import IngredientsDetail from "~/components/recipes/recipe-detail/ingredients-de
 import Instructions from "~/components/recipes/recipe-detail/instructions";
 import RecipeFooter from "~/components/recipes/recipe-detail/recipe-footer";
 import { FileInput } from "~/components/form/Inputs";
+import { canCangeRecipe } from "~/utils/abilities.server";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
@@ -101,16 +103,9 @@ const createIngredientSchema = z.object({
 const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
 
 export const action: ActionFunction = async ({ request, params }) => {
-  const user = await requireLoggedInUser(request);
   const recipeId = params.recipeId as string; // * from the route
-  const recipe = await getRecipe(recipeId);
-  if (!recipe) {
-    throw json({ message: "Recipe not found" }, { status: 404 });
-  }
-  if (recipe.userId !== user.id) {
-    const message = "You are not authorized to make changes this recipe";
-    throw json({ message }, { status: 401 });
-  }
+  await canCangeRecipe(request, recipeId);
+
   const contentType = request.headers.get("Content-Type");
   const isMuliPartFormData = contentType?.startsWith("multipart/form-data");
   let formData: FormData;
@@ -206,19 +201,29 @@ export default function RecipeDetail() {
   const actionData = useActionData<typeof action>();
   if (!recipe) return null;
 
-  const { id, name, totalTime, ingredients, instructions } = recipe;
+  const { id, name, totalTime, ingredients, instructions, mealPlanMultiplier } =
+    recipe;
   const { errors } = actionData || {};
+  const outletCtx = { recipeName: name, mealPlanMultiplier };
 
   return (
-    <Form method="post" encType="multipart/form-data">
-      <button name="_action" value="saveRecipe" className="hidden" />
-      <RecipeName id={id} name={name} errors={errors} />
-      <RecipeTotalTime totalTime={totalTime} id={id} errors={errors} />
-      <IngredientsDetail ingredients={ingredients} errors={errors} />
-      <Instructions id={id} instructions={instructions} errors={errors} />
-      <FileInput key={id} />
-      <RecipeFooter />
-    </Form>
+    <Fragment>
+      <Outlet context={outletCtx} />
+      <Form method="post" encType="multipart/form-data">
+        <button name="_action" value="saveRecipe" className="hidden" />
+        <RecipeName
+          id={id}
+          name={name}
+          mealPlanMultiplier={mealPlanMultiplier}
+          errors={errors}
+        />
+        <RecipeTotalTime totalTime={totalTime} id={id} errors={errors} />
+        <IngredientsDetail ingredients={ingredients} errors={errors} />
+        <Instructions id={id} instructions={instructions} errors={errors} />
+        <FileInput recipeId={id} />
+        <RecipeFooter />
+      </Form>
+    </Fragment>
   );
 }
 
