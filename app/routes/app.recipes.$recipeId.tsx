@@ -110,15 +110,20 @@ export const action: ActionFunction = async ({ request, params }) => {
   const isMuliPartFormData = contentType?.startsWith("multipart/form-data");
   let formData: FormData;
   if (isMuliPartFormData) {
-    const uploadHandler = unstable_composeUploadHandlers(
-      unstable_createFileUploadHandler({ directory: "public/images" }),
-      unstable_createMemoryUploadHandler()
-    );
-    formData = await unstable_parseMultipartFormData(request, uploadHandler);
-    const image = formData.get("image") as File;
-    if (image && image.size > 0) {
-      formData.set("imageUrl", `/images/${image.name}`);
+    if (process.env.NODE_ENV === "development") {
+      const uploadHandler = unstable_composeUploadHandlers(
+        unstable_createFileUploadHandler({ directory: "public/images" }),
+        unstable_createMemoryUploadHandler()
+      );
+      formData = await unstable_parseMultipartFormData(request, uploadHandler);
+      const image = formData.get("image") as File;
+      if (image && image.size > 0) {
+        formData.set("imageUrl", `/images/${image.name}`);
+      }
+    } else {
+      // TODO: move file storage to S3 in production
     }
+    return null;
   } else {
     formData = await request.formData();
   }

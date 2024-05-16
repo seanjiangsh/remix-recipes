@@ -49,7 +49,13 @@ export const FileInput = (props: FileInputProps) => {
       >
         Image
       </label>
-      <input id="image" type="file" name="image" key={recipeId} />
+      <input
+        id="image"
+        type="file"
+        name="image"
+        key={recipeId}
+        accept="image/*"
+      />
     </Fragment>
   );
 };

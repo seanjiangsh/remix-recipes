@@ -20,7 +20,7 @@ import classNames from "classnames";
 
 import { getCurrentUser } from "./utils/auth/auth.server";
 
-// import favicon from "~/assets/favicon.ico";
+import favicon from "~/assets/favicon.ico";
 import styles from "~/tailwind.css";
 import {
   DiscoverIcon,
@@ -38,7 +38,7 @@ export const meta: MetaFunction = () => [
 ];
 
 export const links: LinksFunction = () => [
-  // { rel: "icon", href: favicon },
+  { rel: "icon", href: favicon },
   { rel: "stylesheet", href: styles },
 ];
 
