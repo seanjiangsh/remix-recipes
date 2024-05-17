@@ -3,7 +3,7 @@ import { useActionData } from "@remix-run/react";
 import { z } from "zod";
 import { v4 as uuid } from "uuid";
 
-import { FieldErrors, validateForm } from "~/utils/prisma/validation";
+import { FieldErrors, validateForm } from "~/utils/validation";
 import { commitSession, getSession } from "~/utils/auth/sessions";
 import { redirectLoggedInUser } from "~/utils/auth/auth.server";
 import {

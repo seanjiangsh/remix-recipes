@@ -18,7 +18,7 @@ import {
   deleteShelfItem,
   getShelfItem,
 } from "~/models/pantry/item.server";
-import { FieldErrors, validateForm } from "~/utils/prisma/validation";
+import { FieldErrors, validateForm } from "~/utils/validation";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
 import SearchBar from "~/components/form/search-bar";

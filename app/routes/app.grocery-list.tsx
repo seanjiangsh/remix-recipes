@@ -11,7 +11,7 @@ import {
   getPantryShelfByName,
 } from "~/models/recipes/recipes.server";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
-import { FieldErrors, validateForm } from "~/utils/prisma/validation";
+import { FieldErrors, validateForm } from "~/utils/validation";
 
 import { CheckCircleIcon } from "~/components/icons/icons";
 

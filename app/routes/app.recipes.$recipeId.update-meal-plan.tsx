@@ -4,7 +4,7 @@ import ReactModal from "react-modal";
 import { z } from "zod";
 
 import { canCangeRecipe } from "~/utils/abilities.server";
-import { FieldErrors, validateForm } from "~/utils/prisma/validation";
+import { FieldErrors, validateForm } from "~/utils/validation";
 import { useRecipeContext } from "~/hooks/recipes/recipes.hooks";
 import {
   removeRecipeFromMealPlan,

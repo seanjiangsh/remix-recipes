@@ -1,3 +1,2 @@
 @sandbox-start
-# npx tsx src/utils/ddb/seed.ts
-echo "sandbox-start"
+npx tsx ddb/seed.ts

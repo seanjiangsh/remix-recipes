@@ -8,8 +8,8 @@ import { useActionData } from "@remix-run/react";
 import classNames from "classnames";
 import { z } from "zod";
 
-import { FieldErrors, validateForm } from "~/utils/prisma/validation";
-import { createUser, getUserByEmail } from "~/models/user/user.server";
+import { FieldErrors, validateForm } from "~/utils/validation";
+import { createUser, getUserByEmail } from "~/utils/ddb/user/models";
 import {
   getMagicLinkPayload,
   invalidMagicLink,
@@ -64,7 +64,7 @@ export const action: ActionFunction = async ({ request }) => {
     const { firstName, lastName } = args;
     const magicLinkPayload = getMagicLinkPayload(request);
     const { email } = magicLinkPayload;
-    const user = await createUser(email, firstName, lastName);
+    const user = await createUser({ email, firstName, lastName });
     const cookies = request.headers.get("cookie");
     const session = await getSession(cookies);
     session.unset("nonce");

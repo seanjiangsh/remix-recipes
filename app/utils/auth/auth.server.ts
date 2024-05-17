@@ -1,4 +1,4 @@
-import { getUserById } from "~/models/user/user.server";
+import { getUserById } from "~/utils/ddb/user/models";
 import { getSession } from "./sessions";
 import { redirect } from "@remix-run/node";
 

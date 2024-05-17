@@ -29,7 +29,7 @@ import {
   saveRecipe,
   saveRecipeField,
 } from "~/models/recipes/recipes.server";
-import { FieldErrors, validateForm } from "~/utils/prisma/validation";
+import { FieldErrors, validateForm } from "~/utils/validation";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
 import RecipeName from "~/components/recipes/recipe-detail/recipe-name";
