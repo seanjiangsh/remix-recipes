@@ -12,7 +12,7 @@ export default function CreateShelf() {
     <Form method="post">
       <PrimaryButton
         name="_action"
-        value="createShelf"
+        value="createNewShelf"
         isLoading={isCreatingShelf}
         className={"mt-4 w-full md:w-fit"}
       >

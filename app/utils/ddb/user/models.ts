@@ -16,14 +16,14 @@ export const createUser = async (
 };
 
 export const getUserById = async (id: string) => {
-  const user = await UserModel.get(id);
-  if (!user) return;
-  return user.toJSON();
+  const data = await UserModel.get(id);
+  if (!data) return;
+  return data.toJSON();
 };
 
 export const getUserByEmail = async (email: string) => {
-  const users = await UserModel.query("email").eq(email).exec();
-  const user = users[0];
+  const data = await UserModel.query("email").eq(email).exec();
+  const user = data[0];
   if (!user) return;
   return user;
 };

@@ -10,7 +10,6 @@ export type User = {
   createdAt: string;
   updatedAt: string;
 };
-export type UserModel = Item & User;
 
 const userSchema = new db.Schema({
   id: { type: String, hashKey: true },
@@ -30,4 +29,7 @@ const userSchema = new db.Schema({
   updatedAt: String,
 });
 
-export const UserModel = db.model<UserModel>(`${tablePrefix}-user`, userSchema);
+export const UserModel = db.model<Item & User>(
+  `${tablePrefix}-user`,
+  userSchema
+);

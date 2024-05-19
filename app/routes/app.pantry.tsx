@@ -7,7 +7,7 @@ import {
 import { z } from "zod";
 
 import {
-  createShelf,
+  createNewShelf,
   deleteShelf,
   getAllShelves,
   getShelf,
@@ -64,8 +64,8 @@ export const action: ActionFunction = async ({ request }) => {
   const action = formData.get("_action") as string;
 
   switch (action) {
-    case "createShelf": {
-      return createShelf(id);
+    case "createNewShelf": {
+      return createNewShelf(id);
     }
     case "saveShelfName": {
       const successFn = async (args: z.infer<typeof saveShelfNameSchema>) => {

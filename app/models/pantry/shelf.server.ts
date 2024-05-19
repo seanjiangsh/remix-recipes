@@ -17,7 +17,13 @@ export const getAllShelves = (userId: string, query: string | null) =>
     orderBy: { createdAt: "desc" },
   });
 
-export const createShelf = (userId: string) =>
+export const getPantryShelfByName = (userId: string, shelfName: string) =>
+  db.pantryShelf.findFirst({ where: { userId, name: shelfName } });
+
+export const createPantryShelf = (userId: string, shelfName: string) =>
+  db.pantryShelf.create({ data: { userId, name: shelfName } });
+
+export const createNewShelf = (userId: string) =>
   db.pantryShelf.create({ data: { userId, name: "New Shelf" } });
 
 export const deleteShelf = (id: string) =>
