@@ -3,15 +3,13 @@ import dynamoose from "dynamoose";
 
 import { Recipe, Ingredient, RecipeModel, IngredientModel } from "./schemas";
 
+// * Recipes
 export const createRecipe = async (userId: string) => {
   const id = randomUUID();
   const name = "New recipe";
   const instructions = "";
   const totalTime = "0 min";
-  const createdAt = new Date().toISOString();
-  const updatedAt = createdAt;
-  const times = { createdAt, updatedAt };
-  const data = { id, userId, name, instructions, totalTime, ...times };
+  const data = { id, userId, name, instructions, totalTime };
   const recipeModel = await RecipeModel.create(data);
   return recipeModel.toJSON();
 };
@@ -85,3 +83,48 @@ export const saveRecipe = async (saveRecipeData: SaveRecipeData) => {
     throw error;
   }
 };
+
+type SaveRecipeFieldData =
+  | { name: string }
+  | { totalTime: string }
+  | { instructions: string };
+export const saveRecipeField = async (
+  recipeId: string,
+  fieldData: SaveRecipeFieldData
+) => {
+  const updatedAt = new Date().toISOString();
+  const data = { ...fieldData, updatedAt };
+  const recipeModel = await RecipeModel.update(recipeId, data);
+  return recipeModel.toJSON();
+};
+
+export const deleteRecipe = (recipeId: string) => RecipeModel.delete(recipeId);
+
+// * Ingredients
+type CreateIngredientData = {
+  newIngredientName: string;
+  newIngredientAmount: string | null;
+};
+export const createIngredient = async (
+  recipeId: string,
+  createIngredientData: CreateIngredientData
+) => {
+  const { newIngredientAmount: amount, newIngredientName: name } =
+    createIngredientData;
+  const id = randomUUID();
+  const data = { id, recipeId, name, amount };
+  const ingredientModel = await IngredientModel.create(data);
+  return ingredientModel.toJSON();
+};
+
+export const saveIngredientAmount = (
+  ingredientId: string,
+  amount: string | null
+) => {
+  const updatedAt = new Date().toISOString();
+  const data = { amount, updatedAt };
+  return IngredientModel.update(ingredientId, data);
+};
+
+export const deleteIngredient = (ingredientId: string) =>
+  IngredientModel.delete(ingredientId);

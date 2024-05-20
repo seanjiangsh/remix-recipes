@@ -93,11 +93,11 @@ type CreateIngredientData = {
 };
 export const createIngredient = (
   recipeId: string,
-  createIngredientDatadata: CreateIngredientData
+  createIngredientData: CreateIngredientData
 ) => {
   try {
     const { newIngredientAmount: amount, newIngredientName: name } =
-      createIngredientDatadata;
+      createIngredientData;
     return db.ingredient.create({ data: { recipeId, amount, name } });
   } catch (err) {
     console.log(err);

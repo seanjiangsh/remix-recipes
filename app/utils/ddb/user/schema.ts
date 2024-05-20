@@ -7,29 +7,31 @@ export type User = {
   email: string;
   firstName: string;
   lastName: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
-const userSchema = new db.Schema({
-  id: { type: String, hashKey: true },
-  email: {
-    type: String,
-    index: { name: "emailIndex", type: "global", project: true },
+const userSchema = new db.Schema(
+  {
+    id: { type: String, hashKey: true },
+    email: {
+      type: String,
+      index: { name: "emailIndex", type: "global", project: true },
+    },
+    firstName: {
+      type: String,
+      index: { name: "firstNameIndex", type: "global", project: true },
+    },
+    lastName: {
+      type: String,
+      index: { name: "lastNameIndex", type: "global", project: true },
+    },
   },
-  firstName: {
-    type: String,
-    index: { name: "firstNameIndex", type: "global", project: true },
-  },
-  lastName: {
-    type: String,
-    index: { name: "lastNameIndex", type: "global", project: true },
-  },
-  createdAt: String,
-  updatedAt: String,
-});
+  { timestamps: true }
+);
 
 export const UserModel = db.model<Item & User>(
   `${tablePrefix}-user`,
-  userSchema
+  userSchema,
+  { throughput: "ON_DEMAND" }
 );

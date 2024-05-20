@@ -11,59 +11,63 @@ export type Recipe = {
   totalTime: string;
   imageUrl: string;
   mealPlanMultiplier: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
-const recipeSchema = new db.Schema({
-  id: { type: String, hashKey: true },
-  userId: {
-    type: String,
-    index: { name: "userIdIndex", type: "global", project: true },
+const recipeSchema = new db.Schema(
+  {
+    id: { type: String, hashKey: true },
+    userId: {
+      type: String,
+      index: { name: "userIdIndex", type: "global", project: true },
+    },
+    name: {
+      type: String,
+      index: { name: "nameIndex", type: "global", project: true },
+    },
+    instructions: String,
+    totalTime: String,
+    imageUrl: String,
+    mealPlanMultiplier: Number,
   },
-  name: {
-    type: String,
-    index: { name: "nameIndex", type: "global", project: true },
-  },
-  instructions: String,
-  totalTime: String,
-  imageUrl: String,
-  mealPlanMultiplier: Number,
-  createdAt: String,
-  updatedAt: String,
-});
+  { timestamps: true }
+);
 
 export const RecipeModel = db.model<Item & Recipe>(
-  `${tablePrefix}-user`,
-  recipeSchema
+  `${tablePrefix}-recipe`,
+  recipeSchema,
+  { throughput: "ON_DEMAND" }
 );
 
 // * Ingredient Schema
 export type Ingredient = {
   id: string;
   recipeId: string;
-  amount: string;
   name: string;
-  createdAt: string;
-  updatedAt: string;
+  amount: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
-const ingredientSchema = new db.Schema({
-  id: { type: String, hashKey: true },
-  recipeId: {
-    type: String,
-    index: { name: "recipeIdIndex", type: "global", project: true },
+const ingredientSchema = new db.Schema(
+  {
+    id: { type: String, hashKey: true },
+    recipeId: {
+      type: String,
+      index: { name: "recipeIdIndex", type: "global", project: true },
+    },
+    name: {
+      type: String,
+      index: { name: "nameIndex", type: "global", project: true },
+    },
+    amount: String,
   },
-  name: {
-    type: String,
-    index: { name: "nameIndex", type: "global", project: true },
-  },
-  amount: String,
-  createdAt: String,
-  updatedAt: String,
-});
+  { timestamps: true }
+);
 
 export const IngredientModel = db.model<Item & Ingredient>(
-  `${tablePrefix}-user`,
-  ingredientSchema
+  `${tablePrefix}-ingredient`,
+  ingredientSchema,
+  { throughput: "ON_DEMAND" }
 );

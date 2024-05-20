@@ -7,9 +7,7 @@ export const createUser = async (
 ) => {
   const { email, firstName, lastName } = args;
   const id = randomUUID();
-  const createdAt = new Date().toISOString();
-  const updatedAt = createdAt;
-  const data = { id, email, firstName, lastName, createdAt, updatedAt };
+  const data = { id, email, firstName, lastName };
   const userModel = new UserModel(data);
   await userModel.save();
   return userModel.toJSON();
