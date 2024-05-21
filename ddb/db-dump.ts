@@ -1,25 +1,18 @@
-import { DynamoDB } from "@aws-sdk/client-dynamodb";
+import { ModelType } from "dynamoose/dist/General";
+import { Item } from "dynamoose/dist/Item";
 
-const config = { endpoint: "http://localhost:5555", region: "ap-northeast-1" };
-const db = new DynamoDB(config);
+import { UserModel } from "../app/utils/ddb/user/schema";
+import { RecipeModel } from "../app/utils/ddb/recipe/schemas";
 
-db.listTables({}, (err, data) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  // console.log(data);
-  // * show all items in the table
-  data?.TableNames?.forEach((TableName) => {
-    db.scan({ TableName }, (err, data) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      const { Items } = data || {};
-      if (!Items?.length) return;
-      console.log(`Table: ${TableName}`);
-      console.table(Items);
-    });
-  });
-});
+const dbDump = async () => {
+  const models = [UserModel, RecipeModel];
+  for (const model of models) await tableDump(model);
+};
+
+const tableDump = async (model: ModelType<Item>) => {
+  const data = await model.scan().all().exec();
+  console.log(model.table().name);
+  console.table(data.toJSON());
+};
+
+dbDump();

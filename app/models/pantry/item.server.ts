@@ -14,5 +14,11 @@ export const createShelfItem = (
 ) =>
   handleCreate(() => db.pantryItem.create({ data: { userId, name, shelfId } }));
 
+export const createPantryItem = (
+  userId: string,
+  name: string,
+  shelfId: string
+) => db.pantryItem.create({ data: { userId, name, shelfId } });
+
 export const deleteShelfItem = (id: string) =>
   handleDelete(() => db.pantryItem.delete({ where: { id } }));

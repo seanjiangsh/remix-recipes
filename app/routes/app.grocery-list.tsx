@@ -3,15 +3,15 @@ import { useFetcher, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
 import * as recipeTypes from "~/types/recipe/recipes";
-import {
-  createPantryItem,
-  getIngredientsByUserId,
-} from "~/models/recipes/recipes.server";
+import { getIngredientsByUserId } from "~/models/recipes/recipes.server";
 import {
   createPantryShelf,
   getPantryShelfByName,
 } from "~/models/pantry/shelf.server";
-import { getPantryItemsByUserId } from "~/models/pantry/item.server";
+import {
+  getPantryItemsByUserId,
+  createPantryItem,
+} from "~/models/pantry/item.server";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 import { FieldErrors, validateForm } from "~/utils/validation";
 

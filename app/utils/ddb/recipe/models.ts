@@ -1,23 +1,13 @@
 import { randomUUID } from "crypto";
 import dynamoose from "dynamoose";
+import { json } from "@remix-run/node";
 
 import { Recipe, Ingredient, RecipeModel, IngredientModel } from "./schemas";
 
 // * Recipes
-export const createRecipe = async (userId: string) => {
-  const id = randomUUID();
-  const name = "New recipe";
-  const instructions = "";
-  const totalTime = "0 min";
-  const data = { id, userId, name, instructions, totalTime };
-  const recipeModel = await RecipeModel.create(data);
-  return recipeModel.toJSON();
-};
-
 export const getRecipe = async (recipeId: string) => {
   const data = await RecipeModel.get(recipeId);
-  if (!data) return;
-  return data.toJSON();
+  return data?.toJSON() as Recipe | undefined;
 };
 
 type GetRecipesConditions = { name?: string; mealPlanOnly?: boolean };
@@ -28,10 +18,9 @@ export const getRecipes = async (
   const { name, mealPlanOnly } = conditions;
   let query = RecipeModel.query("userId").eq(userId);
   if (name) query = query.where("name").contains(name);
-  if (mealPlanOnly) query = query.where("mealPlanMultiplier").not().eq(null);
+  if (mealPlanOnly) query = query.where("mealPlanMultiplier").gt(0);
   const data = await query.exec();
-  if (!data) return;
-  return data.toJSON();
+  return data.toJSON() as Array<Recipe>;
 };
 
 type RecipeWithIngredients = Recipe & { ingredients: Array<Ingredient> };
@@ -49,6 +38,16 @@ export const getRecipeWithIngredients = async (
   return { ...recipe, ingredients };
 };
 
+export const createRecipe = async (userId: string) => {
+  const id = randomUUID();
+  const name = "New recipe";
+  const instructions = "";
+  const totalTime = "0 min";
+  const data = { id, userId, name, instructions, totalTime };
+  const recipeModel = await RecipeModel.create(data);
+  return recipeModel.toJSON() as Recipe;
+};
+
 type SaveRecipeData = {
   id: string;
   name: string;
@@ -56,23 +55,25 @@ type SaveRecipeData = {
   instructions: string;
   ingredientIds?: Array<string>;
   ingredientNames?: Array<string>;
-  ingredientAmounts?: Array<string | null>;
+  ingredientAmounts?: Array<string>;
 };
 export const saveRecipe = async (saveRecipeData: SaveRecipeData) => {
   try {
     const { id: recipeId, name, totalTime, instructions } = saveRecipeData;
+    const recipe = await getRecipe(recipeId);
+    if (!recipe) return json({ error: "Recipe not found" }, { status: 404 });
+
     const { ingredientAmounts, ingredientNames } = saveRecipeData;
-    const updatedAt = new Date().toISOString();
     // * recipe
     const recipeTranId = { id: recipeId };
-    const recipeData = { $SET: { name, totalTime, instructions, updatedAt } };
+    const recipeData = { $SET: { name, totalTime, instructions } };
     const recipeTran = RecipeModel.transaction.update(recipeTranId, recipeData);
     // * ingredients
     const ingredientIds = saveRecipeData.ingredientIds || [];
     const ingredientTrans = ingredientIds.map((id, idx) => {
       const amount = ingredientAmounts?.[idx] || "";
       const name = ingredientNames?.[idx] || "";
-      const data = { recipeId, amount, name, updatedAt };
+      const data = { recipeId, amount, name };
       const tranData = { $SET: data };
       return IngredientModel.transaction.update({ id }, tranData);
     });
@@ -92,18 +93,41 @@ export const saveRecipeField = async (
   recipeId: string,
   fieldData: SaveRecipeFieldData
 ) => {
-  const updatedAt = new Date().toISOString();
-  const data = { ...fieldData, updatedAt };
-  const recipeModel = await RecipeModel.update(recipeId, data);
-  return recipeModel.toJSON();
+  const recipeModel = await RecipeModel.update(recipeId, fieldData);
+  return recipeModel.toJSON() as Recipe;
 };
 
 export const deleteRecipe = (recipeId: string) => RecipeModel.delete(recipeId);
 
+// * Recipe & Meal Plan
+export const updateRecipeMealPlan = async (
+  recipeId: string,
+  mealPlanMultiplier: number
+) => {
+  const recipe = await RecipeModel.update(recipeId, { mealPlanMultiplier });
+  return recipe.toJSON() as Recipe;
+};
+
+export const removeRecipeFromMealPlan = async (recipeId: string) => {
+  const recipe = await RecipeModel.update(recipeId, { mealPlanMultiplier: 0 });
+  return recipe.toJSON() as Recipe;
+};
+
+export const clearMealPlan = async (userId: string) => {
+  const recipesHasMealPlan = await getRecipes(userId, { mealPlanOnly: true });
+  const ids = recipesHasMealPlan.map(({ id }) => id);
+  await Promise.all(ids.map(removeRecipeFromMealPlan));
+};
+
 // * Ingredients
+export const getIngredientsByUserId = async (userId: string) => {
+  const data = await IngredientModel.query("userId").eq(userId).exec();
+  return data.toJSON() as Array<Ingredient>;
+};
+
 type CreateIngredientData = {
   newIngredientName: string;
-  newIngredientAmount: string | null;
+  newIngredientAmount: string;
 };
 export const createIngredient = async (
   recipeId: string,
@@ -114,17 +138,24 @@ export const createIngredient = async (
   const id = randomUUID();
   const data = { id, recipeId, name, amount };
   const ingredientModel = await IngredientModel.create(data);
-  return ingredientModel.toJSON();
+  return ingredientModel.toJSON() as Ingredient;
 };
 
-export const saveIngredientAmount = (
+export const saveIngredientAmount = async (
   ingredientId: string,
-  amount: string | null
+  amount: string
 ) => {
-  const updatedAt = new Date().toISOString();
-  const data = { amount, updatedAt };
-  return IngredientModel.update(ingredientId, data);
+  const ingredient = await IngredientModel.update(ingredientId, { amount });
+  return ingredient.toJSON() as Ingredient;
 };
 
-export const deleteIngredient = (ingredientId: string) =>
+export const saveIngredientName = async (
+  ingredientId: string,
+  name: string
+) => {
+  const ingredient = await IngredientModel.update(ingredientId, { name });
+  return ingredient.toJSON() as Ingredient;
+};
+
+export const deleteIngredient = async (ingredientId: string) =>
   IngredientModel.delete(ingredientId);
