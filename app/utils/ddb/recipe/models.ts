@@ -17,7 +17,7 @@ export const getRecipes = async (
 ) => {
   const { name, mealPlanOnly } = conditions;
   let query = RecipeModel.query("userId").eq(userId);
-  if (name) query = query.where("name").contains(name);
+  if (name) query = query.where("lowercaseName").contains(name.toLowerCase());
   if (mealPlanOnly) query = query.where("mealPlanMultiplier").gt(0);
   const data = await query.exec();
   return data.toJSON() as Array<Recipe>;
@@ -66,7 +66,8 @@ export const saveRecipe = async (saveRecipeData: SaveRecipeData) => {
     const { ingredientAmounts, ingredientNames } = saveRecipeData;
     // * recipe
     const recipeTranId = { id: recipeId };
-    const recipeData = { $SET: { name, totalTime, instructions } };
+    const names = { name, lowercaseName: name.toLowerCase() };
+    const recipeData = { $SET: { ...names, totalTime, instructions } };
     const recipeTran = RecipeModel.transaction.update(recipeTranId, recipeData);
     // * ingredients
     const ingredientIds = saveRecipeData.ingredientIds || [];
@@ -93,24 +94,37 @@ export const saveRecipeField = async (
   recipeId: string,
   fieldData: SaveRecipeFieldData
 ) => {
+  const recipe = await getRecipe(recipeId);
+  if (!recipe) return json({ error: "Recipe not found" }, { status: 404 });
   const recipeModel = await RecipeModel.update(recipeId, fieldData);
   return recipeModel.toJSON() as Recipe;
 };
 
-export const deleteRecipe = (recipeId: string) => RecipeModel.delete(recipeId);
+export const deleteRecipe = async (recipeId: string) => {
+  const recipe = await getRecipe(recipeId);
+  if (!recipe) return json({ error: "Recipe not found" }, { status: 404 });
+  await RecipeModel.delete(recipeId);
+  return recipe;
+};
 
 // * Recipe & Meal Plan
 export const updateRecipeMealPlan = async (
   recipeId: string,
   mealPlanMultiplier: number
 ) => {
-  const recipe = await RecipeModel.update(recipeId, { mealPlanMultiplier });
-  return recipe.toJSON() as Recipe;
+  const recipe = await getRecipe(recipeId);
+  if (!recipe) return json({ error: "Recipe not found" }, { status: 404 });
+  const newRecipe = await RecipeModel.update(recipeId, { mealPlanMultiplier });
+  return newRecipe.toJSON() as Recipe;
 };
 
 export const removeRecipeFromMealPlan = async (recipeId: string) => {
-  const recipe = await RecipeModel.update(recipeId, { mealPlanMultiplier: 0 });
-  return recipe.toJSON() as Recipe;
+  const recipe = await getRecipe(recipeId);
+  if (!recipe) return json({ error: "Recipe not found" }, { status: 404 });
+  const newRecipe = await RecipeModel.update(recipeId, {
+    mealPlanMultiplier: 0,
+  });
+  return newRecipe.toJSON() as Recipe;
 };
 
 export const clearMealPlan = async (userId: string) => {
@@ -120,6 +134,11 @@ export const clearMealPlan = async (userId: string) => {
 };
 
 // * Ingredients
+export const getIngredient = async (ingredientId: string) => {
+  const data = await IngredientModel.get(ingredientId);
+  return data?.toJSON() as Ingredient | undefined;
+};
+
 export const getIngredientsByUserId = async (userId: string) => {
   const data = await IngredientModel.query("userId").eq(userId).exec();
   return data.toJSON() as Array<Ingredient>;
@@ -145,17 +164,28 @@ export const saveIngredientAmount = async (
   ingredientId: string,
   amount: string
 ) => {
-  const ingredient = await IngredientModel.update(ingredientId, { amount });
-  return ingredient.toJSON() as Ingredient;
+  const ingredient = await getIngredient(ingredientId);
+  if (!ingredient)
+    return json({ error: "Ingredient not found" }, { status: 404 });
+  const newIngredient = await IngredientModel.update(ingredientId, { amount });
+  return newIngredient.toJSON() as Ingredient;
 };
 
 export const saveIngredientName = async (
   ingredientId: string,
   name: string
 ) => {
-  const ingredient = await IngredientModel.update(ingredientId, { name });
-  return ingredient.toJSON() as Ingredient;
+  const ingredient = await getIngredient(ingredientId);
+  if (!ingredient)
+    return json({ error: "Ingredient not found" }, { status: 404 });
+  const newIngredient = await IngredientModel.update(ingredientId, { name });
+  return newIngredient.toJSON() as Ingredient;
 };
 
-export const deleteIngredient = async (ingredientId: string) =>
-  IngredientModel.delete(ingredientId);
+export const deleteIngredient = async (ingredientId: string) => {
+  const ingredient = await getIngredient(ingredientId);
+  if (!ingredient)
+    return json({ error: "Ingredient not found" }, { status: 404 });
+  await IngredientModel.delete(ingredientId);
+  return ingredient;
+};

@@ -7,6 +7,7 @@ export type Recipe = {
   id: string;
   userId: string;
   name: string;
+  lowercaseName: string;
   instructions: string;
   totalTime: string;
   imageUrl: string;
@@ -25,6 +26,10 @@ const recipeSchema = new db.Schema(
     name: {
       type: String,
       index: { name: "nameIndex", type: "global", project: true },
+    },
+    lowercaseName: {
+      type: String,
+      index: { name: "lowercaseNameIndex", type: "global", project: true },
     },
     instructions: String,
     totalTime: String,
