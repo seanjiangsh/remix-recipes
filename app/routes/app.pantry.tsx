@@ -14,9 +14,9 @@ import {
   saveShelfName,
 } from "~/models/pantry/shelf.server";
 import {
-  createShelfItem,
-  deleteShelfItem,
-  getShelfItem,
+  createPantryItem,
+  deletePantryItem,
+  getPantryItem,
 } from "~/models/pantry/item.server";
 import { FieldErrors, validateForm } from "~/utils/validation";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
@@ -99,18 +99,18 @@ export const action: ActionFunction = async ({ request }) => {
       };
       return validateForm(formData, deleteShelfSchema, successFn, errorFn);
     }
-    case "createShelfItem": {
+    case "createPantryItem": {
       return validateForm(
         formData,
         createShelfItemSchema,
-        ({ shelfId, itemName }) => createShelfItem(id, shelfId, itemName),
+        ({ shelfId, itemName }) => createPantryItem(id, shelfId, itemName),
         errorFn
       );
     }
-    case "deleteShelfItem": {
+    case "deletePantryItem": {
       const successFn = async (args: z.infer<typeof deleteShelfItemSchema>) => {
         const { itemId } = args;
-        const item = await getShelfItem(itemId);
+        const item = await getPantryItem(itemId);
         if (!item) {
           throw json({ message: "Shelf item not found" }, { status: 404 });
         }
@@ -119,7 +119,7 @@ export const action: ActionFunction = async ({ request }) => {
             "This shelf item does not belong to you, you can't delete it.";
           throw json({ message }, { status: 401 });
         }
-        return deleteShelfItem(itemId);
+        return deletePantryItem(itemId);
       };
       return validateForm(formData, deleteShelfItemSchema, successFn, errorFn);
     }

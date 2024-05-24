@@ -54,7 +54,7 @@ export const createNewPantryShelf = async (
   const id = randomUUID();
   const name = shelfName || "New Shelf";
   const lowercaseName = name.toLowerCase();
-  const data = { id, userId, name, lowercaseName };
+  const data: PantryShelf = { id, userId, name, lowercaseName };
   const shelfModel = await PantryShelfModel.create(data);
   return shelfModel.toJSON() as PantryShelf;
 };
@@ -76,3 +76,30 @@ export const savePantryShelfName = async (shelfId: string, name: string) => {
 };
 
 // * Pantry Items
+export const getPantryItem = async (itemId: string) => {
+  const data = await PantryItemModel.get(itemId);
+  return data?.toJSON() as PantryItem | undefined;
+};
+
+export const getPantryItemsByUserId = async (userId: string) => {
+  const items = await PantryItemModel.query("userId").eq(userId).exec();
+  return items.map((i) => i.toJSON() as PantryItem);
+};
+
+export const createPantryItem = async (
+  userId: string,
+  shelfId: string,
+  name: string
+) => {
+  const id = randomUUID();
+  const data: PantryItem = { id, name, shelfId, userId, amount: "" };
+  const itemModel = await PantryItemModel.create(data);
+  return itemModel.toJSON() as PantryItem;
+};
+
+export const deletePantryItem = async (itemId: string) => {
+  const item = await PantryItemModel.get(itemId);
+  if (!item) return json({ error: "Item not found" }, { status: 404 });
+  await item.delete();
+  return item.toJSON() as PantryItem;
+};

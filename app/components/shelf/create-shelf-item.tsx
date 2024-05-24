@@ -33,9 +33,9 @@ export default function CreatShelfItem(props: ShelfProps) {
     // * submit manually via fetcher
     ev.preventDefault();
     const submitValue = {
-      _action: "createShelfItem",
-      shelfId: id,
+      _action: "createPantryItem",
       itemName: itemNameIput.value,
+      shelfId: id,
     };
     const options: SubmitOptions = { method: "post" };
     createShelfItemFetcher.submit(submitValue, options);
@@ -69,7 +69,7 @@ export default function CreatShelfItem(props: ShelfProps) {
       </div>
       <button
         name="_action"
-        value="createShelfItem"
+        value="createPantryItem"
         className={classNames(
           "ml-4 opacity-0 hover:opacity-100 focus:opacity-100",
           "peer-focus-within:opacity-100"

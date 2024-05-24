@@ -63,7 +63,7 @@ export const action: ActionFunction = async ({ request }) => {
         const { id: shelfId } =
           (await getPantryShelfByName(user.id, shelfName)) ||
           (await createPantryShelf(user.id, shelfName));
-        return await createPantryItem(user.id, name, shelfId);
+        return await createPantryItem(user.id, shelfId, name);
       };
       return validateForm(formData, checkOffItemSchema, successFn, errorFn);
     }

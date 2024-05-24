@@ -20,7 +20,7 @@ export default function ShelfItem({ item }: ShelfItemProps) {
         <deleteItemFetcher.Form method="post" className="flex items-center">
           <p className="w-full">{name}</p>
           {!isOptimistic && (
-            <button name="_action" value="deleteShelfItem">
+            <button name="_action" value="deletePantryItem">
               <TrashIcon />
             </button>
           )}
