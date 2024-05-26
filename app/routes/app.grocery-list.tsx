@@ -3,15 +3,13 @@ import { useFetcher, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
 import * as recipeTypes from "~/types/recipe/recipes";
-import { getIngredientsByUserId } from "~/models/recipes/recipes.server";
+import { getRecipesWithIngredients } from "~/utils/ddb/recipe/models";
 import {
-  createPantryShelf,
+  createNewPantryShelf,
   getPantryShelfByName,
-} from "~/models/pantry/shelf.server";
-import {
   getPantryItemsByUserId,
   createPantryItem,
-} from "~/models/pantry/item.server";
+} from "~/utils/ddb/pantry/models";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 import { FieldErrors, validateForm } from "~/utils/validation";
 
@@ -19,8 +17,9 @@ import { CheckCircleIcon } from "~/components/icons/icons";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
-  const ingredients = await getIngredientsByUserId(user.id);
+  const recipes = await getRecipesWithIngredients(user.id);
   const pantryItems = await getPantryItemsByUserId(user.id);
+  const ingredients = recipes.flatMap(({ ingredients }) => ingredients);
   const missingIngredients = ingredients.filter(
     (ingredient) =>
       !pantryItems.find(
@@ -30,7 +29,9 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const groceryListItems = missingIngredients.reduce<{
     [key: string]: recipeTypes.GroceryListItem;
   }>((p, c) => {
-    const { id, recipe, amount } = c;
+    const { id, recipeId, amount } = c;
+    const recipe = recipes.find(({ id }) => id === recipeId);
+    if (!recipe) throw new Error("Recipe not found");
     const name = c.name.toLowerCase();
     const { name: recipeName, mealPlanMultiplier: multiplier } = recipe;
     if (multiplier === null) throw new Error("Multiplier is unexpectedly null");
@@ -62,7 +63,7 @@ export const action: ActionFunction = async ({ request }) => {
         const shelfName = getGroceryTripShelfName();
         const { id: shelfId } =
           (await getPantryShelfByName(user.id, shelfName)) ||
-          (await createPantryShelf(user.id, shelfName));
+          (await createNewPantryShelf(user.id, shelfName));
         return await createPantryItem(user.id, shelfId, name);
       };
       return validateForm(formData, checkOffItemSchema, successFn, errorFn);

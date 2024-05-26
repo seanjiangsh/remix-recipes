@@ -20,15 +20,15 @@ import {
 import { z } from "zod";
 
 import {
-  createIngredient,
-  deleteIngredient,
-  deleteRecipe,
   getRecipeWithIngredients,
-  saveIngredientAmount,
-  saveIngredientName,
   saveRecipe,
   saveRecipeField,
-} from "~/models/recipes/recipes.server";
+  deleteRecipe,
+  createIngredient,
+  saveIngredientAmount,
+  deleteIngredient,
+  saveIngredientName,
+} from "~/utils/ddb/recipe/models";
 import { FieldErrors, validateForm } from "~/utils/validation";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 

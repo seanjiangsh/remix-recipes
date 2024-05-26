@@ -7,17 +7,15 @@ import {
 import { z } from "zod";
 
 import {
-  createNewShelf,
-  deleteShelf,
-  getAllShelves,
-  getShelf,
-  saveShelfName,
-} from "~/models/pantry/shelf.server";
-import {
+  getPantryShelf,
+  getAllPantryShelves,
+  createNewPantryShelf,
+  savePantryShelfName,
+  deletePantryShelf,
+  getPantryItem,
   createPantryItem,
   deletePantryItem,
-  getPantryItem,
-} from "~/models/pantry/item.server";
+} from "~/utils/ddb/pantry/models";
 import { FieldErrors, validateForm } from "~/utils/validation";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
@@ -35,8 +33,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const { id } = user;
   const url = new URL(request.url);
-  const query = url.searchParams.get("q");
-  const shelves = await getAllShelves(id, query);
+  const name = url.searchParams.get("q") || undefined;
+  const shelves = await getAllPantryShelves(id, name);
   return json({ shelves });
 };
 
@@ -65,37 +63,33 @@ export const action: ActionFunction = async ({ request }) => {
 
   switch (action) {
     case "createNewShelf": {
-      return createNewShelf(id);
+      return createNewPantryShelf(id);
     }
     case "saveShelfName": {
       const successFn = async (args: z.infer<typeof saveShelfNameSchema>) => {
         const { shelfId, shelfName } = args;
-        const shelf = await getShelf(shelfId);
-        if (!shelf) {
-          throw json({ message: "Shelf not found" }, { status: 404 });
-        }
+        const shelf = await getPantryShelf(shelfId);
+        if (!shelf) throw json({ message: "Shelf not found" }, { status: 404 });
         if (shelf.userId !== id) {
           const message =
             "This shelf does not belong to you, you can't rename it.";
           throw json({ message }, { status: 401 });
         }
-        return saveShelfName(shelfId, shelfName);
+        return savePantryShelfName(shelfId, shelfName);
       };
       return validateForm(formData, saveShelfNameSchema, successFn, errorFn);
     }
     case "deleteShelf": {
       const successFn = async (args: z.infer<typeof deleteShelfSchema>) => {
         const { shelfId } = args;
-        const shelf = await getShelf(shelfId);
-        if (!shelf) {
-          throw json({ message: "Shelf not found" }, { status: 404 });
-        }
+        const shelf = await getPantryShelf(shelfId);
+        if (!shelf) throw json({ message: "Shelf not found" }, { status: 404 });
         if (shelf.userId !== id) {
           const message =
             "This shelf does not belong to you, you can't delete it.";
           throw json({ message }, { status: 401 });
         }
-        return deleteShelf(shelfId);
+        return deletePantryShelf(shelfId);
       };
       return validateForm(formData, deleteShelfSchema, successFn, errorFn);
     }
@@ -111,9 +105,8 @@ export const action: ActionFunction = async ({ request }) => {
       const successFn = async (args: z.infer<typeof deleteShelfItemSchema>) => {
         const { itemId } = args;
         const item = await getPantryItem(itemId);
-        if (!item) {
+        if (!item)
           throw json({ message: "Shelf item not found" }, { status: 404 });
-        }
         if (item.userId !== id) {
           const message =
             "This shelf item does not belong to you, you can't delete it.";

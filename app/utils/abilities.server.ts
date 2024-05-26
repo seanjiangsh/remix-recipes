@@ -1,6 +1,6 @@
 import { json } from "@remix-run/node";
 
-import { getRecipe } from "~/models/recipes/recipes.server";
+import { getRecipe } from "./ddb/recipe/models";
 import { requireLoggedInUser } from "./auth/auth.server";
 
 export const canCangeRecipe = async (request: Request, recipeId: string) => {

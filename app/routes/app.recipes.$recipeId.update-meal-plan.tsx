@@ -7,9 +7,9 @@ import { canCangeRecipe } from "~/utils/abilities.server";
 import { FieldErrors, validateForm } from "~/utils/validation";
 import { useRecipeContext } from "~/hooks/recipes/recipes.hooks";
 import {
-  removeRecipeFromMealPlan,
   updateRecipeMealPlan,
-} from "~/models/recipes/recipes.server";
+  removeRecipeFromMealPlan,
+} from "~/utils/ddb/recipe/models";
 
 import { DeleteButton, PrimaryButton } from "~/components/buttons/buttons";
 import { IconInput } from "~/components/form/Inputs";

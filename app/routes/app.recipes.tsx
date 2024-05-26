@@ -7,10 +7,10 @@ import {
 import { Outlet, useLoaderData } from "@remix-run/react";
 
 import {
-  clearMealPlan,
-  createRecipe,
   getRecipes,
-} from "~/models/recipes/recipes.server";
+  createRecipe,
+  clearMealPlan,
+} from "~/utils/ddb/recipe/models";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 
 import CreateRecipe from "~/components/recipes/create-recipe";
@@ -25,9 +25,10 @@ import RecipeSearchBar from "~/components/recipes/seasrch-bar";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
   const url = new URL(request.url);
-  const query = url.searchParams.get("q");
-  const filter = url.searchParams.get("filter");
-  const recipes = await getRecipes(user.id, query, filter);
+  const name = url.searchParams.get("q") || undefined;
+  const mealPlanOnly = url.searchParams.get("filter") === "mealPlanOnly";
+  const conditions = { name, mealPlanOnly };
+  const recipes = await getRecipes(user.id, conditions);
   return json({ recipes });
 };
 

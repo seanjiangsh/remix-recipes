@@ -38,6 +38,20 @@ export const getRecipeWithIngredients = async (
   return { ...recipe, ingredients };
 };
 
+export const getRecipesWithIngredients = async (userId: string) => {
+  const recipes = await getRecipes(userId, { mealPlanOnly: true });
+  const recipesWithIngredients = await Promise.all(
+    recipes.map(async (recipe) => {
+      const ingredientsData = await IngredientModel.query("recipeId")
+        .eq(recipe.id)
+        .exec();
+      const ingredients = ingredientsData.toJSON() as Array<Ingredient>;
+      return { ...recipe, ingredients };
+    })
+  );
+  return recipesWithIngredients;
+};
+
 export const createRecipe = async (userId: string) => {
   const id = randomUUID();
   const name = "New recipe";
@@ -49,17 +63,19 @@ export const createRecipe = async (userId: string) => {
 };
 
 type SaveRecipeData = {
-  id: string;
   name: string;
   totalTime: string;
   instructions: string;
   ingredientIds?: Array<string>;
   ingredientNames?: Array<string>;
-  ingredientAmounts?: Array<string>;
+  ingredientAmounts?: Array<string | null>;
 };
-export const saveRecipe = async (saveRecipeData: SaveRecipeData) => {
+export const saveRecipe = async (
+  recipeId: string,
+  saveRecipeData: SaveRecipeData
+) => {
   try {
-    const { id: recipeId, name, totalTime, instructions } = saveRecipeData;
+    const { name, totalTime, instructions } = saveRecipeData;
     const recipe = await getRecipe(recipeId);
     if (!recipe) return json({ error: "Recipe not found" }, { status: 404 });
 
@@ -139,21 +155,16 @@ export const getIngredient = async (ingredientId: string) => {
   return data?.toJSON() as Ingredient | undefined;
 };
 
-export const getIngredientsByUserId = async (userId: string) => {
-  const data = await IngredientModel.query("userId").eq(userId).exec();
-  return data.toJSON() as Array<Ingredient>;
-};
-
 type CreateIngredientData = {
   newIngredientName: string;
-  newIngredientAmount: string;
+  newIngredientAmount: string | null;
 };
 export const createIngredient = async (
   recipeId: string,
   createIngredientData: CreateIngredientData
 ) => {
-  const { newIngredientAmount: amount, newIngredientName: name } =
-    createIngredientData;
+  const amount = createIngredientData.newIngredientAmount || "";
+  const { newIngredientName: name } = createIngredientData;
   const id = randomUUID();
   const data = { id, recipeId, name, amount };
   const ingredientModel = await IngredientModel.create(data);
@@ -162,11 +173,12 @@ export const createIngredient = async (
 
 export const saveIngredientAmount = async (
   ingredientId: string,
-  amount: string
+  ingredientAmount: string | null
 ) => {
   const ingredient = await getIngredient(ingredientId);
   if (!ingredient)
     return json({ error: "Ingredient not found" }, { status: 404 });
+  const amount = ingredientAmount || "";
   const newIngredient = await IngredientModel.update(ingredientId, { amount });
   return newIngredient.toJSON() as Ingredient;
 };
