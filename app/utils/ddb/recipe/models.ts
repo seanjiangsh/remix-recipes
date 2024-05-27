@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import dynamoose from "dynamoose";
 import { json } from "@remix-run/node";
 
-import { Recipe, Ingredient, RecipeModel, IngredientModel } from "./schemas";
+import { Recipe, Ingredient, RecipeModel, IngredientModel } from "./schema";
 
 // * Recipes
 export const getRecipe = async (recipeId: string) => {

@@ -2,6 +2,16 @@ import { PrismaClient } from "@prisma/client";
 
 const db = new PrismaClient();
 
+const createUser = () => {
+  return db.user.create({
+    data: {
+      email: "test@test.com",
+      firstName: "Sean",
+      lastName: "Jiang",
+    },
+  });
+};
+
 const getShelves = (userId: string) => [
   {
     name: "Dairy",
@@ -36,16 +46,6 @@ const getShelves = (userId: string) => [
     },
   },
 ];
-
-const createUser = () => {
-  return db.user.create({
-    data: {
-      email: "test@test.com",
-      firstName: "Sean",
-      lastName: "Jiang",
-    },
-  });
-};
 
 const getRecipes = (userId: string) => {
   return [

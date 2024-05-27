@@ -4,12 +4,10 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix build",
-    "dev:remix": "remix dev --manual -c \"arc sandbox -p 3000\"",
-    "dev:db-dump": "npx tsx ddb/db-dump.ts",
-    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "remix-serve ./build/index.js",
-    "typecheck": "tsc"
+    "dev": "remix dev --manual -c \"arc sandbox -p 3000\"",
+    "dev:db-dump": "npx tsx app/utils/ddb/db-dump.ts",
+    "build": "tsc && remix build",
+    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint ."
   },
   "dependencies": {
     "@getbrevo/brevo": "2.1.1",

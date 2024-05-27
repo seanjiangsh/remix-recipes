@@ -92,7 +92,7 @@ export const createPantryItem = async (
   name: string
 ) => {
   const id = randomUUID();
-  const data: PantryItem = { id, name, shelfId, userId, amount: "" };
+  const data: PantryItem = { id, name, shelfId, userId };
   const itemModel = await PantryItemModel.create(data);
   return itemModel.toJSON() as PantryItem;
 };

@@ -41,7 +41,6 @@ export type PantryItem = {
   name: string;
   shelfId: string;
   userId: string;
-  amount: string;
 };
 
 const pantryItemSchema = new db.Schema(
@@ -59,7 +58,6 @@ const pantryItemSchema = new db.Schema(
       type: String,
       index: { name: "userIdIndex", type: "global", project: true },
     },
-    amount: String,
   },
   { timestamps: true }
 );
