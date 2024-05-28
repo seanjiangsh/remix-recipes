@@ -8,6 +8,8 @@ export type PantryShelf = {
   userId: string;
   name: string;
   lowercaseName: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 const pantryShelfSchema = new db.Schema(
@@ -41,6 +43,8 @@ export type PantryItem = {
   name: string;
   shelfId: string;
   userId: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 const pantryItemSchema = new db.Schema(

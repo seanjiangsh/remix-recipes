@@ -1,4 +1,4 @@
-import { Form, useFetcher, useSearchParams } from "@remix-run/react";
+import { useFetcher, useSearchParams } from "@remix-run/react";
 
 import { DeleteButton, PrimaryButton } from "~/components/buttons/buttons";
 import { PlusIcon } from "../icons/icons";
@@ -20,7 +20,7 @@ export default function CreateRecipe() {
     >
       <PlusIcon />
       <span className="ml-2">
-        {isCreatingRecipe ? "Creating Recipe" : "Create Recipe"}
+        {isCreatingRecipe ? "Creating Recipe..." : "Create Recipe"}
       </span>
     </PrimaryButton>
   );
@@ -31,8 +31,8 @@ export default function CreateRecipe() {
   );
 
   return (
-    <Form method="post" className="mt-4" reloadDocument>
+    <createRecipeFetcher.Form method="post" className="mt-4">
       {isMealPlanOnlyOn ? deleteMealPlanButton : createRecipeButton}
-    </Form>
+    </createRecipeFetcher.Form>
   );
 }

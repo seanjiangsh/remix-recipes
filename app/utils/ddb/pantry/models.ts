@@ -7,6 +7,7 @@ import {
   PantryItem,
   PantryItemModel,
 } from "./schema";
+import { sortDataByCreatedDate } from "../utils";
 
 // * Pantry Shelves
 export const getPantryShelf = async (shelfId: string) => {
@@ -22,15 +23,11 @@ export const getAllPantryShelves = async (
   let shelfQuery = PantryShelfModel.query("userId").eq(userId);
   if (name) shelfQuery = shelfQuery.where("lowercaseName").contains(name);
   const shelfs = await shelfQuery.exec();
-  const shelfIds = shelfs.map((s) => s.id);
-  const itemQuery = PantryItemModel.query("shelfId").in(shelfIds);
+  const itemQuery = PantryItemModel.query("userId").eq(userId);
   const items = await itemQuery.exec();
-  const shelfsWithItems = shelfs.map((shelf) => {
-    const shelfItems = items
-      .filter((i) => i.shelfId === shelf.id)
-      .map((i) => i.toJSON() as PantryItem)
-      .sort((a, b) => a.name.localeCompare(b.name));
-    return { ...shelf, items: shelfItems };
+  const shelfsWithItems = shelfs.sort(sortDataByCreatedDate).map((shelf) => {
+    const shelfData = shelf.toJSON() as PantryShelf;
+    return getShelfWithItems(shelfData, items);
   });
   return shelfsWithItems;
 };
@@ -62,8 +59,12 @@ export const createNewPantryShelf = async (
 export const deletePantryShelf = async (shelfId: string) => {
   const shelf = await PantryShelfModel.get(shelfId);
   if (!shelf) return json({ error: "Shelf not found" }, { status: 404 });
+  const items = await getPantryItemsByShelfId(shelfId);
   await shelf.delete();
-  return shelf.toJSON() as PantryShelf;
+  await Promise.all(items.map((item) => deletePantryItem(item.id)));
+  const shelfData = shelf.toJSON() as PantryShelf;
+  const deletedShelfWithItems = getShelfWithItems(shelfData, items);
+  return deletedShelfWithItems;
 };
 
 export const savePantryShelfName = async (shelfId: string, name: string) => {
@@ -75,10 +76,22 @@ export const savePantryShelfName = async (shelfId: string, name: string) => {
   return shelf.toJSON() as PantryShelf;
 };
 
+const getShelfWithItems = (shelf: PantryShelf, items: Array<PantryItem>) => ({
+  ...shelf,
+  items: items
+    .filter((i) => i.shelfId === shelf.id)
+    .sort((a, b) => a.name.localeCompare(b.name)),
+});
+
 // * Pantry Items
 export const getPantryItem = async (itemId: string) => {
   const data = await PantryItemModel.get(itemId);
   return data?.toJSON() as PantryItem | undefined;
+};
+
+export const getPantryItemsByShelfId = async (shelfId: string) => {
+  const items = await PantryItemModel.query("shelfId").eq(shelfId).exec();
+  return items.map((i) => i.toJSON() as PantryItem);
 };
 
 export const getPantryItemsByUserId = async (userId: string) => {

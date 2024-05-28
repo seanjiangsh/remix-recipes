@@ -1,3 +1,5 @@
+// TODO: integrate with DDB types
+
 export type Recipe = {
   id: string;
   name: string;

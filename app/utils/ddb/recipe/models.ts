@@ -3,6 +3,7 @@ import dynamoose from "dynamoose";
 import { json } from "@remix-run/node";
 
 import { Recipe, Ingredient, RecipeModel, IngredientModel } from "./schema";
+import { sortDataByCreatedDate } from "../utils";
 
 // * Recipes
 export const getRecipe = async (recipeId: string) => {
@@ -19,8 +20,9 @@ export const getRecipes = async (
   let query = RecipeModel.query("userId").eq(userId);
   if (name) query = query.where("lowercaseName").contains(name.toLowerCase());
   if (mealPlanOnly) query = query.where("mealPlanMultiplier").gt(0);
-  const data = await query.exec();
-  return data.toJSON() as Array<Recipe>;
+  const recipeData = await query.exec();
+  const recipes = recipeData.toJSON() as Array<Recipe>;
+  return recipes.sort(sortDataByCreatedDate);
 };
 
 type RecipeWithIngredients = Recipe & { ingredients: Array<Ingredient> };
@@ -57,7 +59,8 @@ export const createRecipe = async (userId: string) => {
   const name = "New recipe";
   const instructions = "";
   const totalTime = "0 min";
-  const data = { id, userId, name, instructions, totalTime };
+  const imageUrl = "https://via.placeholder.com/150?text=Remix+Recipes";
+  const data = { id, userId, name, instructions, totalTime, imageUrl };
   const recipeModel = await RecipeModel.create(data);
   return recipeModel.toJSON() as Recipe;
 };

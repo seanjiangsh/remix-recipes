@@ -42,11 +42,11 @@ export function Card(props: Recipe) {
       <div className="p-4 flex-grow">
         <h3 className="font-semibold mb-1 text-left">
           {name}
-          {mealPlanMultiplier && (
+          {mealPlanMultiplier ? (
             <span className="text-primary-light ml-1">
               (x{mealPlanMultiplier})
             </span>
-          )}
+          ) : null}
           {delayedLoading ? "..." : ""}
         </h3>
         <div
