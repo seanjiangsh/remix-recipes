@@ -32,35 +32,31 @@ export const getRecipeWithIngredients = async (
   const recipeData = await RecipeModel.get(recipeId);
   if (!recipeData) return;
   const recipe = recipeData.toJSON() as Recipe;
-  const ingredientsData = await IngredientModel.query("recipeId")
-    .eq(recipeId)
-    .exec();
-  if (!ingredientsData) return;
-  const ingredients = ingredientsData.toJSON() as Array<Ingredient>;
+  const ingredients = await getIngredientsByRecipeId(recipe.id);
   return { ...recipe, ingredients };
 };
 
 export const getRecipesWithIngredients = async (userId: string) => {
   const recipes = await getRecipes(userId, { mealPlanOnly: true });
-  const recipesWithIngredients = await Promise.all(
-    recipes.map(async (recipe) => {
-      const ingredientsData = await IngredientModel.query("recipeId")
-        .eq(recipe.id)
-        .exec();
-      const ingredients = ingredientsData.toJSON() as Array<Ingredient>;
-      return { ...recipe, ingredients };
-    })
-  );
-  return recipesWithIngredients;
+  const userIngredients = await getIngredientsByUserId(userId);
+  const recipesWithIngredients = recipes.map((recipe) => {
+    const ingredients = userIngredients
+      .filter((i) => i.recipeId === recipe.id)
+      .sort((a, b) => sortDataByCreatedDate(a, b, true));
+    return { ...recipe, ingredients };
+  });
+  return recipesWithIngredients.sort(sortDataByCreatedDate);
 };
 
 export const createRecipe = async (userId: string) => {
   const id = randomUUID();
   const name = "New recipe";
+  const lowercaseName = name.toLowerCase();
+  const names = { name, lowercaseName };
   const instructions = "";
   const totalTime = "0 min";
   const imageUrl = "https://via.placeholder.com/150?text=Remix+Recipes";
-  const data = { id, userId, name, instructions, totalTime, imageUrl };
+  const data = { id, userId, ...names, instructions, totalTime, imageUrl };
   const recipeModel = await RecipeModel.create(data);
   return recipeModel.toJSON() as Recipe;
 };
@@ -115,7 +111,13 @@ export const saveRecipeField = async (
 ) => {
   const recipe = await getRecipe(recipeId);
   if (!recipe) return json({ error: "Recipe not found" }, { status: 404 });
-  const recipeModel = await RecipeModel.update(recipeId, fieldData);
+  const [fieldKey, fieldValue] = Object.entries(fieldData)[0];
+  let data: Partial<Recipe> = fieldData;
+  if (fieldKey === "name") {
+    const lowercaseName = fieldValue.toLowerCase();
+    data = { ...fieldData, lowercaseName };
+  }
+  const recipeModel = await RecipeModel.update(recipeId, data);
   return recipeModel.toJSON() as Recipe;
 };
 
@@ -156,6 +158,20 @@ export const clearMealPlan = async (userId: string) => {
 export const getIngredient = async (ingredientId: string) => {
   const data = await IngredientModel.get(ingredientId);
   return data?.toJSON() as Ingredient | undefined;
+};
+
+export const getIngredientsByRecipeId = async (recipeId: string) => {
+  const query = IngredientModel.query("recipeId").eq(recipeId);
+  const ingredientsData = await query.exec();
+  const ingredients = ingredientsData.toJSON() as Array<Ingredient>;
+  return ingredients.sort((a, b) => sortDataByCreatedDate(a, b, true));
+};
+
+export const getIngredientsByUserId = async (userId: string) => {
+  const query = IngredientModel.query("userId").eq(userId);
+  const ingredientData = await query.exec();
+  const ingredients = ingredientData.toJSON() as Array<Ingredient>;
+  return ingredients.sort(sortDataByCreatedDate);
 };
 
 type CreateIngredientData = {

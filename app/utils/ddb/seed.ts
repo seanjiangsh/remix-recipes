@@ -69,52 +69,63 @@ const getRecipes = (userId: string): Array<Recipe> => [
     mealPlanMultiplier: 0,
   },
 ];
-const getIngredients = (recipes: Array<Recipe>): Array<Ingredient> => [
+const getIngredients = (
+  userId: string,
+  recipes: Array<Recipe>
+): Array<Ingredient> => [
   // Buttermilk Pancakes
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[0].id,
     name: "salt",
     amount: "1 tsp",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[0].id,
     name: "baking powder",
     amount: "2 tsp",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[0].id,
     name: "baking soda",
     amount: "1 tsp",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[0].id,
     name: "flour",
     amount: "2 cups",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[0].id,
     name: "sugar",
     amount: "2 tbsp",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[0].id,
     name: "eggs",
     amount: "2",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[0].id,
     name: "buttermilk",
     amount: "2 cups",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[0].id,
     name: "butter, melted",
     amount: "2 tbsp",
@@ -122,36 +133,42 @@ const getIngredients = (recipes: Array<Recipe>): Array<Ingredient> => [
   // French Dip Sandwiches
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[1].id,
     name: "beef roast",
     amount: "",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[1].id,
     name: "dry onion soup mix",
     amount: "1 pkg",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[1].id,
     name: "beef broth",
     amount: "2 cans",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[1].id,
     name: "water",
     amount: "2 cans",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[1].id,
     name: "sliced swiss cheese",
     amount: "",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[1].id,
     name: "hoagie buns",
     amount: "",
@@ -159,48 +176,56 @@ const getIngredients = (recipes: Array<Recipe>): Array<Ingredient> => [
   // Shepherds Pie
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[2].id,
     name: "chopped onion",
     amount: "1/4 cup",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[2].id,
     name: "ground beef",
     amount: "1 lb",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[2].id,
     name: "brown sugar",
     amount: "1/3 cup",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[2].id,
     name: "vinegar",
     amount: "1 tbsp",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[2].id,
     name: "tomato soup",
     amount: "1 can",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[2].id,
     name: "mustard",
     amount: "1 tsp",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[2].id,
     name: "mashed potatoes",
     amount: "",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[2].id,
     name: "grated cheese",
     amount: "",
@@ -208,78 +233,91 @@ const getIngredients = (recipes: Array<Recipe>): Array<Ingredient> => [
   // Chicken Alfredo
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "butter",
     amount: "1 stick",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "garlic cloves, minced",
     amount: "4",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "flour",
     amount: "2 tbsp",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "cream cheese",
     amount: "8 oz",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "heavy cream",
     amount: "2 cups",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "grated parmesan cheese",
     amount: "1 1/3 cup",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "salt and pepper to taste",
     amount: "",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "desired pasta",
     amount: "1 pkg",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "chicken breasts",
     amount: "2-3",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "flour",
     amount: "1 cup",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "eggs",
     amount: "3",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "bread crumbs",
     amount: "1 1/2 cup",
   },
   {
     id: randomUUID(),
+    userId,
     recipeId: recipes[3].id,
     name: "parmesan cheese",
     amount: "1 1/2 cup",
@@ -369,7 +407,7 @@ const putData = async (model: ModelType<Item & any>, data: Array<any>) => {
   }
 };
 
-const deleteData = async (model: ModelType<Item & { id: string }>) => {
+const deleteModelData = async (model: ModelType<Item & { id: string }>) => {
   const data = await model.scan().all().exec();
   if (!data.length) return;
   const ids = data.map(({ id }) => id);
@@ -382,29 +420,32 @@ const deleteData = async (model: ModelType<Item & { id: string }>) => {
   }
 };
 
-export const seedData = async (newUser?: User) => {
+const deleteData = async () => {
+  await deleteModelData(UserModel);
+  await deleteModelData(RecipeModel);
+  await deleteModelData(IngredientModel);
+  await deleteModelData(PantryShelfModel);
+  await deleteModelData(PantryItemModel);
+};
+
+export const seedData = async (user: User, isDevSeeding?: boolean) => {
+  if (isDevSeeding) await deleteData();
   // * users
-  const user = newUser || createTestUser();
-  await deleteData(UserModel);
   await putData(UserModel, [user]);
   // * recipes
   const recipes = getRecipes(user.id);
-  await deleteData(RecipeModel);
   await putData(RecipeModel, recipes);
   // * ingredients
-  const ingredients = getIngredients(recipes);
-  await deleteData(IngredientModel);
+  const ingredients = getIngredients(user.id, recipes);
   await putData(IngredientModel, ingredients);
   // * pantry shelves
   const shelves = getPantryShelves(user.id);
-  await deleteData(PantryShelfModel);
   await putData(PantryShelfModel, shelves);
   // * pantry items
   const items = getPantryItems(shelves);
-  await deleteData(PantryItemModel);
   await putData(PantryItemModel, items);
 
   console.log("Data seeded successfully");
 };
 
-seedData();
+seedData(createTestUser(), true);

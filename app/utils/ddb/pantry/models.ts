@@ -38,8 +38,8 @@ export const getPantryShelfByName = async (
 ) => {
   const shelfQuery = PantryShelfModel.query("userId")
     .eq(userId)
-    .where("name")
-    .eq(shelfName);
+    .where("lowercaseName")
+    .eq(shelfName.toLowerCase());
   const shelf = await shelfQuery.exec();
   return shelf[0]?.toJSON() as PantryShelf | undefined;
 };

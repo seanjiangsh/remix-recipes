@@ -1,6 +1,7 @@
+import { redirect } from "@remix-run/node";
+
 import { getUserById } from "~/utils/ddb/user/models";
 import { getSession } from "./sessions";
-import { redirect } from "@remix-run/node";
 
 export const getCurrentUser = async (request: Request) => {
   const cookies = request.headers.get("cookie");

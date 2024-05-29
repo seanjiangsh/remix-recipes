@@ -48,6 +48,7 @@ export const RecipeModel = db.model<Item & Recipe>(
 // * Ingredient Schema
 export type Ingredient = {
   id: string;
+  userId: string;
   recipeId: string;
   name: string;
   amount: string;
@@ -58,6 +59,10 @@ export type Ingredient = {
 const ingredientSchema = new db.Schema(
   {
     id: { type: String, hashKey: true },
+    userId: {
+      type: String,
+      index: { name: "userIdIndex", type: "global", project: true },
+    },
     recipeId: {
       type: String,
       index: { name: "recipeIdIndex", type: "global", project: true },
