@@ -1,3 +1,4 @@
+import fse from "fs-extra";
 import { Fragment } from "react";
 import {
   ActionFunction,
@@ -39,6 +40,7 @@ import Instructions from "~/components/recipes/recipe-detail/instructions";
 import RecipeFooter from "~/components/recipes/recipe-detail/recipe-footer";
 import { FileInput } from "~/components/form/Inputs";
 import { canCangeRecipe } from "~/utils/abilities.server";
+import { getRecipeImageUploadHandler } from "~/utils/files/image-upload";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
@@ -108,23 +110,24 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const contentType = request.headers.get("Content-Type");
   const isMuliPartFormData = contentType?.startsWith("multipart/form-data");
-  let formData: FormData;
-  if (isMuliPartFormData) {
-    const uploadHandler = unstable_composeUploadHandlers(
-      unstable_createFileUploadHandler({ directory: "public/images" }),
-      unstable_createMemoryUploadHandler()
-    );
-    formData = await unstable_parseMultipartFormData(request, uploadHandler);
-    if (process.env.NODE_ENV === "development") {
-      const image = formData.get("image") as File;
-      if (image && image.size > 0) {
-        formData.set("imageUrl", `/images/${image.name}`);
-      }
-    } else {
-      // TODO: move file storage to S3 in production
-    }
-  } else {
-    formData = await request.formData();
+  // let formData: FormData;
+  const formData = await request.formData();
+  const image = formData.get("image") as File | null;
+  console.log(isMuliPartFormData, image);
+  if (isMuliPartFormData && image) {
+    const buf = Buffer.from(await image.arrayBuffer());
+    fse.writeFile(`public/images/${image.name}`, buf);
+    formData.set("imageUrl", `/images/${image.name}`);
+    // const uploadHandler = unstable_composeUploadHandlers(
+    //   unstable_createFileUploadHandler({ directory: "public/images" })
+    // );
+    // formData = await unstable_parseMultipartFormData(request, uploadHandler);
+    // const uploadHandler = getRecipeImageUploadHandler();
+    // formData = await unstable_parseMultipartFormData(request, uploadHandler);
+    // const image = formData.get("image") as File;
+    // console.log(image);
+    // if (image && image.size > 0)
+    //   formData.set("imageUrl", `/images/${image.name}`);
   }
   const action = formData.get("_action") as string;
   if (typeof action === "string" && action.startsWith("deleteIngredient")) {

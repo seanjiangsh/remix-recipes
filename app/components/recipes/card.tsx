@@ -5,6 +5,8 @@ import { Recipe } from "~/utils/ddb/recipe/schema";
 import { useDelayedBool } from "~/hooks/recipes/recipes.hooks";
 import { TimeIcon } from "~/components/icons/icons";
 
+const isDev = process.env.ARC_ENV === "testing";
+
 export type CardProps = Recipe & { isActive?: boolean; isLoading?: boolean };
 
 export function Card(props: CardProps) {
@@ -36,7 +38,7 @@ export function Card(props: CardProps) {
     >
       <div className="w-14 h-14 rounded-full overflow-hidden my-4 ml-3">
         <img
-          src={imageUrl}
+          src={isDev ? imageUrl : `/_static/${imageUrl}`}
           alt={`recipe named ${name}`}
           className="object-cover h-full w-full"
         />

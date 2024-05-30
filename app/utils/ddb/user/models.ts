@@ -1,15 +1,16 @@
 import { randomUUID } from "crypto";
 
 import { User, UserModel } from "./schema";
+import { seedData } from "../seeding/functions";
 
 export const createUser = async (
   args: Pick<User, "email" | "firstName" | "lastName">
 ) => {
   const { email, firstName, lastName } = args;
   const id = randomUUID();
-  const data = { id, email, firstName, lastName };
-  const userModel = new UserModel(data);
-  await userModel.save();
+  const user: User = { id, email, firstName, lastName };
+  const userModel = new UserModel(user);
+  await Promise.all([userModel.save(), seedData(user)]);
   return userModel.toJSON() as User;
 };
 

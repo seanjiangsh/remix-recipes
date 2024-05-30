@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
-import dynamoose from "dynamoose";
 import { json } from "@remix-run/node";
+import dynamoose from "dynamoose";
+import { ObjectType } from "dynamoose/dist/General";
 
 import { Recipe, Ingredient, RecipeModel, IngredientModel } from "./schema";
 import { sortDataByCreatedDate } from "../utils";
@@ -69,8 +70,7 @@ export const createRecipe = async (userId: string) => {
 
 type SaveRecipeData = {
   name: string;
-  totalTime: string;
-  instructions: string;
+  imageUrl?: string;
   ingredientIds?: Array<string>;
   ingredientNames?: Array<string>;
   ingredientAmounts?: Array<string | null>;
@@ -80,7 +80,7 @@ export const saveRecipe = async (
   saveRecipeData: SaveRecipeData
 ) => {
   try {
-    const { name, totalTime, instructions } = saveRecipeData;
+    const { name, imageUrl } = saveRecipeData;
     const recipe = await getRecipe(recipeId);
     if (!recipe) return json({ error: "Recipe not found" }, { status: 404 });
 
@@ -88,7 +88,8 @@ export const saveRecipe = async (
     // * recipe
     const recipeTranId = { id: recipeId };
     const names = { name, lowercaseName: name.toLowerCase() };
-    const recipeData = { $SET: { ...names, totalTime, instructions } };
+    const recipeData: ObjectType = { $SET: { ...names } };
+    if (imageUrl) recipeData.$SET.imageUrl = imageUrl;
     const recipeTran = RecipeModel.transaction.update(recipeTranId, recipeData);
     // * ingredients
     const ingredientIds = saveRecipeData.ingredientIds || [];

@@ -64,7 +64,9 @@ export const action: ActionFunction = async ({ request }) => {
     const { firstName, lastName } = args;
     const magicLinkPayload = getMagicLinkPayload(request);
     const { email } = magicLinkPayload;
+    console.log("going to create user");
     const user = await createUser({ email, firstName, lastName });
+    console.log("user created");
     const cookies = request.headers.get("cookie");
     const session = await getSession(cookies);
     session.unset("nonce");
