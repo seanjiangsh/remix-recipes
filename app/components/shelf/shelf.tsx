@@ -1,19 +1,21 @@
 import { useFetcher } from "@remix-run/react";
 import classNames from "classnames";
 
-import * as pantryTypes from "~/types/pantry/pantry";
 import { useOptimisticItems } from "~/hooks/pantry/pantry.hooks";
+import { PantryShelf, PantryItem } from "~/utils/ddb/pantry/schema";
 
 import ShelfName from "./shelf-name";
 import DeleteShelf from "./delete-shelf";
 import CreateShelfItem from "./create-shelf-item";
 import ShelfItems from "./shelf-items";
 
+export type ShelfWithItems = PantryShelf & { items: Array<PantryItem> };
+
 export type CreateShelfItemData = {
   errors: { shelfId?: string; itemName?: string };
 };
 export type DeleteShelfData = { errors?: { shelfId?: string } };
-type ShelfProps = { shelf: pantryTypes.Shelf };
+type ShelfProps = { shelf: ShelfWithItems };
 
 export default function Shelf({ shelf }: ShelfProps) {
   const { id, items } = shelf;

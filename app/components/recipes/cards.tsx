@@ -1,9 +1,9 @@
 import { NavLink, useLocation, useNavigation } from "@remix-run/react";
 
-import { Recipe } from "~/types/recipe/recipes";
-import { Card } from "./card";
+import { Card, CardProps } from "./card";
 
-type CardsProps = { recipes: Array<Recipe> };
+type CardsProps = { recipes: Array<CardProps> };
+
 export default function Cards(props: CardsProps) {
   const { recipes } = props;
 

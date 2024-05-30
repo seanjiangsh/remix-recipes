@@ -1,8 +1,8 @@
 import { Fragment, MouseEventHandler } from "react";
 import { useFetcher } from "@remix-run/react";
 
-import { OptimisticIngredient } from "~/types/recipe/recipes";
 import { useDebounce } from "~/hooks/misc/debounce";
+import { OptimisticIngredient } from "~/hooks/recipes/recipes.hooks";
 
 import { Input } from "~/components/form/Inputs";
 import { TrashIcon } from "~/components/icons/icons";

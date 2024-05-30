@@ -2,20 +2,19 @@ import { FormEventHandler, useRef } from "react";
 import { FetcherWithComponents, SubmitOptions } from "@remix-run/react";
 import classNames from "classnames";
 
-import * as pantryTypes from "~/types/pantry/pantry";
-import { SaveIcon } from "../icons/icons";
-import ErrorMessage from "../form/error-message";
-import { CreateShelfItemData } from "./shelf";
+import { SaveIcon } from "~/components/icons/icons";
+import ErrorMessage from "~/components/form/error-message";
+import { CreateShelfItemData, ShelfWithItems } from "./shelf";
 
 type ShelfProps = {
-  shelf: pantryTypes.Shelf;
-  addItem: (name: string) => void;
+  shelf: ShelfWithItems;
+  addItem: (userId: string, shelfId: string, name: string) => void;
   createShelfItemFetcher: FetcherWithComponents<CreateShelfItemData>;
 };
 
 export default function CreatShelfItem(props: ShelfProps) {
   const { shelf, addItem, createShelfItemFetcher } = props;
-  const { id } = shelf;
+  const { id, userId } = shelf;
 
   const fetcherData = createShelfItemFetcher.data;
   const createShelfItemIdErrMsg = fetcherData?.errors?.shelfId;
@@ -28,7 +27,7 @@ export default function CreatShelfItem(props: ShelfProps) {
     // * add item to the UI (items in useOptimisticItems hook)
     const { elements } = ev.currentTarget;
     const itemNameIput = elements.namedItem("itemName") as HTMLInputElement;
-    addItem(itemNameIput.value);
+    addItem(userId, id, itemNameIput.value);
 
     // * submit manually via fetcher
     ev.preventDefault();

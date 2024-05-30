@@ -1,6 +1,6 @@
 import { useFetcher } from "@remix-run/react";
 
-import { Ingredient } from "~/types/recipe/recipes";
+import { Ingredient } from "~/utils/ddb/recipe/schema";
 import { useOptimisticIngredients } from "~/hooks/recipes/recipes.hooks";
 
 import CreateIngredient, { CreateIngredientProps } from "./create-ingredient";

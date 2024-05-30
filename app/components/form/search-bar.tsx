@@ -1,7 +1,7 @@
 import { Form, useNavigation, useSearchParams } from "@remix-run/react";
 import classNames from "classnames";
 
-import { SearchIcon } from "../icons/icons";
+import { SearchIcon } from "~/components/icons/icons";
 
 type SearchBarProps = { placeholder: string; className?: string };
 export default function SearchBar({ placeholder, className }: SearchBarProps) {

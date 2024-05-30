@@ -8,7 +8,9 @@
     "dev:db-dump": "npx tsx app/utils/ddb/db-dump.ts",
     "build": "tsc && remix build",
     "start": "remix-serve ./build/index.js",
-    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint ."
+    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+    "deploy": "npm run build && arc deploy --production",
+    "destroy": "arc destroy --app remix-recipes --production --force"
   },
   "dependencies": {
     "@getbrevo/brevo": "2.1.1",

@@ -1,7 +1,7 @@
 import { useFetcher, useSearchParams } from "@remix-run/react";
 
 import { DeleteButton, PrimaryButton } from "~/components/buttons/buttons";
-import { PlusIcon } from "../icons/icons";
+import { PlusIcon } from "~/components/icons/icons";
 
 export default function CreateRecipe() {
   const createRecipeFetcher = useFetcher();

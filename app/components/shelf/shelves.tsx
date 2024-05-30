@@ -1,11 +1,8 @@
 import classNames from "classnames";
 
-import * as pantryTypes from "~/types/pantry/pantry";
-import Shelf from "./shelf";
+import Shelf, { ShelfWithItems } from "./shelf";
 
-type ShelvesProps = {
-  shelves: Array<pantryTypes.Shelf>;
-};
+type ShelvesProps = { shelves: Array<ShelfWithItems> };
 export default function Shelves({ shelves }: ShelvesProps) {
   return (
     <ul

@@ -22,7 +22,13 @@ export const getRecipes = async (
   if (mealPlanOnly) query = query.where("mealPlanMultiplier").gt(0);
   const recipeData = await query.exec();
   const recipes = recipeData.toJSON() as Array<Recipe>;
-  return recipes.sort(sortDataByCreatedDate);
+  return recipes.sort((a, b) => {
+    // First sort by createdDate
+    const dateComparison = sortDataByCreatedDate(a, b);
+    if (dateComparison !== 0) return dateComparison;
+    // If createdDate is the same, sort by name
+    return a.name.localeCompare(b.name);
+  });
 };
 
 type RecipeWithIngredients = Recipe & { ingredients: Array<Ingredient> };
@@ -182,10 +188,13 @@ export const createIngredient = async (
   recipeId: string,
   createIngredientData: CreateIngredientData
 ) => {
+  const recipe = await getRecipe(recipeId);
+  if (!recipe) return json({ error: "Recipe not found" }, { status: 404 });
+  const { userId } = recipe;
   const amount = createIngredientData.newIngredientAmount || "";
   const { newIngredientName: name } = createIngredientData;
   const id = randomUUID();
-  const data = { id, recipeId, name, amount };
+  const data = { id, userId, recipeId, name, amount };
   const ingredientModel = await IngredientModel.create(data);
   return ingredientModel.toJSON() as Ingredient;
 };

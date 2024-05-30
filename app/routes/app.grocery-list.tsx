@@ -2,7 +2,6 @@ import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
-import * as recipeTypes from "~/types/recipe/recipes";
 import { getRecipesWithIngredients } from "~/utils/ddb/recipe/models";
 import {
   createNewPantryShelf,
@@ -14,6 +13,17 @@ import { requireLoggedInUser } from "~/utils/auth/auth.server";
 import { FieldErrors, validateForm } from "~/utils/validation";
 
 import { CheckCircleIcon } from "~/components/icons/icons";
+
+type GroceryListItem = {
+  id: string;
+  name: string;
+  uses: Array<{
+    id: string;
+    amount: string | null;
+    recipeName: string;
+    multiplier: number;
+  }>;
+};
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
@@ -27,7 +37,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       )
   );
   const groceryListItems = missingIngredients.reduce<{
-    [key: string]: recipeTypes.GroceryListItem;
+    [key: string]: GroceryListItem;
   }>((p, c) => {
     const { id, recipeId, amount } = c;
     const recipe = recipes.find(({ id }) => id === recipeId);
@@ -74,7 +84,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-const GroceryListItem = ({ item }: { item: recipeTypes.GroceryListItem }) => {
+const GroceryListItem = ({ item }: { item: GroceryListItem }) => {
   const { name, uses } = item;
 
   const fetcher = useFetcher();

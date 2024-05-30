@@ -1,7 +1,7 @@
 import { useFetcher } from "@remix-run/react";
 
 import { PrimaryButton } from "~/components/buttons/buttons";
-import { PlusIcon } from "../icons/icons";
+import { PlusIcon } from "~/components/icons/icons";
 
 export default function CreateShelf() {
   const createShelfFetcher = useFetcher();

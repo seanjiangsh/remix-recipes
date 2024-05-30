@@ -1,13 +1,12 @@
 import { FormEventHandler } from "react";
 import { FetcherWithComponents } from "@remix-run/react";
 
-import * as pantryTypes from "~/types/pantry/pantry";
-import { DeleteButton } from "../buttons/buttons";
-import ErrorMessage from "../form/error-message";
-import { DeleteShelfData } from "./shelf";
+import { DeleteButton } from "~/components/buttons/buttons";
+import ErrorMessage from "~/components/form/error-message";
+import { DeleteShelfData, ShelfWithItems } from "./shelf";
 
 type DeleteShelfProps = {
-  shelf: pantryTypes.Shelf;
+  shelf: ShelfWithItems;
   deleteShelfFetcher: FetcherWithComponents<DeleteShelfData>;
 };
 
