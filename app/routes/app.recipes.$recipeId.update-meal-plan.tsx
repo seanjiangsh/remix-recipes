@@ -3,7 +3,7 @@ import { Form, Link, useActionData } from "@remix-run/react";
 import ReactModal from "react-modal";
 import { z } from "zod";
 
-import { canCangeRecipe } from "~/utils/abilities.server";
+import { canChangeRecipe } from "~/utils/abilities.server";
 import { FieldErrors, validateForm } from "~/utils/validation";
 import { useRecipeContext } from "~/hooks/recipes/recipes.hooks";
 import {
@@ -25,7 +25,7 @@ const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
 
 export const action: ActionFunction = async ({ request, params }) => {
   const recipeId = params.recipeId as string; // * from the route
-  await canCangeRecipe(request, recipeId);
+  await canChangeRecipe(request, recipeId);
 
   const formData = await request.formData();
   const action = formData.get("_action") as string;

@@ -58,7 +58,7 @@ export const createNewPantryShelf = async (
 
 export const deletePantryShelf = async (shelfId: string) => {
   const shelf = await PantryShelfModel.get(shelfId);
-  if (!shelf) return json({ error: "Shelf not found" }, { status: 404 });
+  if (!shelf) throw json({ error: "Shelf not found" }, { status: 404 });
   const items = await getPantryItemsByShelfId(shelfId);
   await shelf.delete();
   await Promise.all(items.map((item) => deletePantryItem(item.id)));
@@ -69,7 +69,7 @@ export const deletePantryShelf = async (shelfId: string) => {
 
 export const savePantryShelfName = async (shelfId: string, name: string) => {
   const shelf = await PantryShelfModel.get(shelfId);
-  if (!shelf) return json({ error: "Shelf not found" }, { status: 404 });
+  if (!shelf) throw json({ error: "Shelf not found" }, { status: 404 });
   shelf.name = name;
   shelf.lowercaseName = name.toLowerCase();
   await shelf.save();
@@ -112,7 +112,7 @@ export const createPantryItem = async (
 
 export const deletePantryItem = async (itemId: string) => {
   const item = await PantryItemModel.get(itemId);
-  if (!item) return json({ error: "Item not found" }, { status: 404 });
+  if (!item) throw json({ error: "Item not found" }, { status: 404 });
   await item.delete();
   return item.toJSON() as PantryItem;
 };

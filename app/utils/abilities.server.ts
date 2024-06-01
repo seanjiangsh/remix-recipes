@@ -3,7 +3,7 @@ import { json } from "@remix-run/node";
 import { getRecipe } from "./ddb/recipe/models";
 import { requireLoggedInUser } from "./auth/auth.server";
 
-export const canCangeRecipe = async (request: Request, recipeId: string) => {
+export const canChangeRecipe = async (request: Request, recipeId: string) => {
   const user = await requireLoggedInUser(request);
   const recipe = await getRecipe(recipeId);
   if (!recipe) {

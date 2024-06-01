@@ -39,7 +39,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 type FileInputProps = InputHTMLAttributes<HTMLInputElement> & {
   recipeId: string;
 };
-export const FileInput = (props: FileInputProps) => {
+export const ImageInput = (props: FileInputProps) => {
   const { recipeId } = props;
   return (
     <Fragment>
@@ -47,7 +47,7 @@ export const FileInput = (props: FileInputProps) => {
         htmlFor="image"
         className="block font-bold text-sm pb-2 w-fit mt-4"
       >
-        Image
+        Image (2MB max)
       </label>
       <input
         id="image"
