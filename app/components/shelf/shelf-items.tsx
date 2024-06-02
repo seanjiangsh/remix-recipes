@@ -1,7 +1,7 @@
-import * as pantryTypes from "~/types/pantry/pantry";
+import { OptimisticItems } from "~/hooks/pantry/pantry.hooks";
 import ShelfItem from "./shelf-item";
 
-type ShelfItemsProps = { items: pantryTypes.OptimisticItems };
+type ShelfItemsProps = { items: OptimisticItems };
 
 export default function ShelfItems({ items }: ShelfItemsProps) {
   return (

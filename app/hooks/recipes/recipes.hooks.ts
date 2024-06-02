@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Fetcher, useOutletContext } from "@remix-run/react";
 
-import { OptimisticIngredients } from "~/types/recipe/recipes";
 import { createItemId, useServerLayoutEffect } from "~/utils/misc";
+import { Ingredient } from "~/utils/ddb/recipe/schema";
 
 export const useDelayedBool = (value: boolean | undefined, delay: number) => {
   const [delayed, setDelayed] = useState(false);
@@ -22,6 +22,9 @@ export const useDelayedBool = (value: boolean | undefined, delay: number) => {
   return delayed;
 };
 
+export type OptimisticIngredient = Ingredient & { isOptimistic?: boolean };
+type OptimisticIngredients = Array<OptimisticIngredient>;
+
 export const useOptimisticIngredients = (
   savedIngredients: OptimisticIngredients,
   createIngredientState: Fetcher["state"]
@@ -38,7 +41,8 @@ export const useOptimisticIngredients = (
   const addIngredient = (amount: string | null, name: string) => {
     const id = createItemId();
     const isOptimistic = true;
-    const newIngredient = { id, name, isOptimistic, amount };
+    const otherData = { userId: "", recipeId: "", amount: amount || "" };
+    const newIngredient = { id, name, isOptimistic, ...otherData };
     setOptimisticIngredients((ingredients) => [...ingredients, newIngredient]);
   };
 

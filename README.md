@@ -1,14 +1,17 @@
 # Remix Recipes
 
-- [Remix Docs](https://remix.run/docs)
+A full-stack web application that provides users with an all-in-one chef experience where users can add recipes, create a meal plan, and generate a shopping list for your meals.
+
+This project builds upon the [Remix Bootcamp: Zero to Mastery](https://zerotomastery.io/courses/learn-remix-run/) course, extending its scope. It utilizes the Architect framework for deployment on AWS Lambda and DynamoDB.
+
+### [live demo](https://remix-recipes.sean-j.dev/)
 
 ## Getting Started
 
-1. Adding required environment variables
+1. Make sure your AWS access key pair has been configured.
+2. Adding required environment variables
 
    ```
-   DATABASE_URL=YOUR-POSTGRES-CONNECTION-STRING
-
    AUTH_COOKIE_SECRET=YOUR-COOKIE-SECRET
 
    MAGIC_LINK_SECRET=YOUR-MAGIC-LINK-SECRET
@@ -16,65 +19,27 @@
    ORIGIN=http://localhost:3000
 
    BREVO_API_KEY=YOUR-BREVO-API-KEY
+
+   AWS_REGION=YOUR-AWS-REGION
+
+   S3_STATIC_BUCKET=YOUR-S3-BUCKET
    ```
 
-2. From your terminal:
+3. From your terminal:
 
    ```sh
    npm install
    ```
 
-3. Start the Postgres instance
-4. Modify .env for Postgres connection
-5. Push Prisma schema to Postgres
-   ```sh
-   npx prisma db push
-   ```
-6. Seed the initial pantry data
-   ```sh
-   npx prisma db seed
-   ```
+4. Please note the data will be seeding to AWS DynamoDB after dev server started
 
-## Development
+### Available scripts
 
-From your terminal:
-
-```sh
-npm run dev
-```
-
-This starts your app in development mode, rebuilding assets on file changes.
-
-## Open Prisma studio for data management
-
-```sh
-npx prisma studio
-```
-
-## Deployment
-
-First, build your app for production:
-
-```sh
-npm run build
-```
-
-Then run the app in production mode:
-
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `remix build`
-
-- `build/`
-- `public/build/`
+| Script         | Description                                          |
+| -------------- | ---------------------------------------------------- |
+| npm run dev    | Start the development server (http://localhost:3000) |
+| npm build      | Build the production-ready code                      |
+| npm run deploy | Deploy production build to AWS                       |
 
 ## This project utilizes the following technologies:
 

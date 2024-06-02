@@ -18,9 +18,8 @@ import {
 } from "@remix-run/react";
 import classNames from "classnames";
 
-import { getCurrentUser } from "./utils/auth/auth.server";
+import { getCurrentUser } from "~/utils/auth/auth.server";
 
-// import favicon from "~/assets/favicon.ico";
 import styles from "~/tailwind.css";
 import {
   DiscoverIcon,
@@ -29,18 +28,15 @@ import {
   LogoutIcon,
   RecipeBookIcon,
   SettingsIcon,
-} from "./components/icons/icons";
-import NavLink from "./components/nav-link/root/nav-link";
+} from "~/components/icons/icons";
+import NavLink from "~/components/nav-link/root/nav-link";
 
 export const meta: MetaFunction = () => [
   { title: "Remix Recipes" },
   { name: "description", content: "Welcome to the Remix Recipes app!" },
 ];
 
-export const links: LinksFunction = () => [
-  // { rel: "icon", href: favicon },
-  { rel: "stylesheet", href: styles },
-];
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getCurrentUser(request);
@@ -55,6 +51,7 @@ export default function Root() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/_static/favicon.ico" />
         <Meta />
         <Links />
       </head>

@@ -1,7 +1,8 @@
 import { json } from "@remix-run/node";
 import Cryptr from "cryptr";
-import { sendEmail } from "../email/email.server";
 import { renderToStaticMarkup } from "react-dom/server";
+
+import { sendEmail } from "~/utils/email/email.server";
 
 const { MAGIC_LINK_SECRET, ORIGIN } = process.env;
 
@@ -56,7 +57,7 @@ export const getMagicLinkPayload = (request: Request) => {
 };
 
 export const sendMagicLinkEmail = async (email: string, link: string) => {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.ARC_ENV !== "production") {
     console.log(link);
     return;
   }

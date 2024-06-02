@@ -4,10 +4,6 @@ import {
   LoaderFunctionArgs,
   json,
   redirect,
-  unstable_composeUploadHandlers,
-  unstable_createFileUploadHandler,
-  unstable_createMemoryUploadHandler,
-  unstable_parseMultipartFormData,
 } from "@remix-run/node";
 import {
   Form,
@@ -20,25 +16,26 @@ import {
 import { z } from "zod";
 
 import {
-  createIngredient,
-  deleteIngredient,
-  deleteRecipe,
   getRecipeWithIngredients,
-  saveIngredientAmount,
-  saveIngredientName,
   saveRecipe,
   saveRecipeField,
-} from "~/models/recipes/recipes.server";
-import { FieldErrors, validateForm } from "~/utils/prisma/validation";
+  deleteRecipe,
+  createIngredient,
+  saveIngredientAmount,
+  deleteIngredient,
+  saveIngredientName,
+} from "~/utils/ddb/recipe/models";
+import { FieldErrors, validateForm } from "~/utils/validation";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
+import { canChangeRecipe } from "~/utils/abilities.server";
+import { deleteImages, saveRecipeImage } from "~/utils/files/images";
 
 import RecipeName from "~/components/recipes/recipe-detail/recipe-name";
 import RecipeTotalTime from "~/components/recipes/recipe-detail/recipe-total-time";
 import IngredientsDetail from "~/components/recipes/recipe-detail/ingredients-detail";
 import Instructions from "~/components/recipes/recipe-detail/instructions";
 import RecipeFooter from "~/components/recipes/recipe-detail/recipe-footer";
-import { FileInput } from "~/components/form/Inputs";
-import { canCangeRecipe } from "~/utils/abilities.server";
+import { ImageInput } from "~/components/form/Inputs";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
@@ -104,26 +101,23 @@ const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
 
 export const action: ActionFunction = async ({ request, params }) => {
   const recipeId = params.recipeId as string; // * from the route
-  await canCangeRecipe(request, recipeId);
+  await canChangeRecipe(request, recipeId);
 
-  const contentType = request.headers.get("Content-Type");
-  const isMuliPartFormData = contentType?.startsWith("multipart/form-data");
-  let formData: FormData;
-  if (isMuliPartFormData) {
-    const uploadHandler = unstable_composeUploadHandlers(
-      unstable_createFileUploadHandler({ directory: "public/images" }),
-      unstable_createMemoryUploadHandler()
-    );
-    formData = await unstable_parseMultipartFormData(request, uploadHandler);
-    const image = formData.get("image") as File;
-    if (image && image.size > 0) {
-      formData.set("imageUrl", `/images/${image.name}`);
-    }
-  } else {
-    formData = await request.formData();
+  const formData = await request.formData();
+  const action = formData.get("_action");
+  const image = formData.get("image") as File | null;
+
+  if (action === "saveRecipe" && image) {
+    if (image.size > 2 * 1024 * 1024)
+      throw json(
+        { message: "Image must be smaller than 2MB" },
+        { status: 400 }
+      );
+    const fileName = await saveRecipeImage({ recipeId, image });
+    if (!fileName)
+      throw json({ message: "Error saving image" }, { status: 500 });
+    formData.set("imageUrl", fileName);
   }
-  const action = formData.get("_action") as string;
-
   if (typeof action === "string" && action.startsWith("deleteIngredient")) {
     const [, ingredientId] = action.split(".");
     return deleteIngredient(ingredientId);
@@ -172,6 +166,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     }
     case "deleteRecipe": {
       await deleteRecipe(recipeId);
+      await deleteImages(recipeId);
       return redirect("/app/recipes");
     }
     case "saveIngredientAmount": {
@@ -220,7 +215,7 @@ export default function RecipeDetail() {
         <RecipeTotalTime totalTime={totalTime} id={id} errors={errors} />
         <IngredientsDetail ingredients={ingredients} errors={errors} />
         <Instructions id={id} instructions={instructions} errors={errors} />
-        <FileInput recipeId={id} />
+        <ImageInput recipeId={id} />
         <RecipeFooter />
       </Form>
     </Fragment>

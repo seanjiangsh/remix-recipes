@@ -1,10 +1,10 @@
 import { useFetcher } from "@remix-run/react";
 
-import * as pantryTypes from "~/types/pantry/pantry";
-import { TrashIcon } from "../icons/icons";
-import ErrorMessage from "../form/error-message";
+import { OptimisticItem } from "~/hooks/pantry/pantry.hooks";
+import { TrashIcon } from "~/components/icons/icons";
+import ErrorMessage from "~/components/form/error-message";
 
-type ShelfItemProps = { item: pantryTypes.OptimisticItem };
+type ShelfItemProps = { item: OptimisticItem };
 type ResponseData = { errors?: { itemId?: string } };
 
 export default function ShelfItem({ item }: ShelfItemProps) {
@@ -20,7 +20,7 @@ export default function ShelfItem({ item }: ShelfItemProps) {
         <deleteItemFetcher.Form method="post" className="flex items-center">
           <p className="w-full">{name}</p>
           {!isOptimistic && (
-            <button name="_action" value="deleteShelfItem">
+            <button name="_action" value="deletePantryItem">
               <TrashIcon />
             </button>
           )}

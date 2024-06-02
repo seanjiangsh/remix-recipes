@@ -1,14 +1,15 @@
 import { SubmitOptions, useFetcher } from "@remix-run/react";
 import classNames from "classnames";
 
-import * as pantryTypes from "~/types/pantry/pantry";
-import { SaveIcon } from "../icons/icons";
-import ErrorMessage from "../form/error-message";
 import { useIsHydrated } from "~/utils/misc";
-import { Input } from "../form/Inputs";
 import { useDebounce } from "~/hooks/misc/debounce";
 
-type ShelfNameProps = { shelf: pantryTypes.Shelf };
+import { SaveIcon } from "~/components/icons/icons";
+import ErrorMessage from "~/components/form/error-message";
+import { Input } from "~/components/form/Inputs";
+import { ShelfWithItems } from "./shelf";
+
+type ShelfNameProps = { shelf: ShelfWithItems };
 type ResponseData = { errors?: { shelfId?: string; shelfName?: string } };
 
 export default function ShelfName({ shelf }: ShelfNameProps) {

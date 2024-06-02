@@ -4,6 +4,10 @@ import { json } from "@remix-run/node";
 import db from "~/utils/prisma/server";
 import { handleDelete } from "~/utils/prisma/utils";
 
+// * Recipes
+export const getRecipe = (recipeId: string) =>
+  db.recipe.findUnique({ where: { id: recipeId } });
+
 export const getRecipes = (
   userId: string,
   query: string | null,
@@ -25,20 +29,6 @@ export const getRecipes = (
     orderBy: { createdAt: "desc" },
   });
 
-export const createRecipe = (userId: string) =>
-  db.recipe.create({
-    data: {
-      userId,
-      name: "New Recipe",
-      instructions: "",
-      totalTime: "0 min",
-      imageUrl: "https://via.placeholder.com/150?text=Remix+Recipes",
-    },
-  });
-
-export const getRecipe = (recipeId: string) =>
-  db.recipe.findUnique({ where: { id: recipeId } });
-
 export const getRecipeWithIngredients = (recipeId: string) =>
   db.recipe.findUnique({
     where: { id: recipeId },
@@ -47,6 +37,17 @@ export const getRecipeWithIngredients = (recipeId: string) =>
         select: { id: true, amount: true, name: true },
         orderBy: { createdAt: "asc" },
       },
+    },
+  });
+
+export const createRecipe = (userId: string) =>
+  db.recipe.create({
+    data: {
+      userId,
+      name: "New Recipe",
+      instructions: "",
+      totalTime: "0 min",
+      imageUrl: "https://via.placeholder.com/150?text=Remix+Recipes",
     },
   });
 
@@ -87,18 +88,16 @@ export const saveRecipe = (
   }
 };
 
-type CreateIngredientData = {
-  newIngredientName: string;
-  newIngredientAmount: string | null;
-};
-export const createIngredient = (
+type SaveRecipeFieldData =
+  | { name: string }
+  | { totalTime: string }
+  | { instructions: string };
+export const saveRecipeField = async (
   recipeId: string,
-  createIngredientDatadata: CreateIngredientData
+  data: SaveRecipeFieldData
 ) => {
   try {
-    const { newIngredientAmount: amount, newIngredientName: name } =
-      createIngredientDatadata;
-    return db.ingredient.create({ data: { recipeId, amount, name } });
+    return db.recipe.update({ where: { id: recipeId }, data });
   } catch (err) {
     console.log(err);
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -113,19 +112,52 @@ export const createIngredient = (
 export const deleteRecipe = (recipeId: string) =>
   handleDelete(() => db.recipe.delete({ where: { id: recipeId } }));
 
-export const deleteIngredient = (ingredientId: string) =>
-  handleDelete(() => db.ingredient.delete({ where: { id: ingredientId } }));
+// * Recipe & Meal Plan
+export const removeRecipeFromMealPlan = (recipeId: string) =>
+  db.recipe.update({
+    where: { id: recipeId },
+    data: { mealPlanMultiplier: null },
+  });
 
-type SaveRecipeFieldData =
-  | { name: string }
-  | { totalTime: string }
-  | { instructions: string };
-export const saveRecipeField = async (
+export const updateRecipeMealPlan = (
   recipeId: string,
-  data: SaveRecipeFieldData
+  mealPlanMultiplier: number
+) =>
+  db.recipe.update({
+    where: { id: recipeId },
+    data: { mealPlanMultiplier },
+  });
+
+export const clearMealPlan = (userId: string) =>
+  db.recipe.updateMany({
+    where: { userId, mealPlanMultiplier: { not: null } },
+    data: { mealPlanMultiplier: null },
+  });
+
+// * Ingredients
+export const getIngredientsByUserId = (userId: string) =>
+  db.ingredient.findMany({
+    where: {
+      recipe: {
+        userId,
+        mealPlanMultiplier: { not: null },
+      },
+    },
+    include: { recipe: { select: { name: true, mealPlanMultiplier: true } } },
+  });
+
+type CreateIngredientData = {
+  newIngredientName: string;
+  newIngredientAmount: string | null;
+};
+export const createIngredient = (
+  recipeId: string,
+  createIngredientData: CreateIngredientData
 ) => {
   try {
-    return db.recipe.update({ where: { id: recipeId }, data });
+    const { newIngredientAmount: amount, newIngredientName: name } =
+      createIngredientData;
+    return db.ingredient.create({ data: { recipeId, amount, name } });
   } catch (err) {
     console.log(err);
     if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -165,49 +197,5 @@ export const saveIngredientName = (id: string, name: string) => {
   }
 };
 
-export const removeRecipeFromMealPlan = (recipeId: string) =>
-  db.recipe.update({
-    where: { id: recipeId },
-    data: { mealPlanMultiplier: null },
-  });
-
-export const updateRecipeMealPlan = (
-  recipeId: string,
-  mealPlanMultiplier: number
-) =>
-  db.recipe.update({
-    where: { id: recipeId },
-    data: { mealPlanMultiplier },
-  });
-
-export const getIngredientsByUserId = (userId: string) =>
-  db.ingredient.findMany({
-    where: {
-      recipe: {
-        userId,
-        mealPlanMultiplier: { not: null },
-      },
-    },
-    include: { recipe: { select: { name: true, mealPlanMultiplier: true } } },
-  });
-
-export const getPantryItemsByUserId = (userId: string) =>
-  db.pantryItem.findMany({ where: { userId } });
-
-export const createPantryItem = (
-  userId: string,
-  name: string,
-  shelfId: string
-) => db.pantryItem.create({ data: { userId, name, shelfId } });
-
-export const getPantryShelfByName = (userId: string, shelfName: string) =>
-  db.pantryShelf.findFirst({ where: { userId, name: shelfName } });
-
-export const createPantryShelf = (userId: string, shelfName: string) =>
-  db.pantryShelf.create({ data: { userId, name: shelfName } });
-
-export const clearMealPlan = (userId: string) =>
-  db.recipe.updateMany({
-    where: { userId, mealPlanMultiplier: { not: null } },
-    data: { mealPlanMultiplier: null },
-  });
+export const deleteIngredient = (ingredientId: string) =>
+  handleDelete(() => db.ingredient.delete({ where: { id: ingredientId } }));
