@@ -28,7 +28,7 @@ import {
 import { FieldErrors, validateForm } from "~/utils/validation";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 import { canChangeRecipe } from "~/utils/abilities.server";
-import { deleteImages, saveRecipeImage } from "~/utils/files/image-upload";
+import { deleteImages, saveRecipeImage } from "~/utils/files/images";
 
 import RecipeName from "~/components/recipes/recipe-detail/recipe-name";
 import RecipeTotalTime from "~/components/recipes/recipe-detail/recipe-total-time";

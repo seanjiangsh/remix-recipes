@@ -1,9 +1,11 @@
 import fse from "fs-extra";
+import mime from "mime";
 import {
   S3Client,
   ListObjectsV2Command,
   DeleteObjectCommand,
   PutObjectCommand,
+  GetObjectCommand,
 } from "@aws-sdk/client-s3";
 
 const { ARC_ENV, AWS_REGION, S3_STATIC_BUCKET } = process.env;
@@ -18,8 +20,8 @@ if (typeof ARC_STATIC_BUCKET !== "string" || typeof AWS_REGION !== "string") {
   throw new Error(msg);
 }
 
-const LOCAL_DIR = "public/images";
-const S3_DIR = "images";
+const LOCAL_DIR = "../public/recipe-images";
+const S3_DIR = "recipe-images";
 
 type SaveImageArgs = { recipeId: string; image: File };
 
@@ -79,9 +81,7 @@ export const deleteImages = async (recipeId: string) => {
 };
 
 const deleteImagesLocal = async (recipeId: string) => {
-  const images = fse
-    .readdirSync(LOCAL_DIR)
-    .filter((f) => f.startsWith(recipeId));
+  const images = getImagesLocal(recipeId);
   if (!images.length) return;
 
   const removeCmds = images.map((f) => fse.remove(`${LOCAL_DIR}/${f}`));
@@ -102,3 +102,43 @@ const deleteImagesS3 = async (recipeId: string) => {
   });
   await Promise.all(deleteCmds);
 };
+
+export const getImage = (recipeId: string) => {
+  return isDev ? getImageLocal(recipeId) : getImageS3(recipeId);
+};
+
+type GetImageResult = { mime: string; buffer: Buffer };
+
+const getImageLocal = async (
+  recipeId: string
+): Promise<GetImageResult | undefined> => {
+  const images = getImagesLocal(recipeId);
+  if (!images.length) return;
+
+  const image = images[0];
+  const mimeType = mime.getType(image);
+  if (!mimeType) return;
+  const buffer = await fse.readFile(`${LOCAL_DIR}/${image}`);
+  return { mime: mimeType, buffer };
+};
+
+const getImageS3 = async (
+  recipeId: string
+): Promise<GetImageResult | undefined> => {
+  const s3Client = new S3Client();
+  const Bucket = ARC_STATIC_BUCKET;
+  const Prefix = `${S3_DIR}/${recipeId}`;
+  const listCmd = new ListObjectsV2Command({ Bucket, Prefix });
+  const { Contents: s3Files } = await s3Client.send(listCmd);
+  if (!s3Files || !s3Files.length) return;
+
+  const Key = s3Files[0].Key;
+  const getCmd = new GetObjectCommand({ Bucket, Key });
+  const { ContentType, Body } = await s3Client.send(getCmd);
+  if (!ContentType || !Body) return;
+  const buffer = Buffer.from(await Body.transformToByteArray());
+  return { mime: ContentType, buffer };
+};
+
+const getImagesLocal = (recipeId: string) =>
+  fse.readdirSync(LOCAL_DIR).filter((f) => f.startsWith(recipeId));
