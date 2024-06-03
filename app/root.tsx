@@ -36,7 +36,10 @@ export const meta: MetaFunction = () => [
   { name: "description", content: "Welcome to the Remix Recipes app!" },
 ];
 
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: "/theme.css" },
+  { rel: "stylesheet", href: styles },
+];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getCurrentUser(request);
