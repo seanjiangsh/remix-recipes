@@ -9,4 +9,6 @@ const options = {
   secure: true,
 };
 
-export const sessionCookie = createCookie("remix-recipes_session", options);
+export const sessionCookie = createCookie("remix-recipes__session", options);
+
+export const themeCookie = createCookie("remix-recipes__theme");
