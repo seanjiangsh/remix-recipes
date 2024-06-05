@@ -3,8 +3,16 @@ import { json } from "@remix-run/node";
 import dynamoose from "dynamoose";
 import { ObjectType } from "dynamoose/dist/General";
 
-import { Recipe, Ingredient, RecipeModel, IngredientModel } from "./schema";
+import {
+  Recipe,
+  Ingredient,
+  RecipeModel,
+  IngredientModel,
+  RecipeWithIngredients,
+  RecipesWithUsers,
+} from "./schema";
 import { sortDataByCreatedDate } from "../utils";
+import { User, UserModel } from "../user/schema";
 
 // * Recipes
 export const getRecipe = async (recipeId: string) => {
@@ -32,7 +40,27 @@ export const getRecipes = async (
   });
 };
 
-type RecipeWithIngredients = Recipe & { ingredients: Array<Ingredient> };
+export const getLatestRecipes = async (
+  limit = 25
+): Promise<RecipesWithUsers> => {
+  // TODO: sort by updatedAt?
+  // const query = RecipeModel.query("updatedAt")
+  //   .exists()
+  //   .sort("descending")
+  //   .limit(limit);
+  // const recipeData = await query.exec();
+
+  const recipeData = await RecipeModel.scan().limit(limit).exec();
+  const recipes = recipeData.toJSON() as Array<Recipe>;
+  const userIds = Array.from(new Set(recipes.map((r) => r.userId)));
+  const users = await UserModel.batchGet(userIds);
+  const recipeWithUsers = recipes.map((recipe) => {
+    const user = users.find((u) => u.id === recipe.userId);
+    return { ...recipe, user: user?.toJSON() as User };
+  });
+  return recipeWithUsers;
+};
+
 export const getRecipeWithIngredients = async (
   recipeId: string
 ): Promise<RecipeWithIngredients | undefined> => {
