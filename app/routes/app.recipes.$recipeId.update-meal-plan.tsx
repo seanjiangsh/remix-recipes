@@ -1,4 +1,4 @@
-import { ActionFunction, json, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
 import ReactModal from "react-modal";
 import { z } from "zod";
@@ -10,6 +10,7 @@ import {
   updateRecipeMealPlan,
   removeRecipeFromMealPlan,
 } from "~/utils/ddb/recipe/models";
+import { badRequest } from "~/utils/route";
 
 import { DeleteButton, PrimaryButton } from "~/components/buttons/buttons";
 import { IconInput } from "~/components/form/Inputs";
@@ -23,8 +24,10 @@ const updateMealPlanSchema = z.object({
 });
 const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
 
-export const action: ActionFunction = async ({ request, params }) => {
-  const recipeId = params.recipeId as string; // * from the route
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+  const { recipeId } = params;
+  if (!recipeId) throw badRequest("recipeId");
+
   await canChangeRecipe(request, recipeId);
 
   const formData = await request.formData();

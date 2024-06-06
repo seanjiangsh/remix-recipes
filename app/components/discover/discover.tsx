@@ -43,11 +43,12 @@ export function DiscoverListItem({ recipe }: DiscoverListItemProps) {
 
 type DiscoverRecipeHeaderProps = { recipe: Recipe };
 export function DiscoverRecipeHeader({ recipe }: DiscoverRecipeHeaderProps) {
+  const { name, imageUrl, totalTime } = recipe;
   return (
     <div className="relative">
       <img
-        src={recipe.imageUrl}
-        alt={`recipe named ${recipe.name}`}
+        src={`/images/${imageUrl}`}
+        alt={`recipe named ${name}`}
         className="h-44 w-full object-cover"
       />
       <div
@@ -56,10 +57,10 @@ export function DiscoverRecipeHeader({ recipe }: DiscoverRecipeHeaderProps) {
           "flex flex-col justify-center p-4"
         )}
       >
-        <h1 className="text-4xl font-bold mb-4">{recipe.name}</h1>
+        <h1 className="text-4xl font-bold mb-4">{name}</h1>
         <div className="flex font-light text-gray-900">
           <TimeIcon />
-          <p className="pl-2">{recipe.totalTime}</p>
+          <p className="pl-2">{totalTime}</p>
         </div>
       </div>
     </div>
@@ -68,11 +69,12 @@ export function DiscoverRecipeHeader({ recipe }: DiscoverRecipeHeaderProps) {
 
 type DiscoverRecipeDetailsProps = { recipe: RecipeWithIngredients };
 export function DiscoverRecipeDetails({ recipe }: DiscoverRecipeDetailsProps) {
+  const { ingredients, instructions } = recipe;
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold">Ingredients</h2>
       <ul className="py-4">
-        {recipe.ingredients.map((ingredient) => (
+        {ingredients.map((ingredient) => (
           <li
             key={ingredient.id}
             className="py-1"
@@ -80,7 +82,7 @@ export function DiscoverRecipeDetails({ recipe }: DiscoverRecipeDetailsProps) {
         ))}
       </ul>
       <h2 className="text-xl font-bold pb-4">Instructions</h2>
-      {recipe.instructions.split("\n").map((paragraph, idx) =>
+      {instructions.split("\n").map((paragraph, idx) =>
         paragraph === "" ? null : (
           <p key={idx} className="pb-6">
             {paragraph}
