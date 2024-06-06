@@ -6,10 +6,7 @@ import { z } from "zod";
 import { canChangeRecipe } from "~/utils/abilities.server";
 import { FieldErrors, validateForm } from "~/utils/validation";
 import { useRecipeContext } from "~/hooks/recipes/recipes.hooks";
-import {
-  updateRecipeMealPlan,
-  removeRecipeFromMealPlan,
-} from "~/utils/ddb/recipe/models";
+import { updateRecipeMealPlan } from "~/utils/ddb/recipe/models";
 import { badRequest } from "~/utils/route";
 
 import { DeleteButton, PrimaryButton } from "~/components/buttons/buttons";
@@ -42,7 +39,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       return validateForm(formData, updateMealPlanSchema, successFn, errorFn);
     }
     case "removeFormMealPlan": {
-      await removeRecipeFromMealPlan(recipeId);
+      await updateRecipeMealPlan(recipeId, 0);
       return redirect("..");
     }
     default: {

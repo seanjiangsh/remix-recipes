@@ -113,8 +113,8 @@ export const action: ActionFunction = async ({ request, params }) => {
   const formData = await request.formData();
   const action = formData.get("_action");
   const image = formData.get("image") as File | null;
-
-  if (action === "saveRecipe" && image) {
+  console.log(image);
+  if (action === "saveRecipe" && image?.size) {
     if (image.size > 2 * 1024 * 1024)
       throw badRequestWithMessage("Image must be smaller than 2MB");
     const fileName = await saveRecipeImage({ recipeId, image });

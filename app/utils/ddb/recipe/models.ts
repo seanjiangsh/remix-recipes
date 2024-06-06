@@ -1,6 +1,5 @@
 import { randomUUID } from "crypto";
 import dynamoose from "dynamoose";
-import { ObjectType } from "dynamoose/dist/General";
 
 import { notFound } from "~/utils/route";
 import {
@@ -16,8 +15,8 @@ import { User, UserModel } from "../user/schema";
 
 // * Recipes
 export const getRecipe = async (recipeId: string) => {
-  const data = await RecipeModel.get(recipeId);
-  return data?.toJSON() as Recipe | undefined;
+  const data = await RecipeModel.query("id").eq(recipeId).exec();
+  return data[0]?.toJSON() as Recipe | undefined;
 };
 
 type GetRecipesConditions = { name?: string; mealPlanOnly?: boolean };
@@ -33,7 +32,7 @@ export const getRecipes = async (
   const recipes = recipeData.toJSON() as Array<Recipe>;
   return recipes.sort((a, b) => {
     // First sort by createdDate
-    const dateComparison = sortDataByCreatedDate(a, b);
+    const dateComparison = sortDataByCreatedDate(a, b, true);
     if (dateComparison !== 0) return dateComparison;
     // If createdDate is the same, sort by name
     return a.name.localeCompare(b.name);
@@ -43,14 +42,12 @@ export const getRecipes = async (
 export const getLatestRecipes = async (
   limit = 25
 ): Promise<RecipesWithUsers> => {
-  // TODO: sort by updatedAt?
-  // const query = RecipeModel.query("updatedAt")
-  //   .exists()
-  //   .sort("descending")
-  //   .limit(limit);
-  // const recipeData = await query.exec();
-
-  const recipeData = await RecipeModel.scan().limit(limit).exec();
+  const query = RecipeModel.query("dummyIndex")
+    .eq("DUMMY_INDEX")
+    .sort("descending")
+    .limit(limit);
+  const recipeData = await query.exec();
+  // const recipeData = await RecipeModel.scan().limit(limit).exec();
   const recipes = recipeData.toJSON() as Array<Recipe>;
   const userIds = Array.from(new Set(recipes.map((r) => r.userId)));
   const users = await UserModel.batchGet(userIds);
@@ -64,9 +61,8 @@ export const getLatestRecipes = async (
 export const getRecipeWithIngredients = async (
   recipeId: string
 ): Promise<RecipeWithIngredients | undefined> => {
-  const recipeData = await RecipeModel.get(recipeId);
-  if (!recipeData) return;
-  const recipe = recipeData.toJSON() as Recipe;
+  const recipe = await getRecipe(recipeId);
+  if (!recipe) return;
   const ingredients = await getIngredientsByRecipeId(recipe.id);
   return { ...recipe, ingredients };
 };
@@ -90,10 +86,33 @@ export const createRecipe = async (userId: string) => {
   const names = { name, lowercaseName };
   const instructions = "";
   const totalTime = "0 min";
-  const imageUrl = "https://via.placeholder.com/150?text=Remix+Recipes";
-  const data = { id, userId, ...names, instructions, totalTime, imageUrl };
+  const imageUrl = "recipe-placeholder.png";
+  const createdAt = new Date().toISOString();
+  const defaultVals = { instructions, totalTime, imageUrl, createdAt };
+  const data = { id, userId, ...names, ...defaultVals };
   const recipeModel = await RecipeModel.create(data);
   return recipeModel.toJSON() as Recipe;
+};
+
+const getDeleteRecipeTrans = (recipe: Recipe) => {
+  const oldUpdatedAt = recipe.updatedAt;
+  if (!oldUpdatedAt) throw new Error("Recipe updatedAt is missing");
+
+  const updatedAt = new Date(oldUpdatedAt).getTime();
+  const deleteKeys = { id: recipe.id, updatedAt };
+  return RecipeModel.transaction.delete(deleteKeys);
+};
+
+const getRecreateRecipeTrans = (oldRecipe: Recipe, newRecipe: Recipe) => {
+  const deleteTrans = getDeleteRecipeTrans(oldRecipe);
+  const newData: Recipe = { ...newRecipe, createdAt: oldRecipe.createdAt };
+  const createTrans = RecipeModel.transaction.create(newData);
+  return [deleteTrans, createTrans];
+};
+
+const recreateRecipe = async (oldRecipe: Recipe, newRecipe: Recipe) => {
+  const trans = getRecreateRecipeTrans(oldRecipe, newRecipe);
+  await dynamoose.transaction(trans);
 };
 
 type SaveRecipeData = {
@@ -112,14 +131,14 @@ export const saveRecipe = async (
     const recipe = await getRecipe(recipeId);
     if (!recipe) throw notFound("Recipe");
 
-    const { ingredientAmounts, ingredientNames } = saveRecipeData;
     // * recipe
-    const recipeTranId = { id: recipeId };
     const names = { name, lowercaseName: name.toLowerCase() };
-    const recipeData: ObjectType = { $SET: { ...names } };
-    if (imageUrl) recipeData.$SET.imageUrl = imageUrl;
-    const recipeTran = RecipeModel.transaction.update(recipeTranId, recipeData);
+    const newRecipe: Recipe = { ...recipe, ...names };
+    if (imageUrl) newRecipe.imageUrl = imageUrl;
+    const recipeTrans = getRecreateRecipeTrans(recipe, newRecipe);
+
     // * ingredients
+    const { ingredientAmounts, ingredientNames } = saveRecipeData;
     const ingredientIds = saveRecipeData.ingredientIds || [];
     const ingredientTrans = ingredientIds.map((id, idx) => {
       const amount = ingredientAmounts?.[idx] || "";
@@ -128,7 +147,9 @@ export const saveRecipe = async (
       const tranData = { $SET: data };
       return IngredientModel.transaction.update({ id }, tranData);
     });
-    await dynamoose.transaction([recipeTran, ...ingredientTrans]);
+
+    const trans = [...recipeTrans, ...ingredientTrans];
+    await dynamoose.transaction(trans);
     return await getRecipeWithIngredients(recipeId);
   } catch (error) {
     console.error("Error saving recipe", error);
@@ -146,20 +167,22 @@ export const saveRecipeField = async (
 ) => {
   const recipe = await getRecipe(recipeId);
   if (!recipe) throw notFound("Recipe");
+
+  const newRecipe: Recipe = { ...recipe, ...fieldData };
   const [fieldKey, fieldValue] = Object.entries(fieldData)[0];
-  let data: Partial<Recipe> = fieldData;
-  if (fieldKey === "name") {
-    const lowercaseName = fieldValue.toLowerCase();
-    data = { ...fieldData, lowercaseName };
-  }
-  const recipeModel = await RecipeModel.update(recipeId, data);
-  return recipeModel.toJSON() as Recipe;
+  if (fieldKey === "name") newRecipe.lowercaseName = fieldValue.toLowerCase();
+
+  await recreateRecipe(recipe, newRecipe);
+  return newRecipe;
 };
 
 export const deleteRecipe = async (recipeId: string) => {
   const recipe = await getRecipe(recipeId);
   if (!recipe) throw notFound("Recipe");
-  await RecipeModel.delete(recipeId);
+
+  const deleteTrans = getDeleteRecipeTrans(recipe);
+  await dynamoose.transaction([deleteTrans]);
+
   return recipe;
 };
 
@@ -170,23 +193,15 @@ export const updateRecipeMealPlan = async (
 ) => {
   const recipe = await getRecipe(recipeId);
   if (!recipe) throw notFound("Recipe");
-  const newRecipe = await RecipeModel.update(recipeId, { mealPlanMultiplier });
-  return newRecipe.toJSON() as Recipe;
-};
-
-export const removeRecipeFromMealPlan = async (recipeId: string) => {
-  const recipe = await getRecipe(recipeId);
-  if (!recipe) throw notFound("Recipe");
-  const newRecipe = await RecipeModel.update(recipeId, {
-    mealPlanMultiplier: 0,
-  });
-  return newRecipe.toJSON() as Recipe;
+  const newRecipe = { ...recipe, mealPlanMultiplier };
+  await recreateRecipe(recipe, newRecipe);
+  return newRecipe;
 };
 
 export const clearMealPlan = async (userId: string) => {
   const recipesHasMealPlan = await getRecipes(userId, { mealPlanOnly: true });
   const ids = recipesHasMealPlan.map(({ id }) => id);
-  await Promise.all(ids.map(removeRecipeFromMealPlan));
+  await Promise.all(ids.map((id) => updateRecipeMealPlan(id, 0)));
 };
 
 // * Ingredients

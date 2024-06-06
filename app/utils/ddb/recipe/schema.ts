@@ -39,8 +39,28 @@ const recipeSchema = new db.Schema(
     totalTime: String,
     imageUrl: String,
     mealPlanMultiplier: Number,
+    // * since updatedAt is a rangeKey, the update operation will be delete and create
+    // * so the createdAt timestamp will need to be manually set
+    createdAt: String,
+    // * and we a dummy index to query all recipes with rangeKey
+    dummyIndex: {
+      type: String,
+      default: "DUMMY_INDEX",
+      index: {
+        name: "dummyIndex",
+        type: "global",
+        project: true,
+        rangeKey: "updatedAt",
+      },
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: {
+      updatedAt: {
+        updatedAt: { type: { value: Date }, rangeKey: true },
+      },
+    },
+  }
 );
 
 export const RecipeModel = db.model<Item & Recipe>(
