@@ -34,11 +34,14 @@ export const action: ActionFunction = async ({ request }) => {
   const successFn = async ({ email }: { email: string }) => {
     const nonce = uuid();
     session.set("nonce", nonce);
-    const repInit = { headers: { "Set-Cookie": await commitSession(session) } };
+    const headers = {
+      "Set-Cookie": await commitSession(session),
+      "Cache-Control": "max-age=60, stale-while-revalidate=86400",
+    };
     const link = generateMagicLink(email, nonce);
     try {
       await sendMagicLinkEmail(email, link);
-      return json("ok", repInit);
+      return json("ok", { headers });
     } catch (error) {
       console.error("send email failed", error);
       const msg =

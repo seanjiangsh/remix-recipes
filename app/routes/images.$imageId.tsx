@@ -10,7 +10,11 @@ export async function loader({ params }: LoaderFunctionArgs) {
     const image = await getImage(imageId);
     if (!image) throw notFound("Image");
     const { mime, buffer } = image;
-    const headers = { "Content-Type": mime };
+    const cacheControl = "max-age=60, stale-while-revalidate=86400";
+    const headers = {
+      "content-type": mime,
+      "cache-control": cacheControl,
+    };
     return new Response(buffer, { headers });
   } catch (error) {
     console.error("Error reading image:", error);

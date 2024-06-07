@@ -24,6 +24,12 @@ export default function handleRequest(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   loadContext: AppLoadContext
 ) {
+  const ifNoneMatch = request.headers.get("if-none-match");
+  const etag = responseHeaders.get("etag");
+  if (ifNoneMatch && etag && ifNoneMatch === etag) {
+    return new Response(null, { status: 304, headers: responseHeaders });
+  }
+
   return isbot(request.headers.get("user-agent") || "")
     ? handleBotRequest(
         request,
@@ -59,7 +65,7 @@ function handleBotRequest(
           const body = new PassThrough();
           const stream = createReadableStreamFromReadable(body);
 
-          responseHeaders.set("Content-Type", "text/html");
+          responseHeaders.set("content-type", "text/html");
 
           resolve(
             new Response(stream, {
@@ -109,7 +115,7 @@ function handleBrowserRequest(
           const body = new PassThrough();
           const stream = createReadableStreamFromReadable(body);
 
-          responseHeaders.set("Content-Type", "text/html");
+          responseHeaders.set("content-type", "text/html");
 
           resolve(
             new Response(stream, {

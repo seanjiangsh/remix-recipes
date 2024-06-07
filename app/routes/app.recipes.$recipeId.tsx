@@ -50,7 +50,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   if (!recipeId) throw badRequest("recipeId");
 
   const recipe = await getRecipeWithIngredients(recipeId);
-  const headers = { "Cache-Control": "max-age=10" };
+  const headers = {
+    "Cache-Control": "max-age=60, stale-while-revalidate=86400",
+  };
   if (!recipe) throw notFound("Recipe");
   if (recipe.userId !== user.id)
     throw unauthorized("You are not authorized to view this recipe");
