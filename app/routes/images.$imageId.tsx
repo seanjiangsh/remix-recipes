@@ -1,23 +1,23 @@
-import { json, LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs } from "@remix-run/node";
 
-import { canReadRecipeImage } from "~/utils/abilities.server";
 import { getImage } from "~/utils/files/images";
+import { badRequest, internalServerError, notFound } from "~/utils/route";
 
-const badRequest = json({ message: "imageId is required" }, { status: 400 });
-const notFound = json({ message: "Image not found" }, { status: 404 });
-
-export async function loader({ request, params }: LoaderFunctionArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
   const { imageId } = params;
-  if (!imageId) throw badRequest;
-  await canReadRecipeImage(request, imageId);
+  if (!imageId) throw badRequest("imageId");
   try {
     const image = await getImage(imageId);
-    if (!image) throw notFound;
+    if (!image) throw notFound("Image");
     const { mime, buffer } = image;
-    const headers = { "Content-Type": mime };
+    const cacheControl = "max-age=60, stale-while-revalidate=86400";
+    const headers = {
+      "content-type": mime,
+      "cache-control": cacheControl,
+    };
     return new Response(buffer, { headers });
   } catch (error) {
     console.error("Error reading image:", error);
-    throw json({ message: "Failed to read image" }, { status: 500 });
+    throw internalServerError("Failed to read image");
   }
 }

@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
@@ -63,7 +63,7 @@ const getGroceryTripShelfName = () => {
   return `Grocery Trip - ${date}`;
 };
 
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const user = await requireLoggedInUser(request);
   const formData = await request.formData();
   const action = formData.get("_action") as string;

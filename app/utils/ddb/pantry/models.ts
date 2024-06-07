@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { json } from "@remix-run/node";
 
+import { notFound } from "~/utils/route";
 import {
   PantryShelf,
   PantryShelfModel,
@@ -58,7 +58,7 @@ export const createNewPantryShelf = async (
 
 export const deletePantryShelf = async (shelfId: string) => {
   const shelf = await PantryShelfModel.get(shelfId);
-  if (!shelf) throw json({ error: "Shelf not found" }, { status: 404 });
+  if (!shelf) throw notFound("Shelf");
   const items = await getPantryItemsByShelfId(shelfId);
   await shelf.delete();
   await Promise.all(items.map((item) => deletePantryItem(item.id)));
@@ -69,7 +69,7 @@ export const deletePantryShelf = async (shelfId: string) => {
 
 export const savePantryShelfName = async (shelfId: string, name: string) => {
   const shelf = await PantryShelfModel.get(shelfId);
-  if (!shelf) throw json({ error: "Shelf not found" }, { status: 404 });
+  if (!shelf) throw notFound("Shelf");
   shelf.name = name;
   shelf.lowercaseName = name.toLowerCase();
   await shelf.save();
@@ -112,7 +112,7 @@ export const createPantryItem = async (
 
 export const deletePantryItem = async (itemId: string) => {
   const item = await PantryItemModel.get(itemId);
-  if (!item) throw json({ error: "Item not found" }, { status: 404 });
+  if (!item) throw notFound("Pantry item");
   await item.delete();
   return item.toJSON() as PantryItem;
 };

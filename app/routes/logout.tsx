@@ -5,9 +5,11 @@ import { destroySession, getSession } from "~/utils/auth/sessions";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const cookies = request.headers.get("cookie");
   const session = await getSession(cookies);
-  return json("ok", {
-    headers: { "Set-Cookie": await destroySession(session) },
-  });
+  const headers = {
+    "Set-Cookie": await destroySession(session),
+    "Cache-Control": "max-age=60, stale-while-revalidate=86400",
+  };
+  return json("ok", { headers });
 };
 
 export default function Logout() {

@@ -36,6 +36,7 @@ const deleteModelData = async (model: ModelType<Item & { id: string }>) => {
   }
 };
 
+// * not in use, migrate data manually for now
 const deleteData = async () => {
   console.log("Deleting data...");
 
@@ -51,7 +52,7 @@ const deleteData = async () => {
 export const seedData = async (user: User, isDevSeeding?: boolean) => {
   console.log("Seeding data...");
 
-  if (isDevSeeding) await deleteData();
+  // if (isDevSeeding) await deleteData();
   // * users
   await putData(UserModel, [user]);
   // * recipes

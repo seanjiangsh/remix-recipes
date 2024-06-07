@@ -13,7 +13,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       --color-primary: ${theme.colorPrimary};
       --color-primary-light: ${theme.colorPrimaryLight};
     }`;
-  const headers = { "Content-Type": "text/css" };
+  const headers = { "content-type": "text/css" };
   const response = new Response(data, { headers });
   return response;
 };

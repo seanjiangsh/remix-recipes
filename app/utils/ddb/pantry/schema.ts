@@ -18,14 +18,17 @@ const pantryShelfSchema = new db.Schema(
     userId: {
       type: String,
       index: { name: "userIdndex", type: "global", project: true },
+      required: true,
     },
     name: {
       type: String,
       index: { name: "nameIndex", type: "global", project: true },
+      required: true,
     },
     lowercaseName: {
       type: String,
       index: { name: "lowercaseNameIndex", type: "global", project: true },
+      required: true,
     },
   },
   { timestamps: true }

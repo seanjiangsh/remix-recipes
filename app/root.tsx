@@ -23,7 +23,6 @@ import { getCurrentUser } from "~/utils/auth/auth.server";
 import styles from "~/tailwind.css";
 import {
   DiscoverIcon,
-  HomeIcon,
   LoginIcon,
   LogoutIcon,
   RecipeBookIcon,
@@ -66,9 +65,6 @@ export default function Root() {
           )}
         >
           <ul className="flex md:flex-col">
-            <NavLink to="/">
-              <HomeIcon />
-            </NavLink>
             <NavLink to="discover">
               <DiscoverIcon />
             </NavLink>

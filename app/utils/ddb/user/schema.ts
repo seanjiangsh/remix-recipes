@@ -17,14 +17,17 @@ const userSchema = new db.Schema(
     email: {
       type: String,
       index: { name: "emailIndex", type: "global", project: true },
+      required: true,
     },
     firstName: {
       type: String,
       index: { name: "firstNameIndex", type: "global", project: true },
+      required: true,
     },
     lastName: {
       type: String,
       index: { name: "lastNameIndex", type: "global", project: true },
+      required: true,
     },
   },
   { timestamps: true }

@@ -15,8 +15,8 @@ export const getRecipes = (userId: string): Array<Recipe> => [
   {
     id: randomUUID(),
     userId,
-    name: "Buttermilk Pancakes (demo)",
-    lowercaseName: "buttermilk pancakes (demo)",
+    name: "Buttermilk Pancakes",
+    lowercaseName: "buttermilk pancakes",
     instructions:
       "Whisk together salt, baking powder, baking soda, four and sugar. In a separate bowl, combine eggs and buttermilk and drizzle in butter. With wooden spoon, combine wet and dry ingredients until just moistened.",
     totalTime: "15 min",
@@ -26,8 +26,8 @@ export const getRecipes = (userId: string): Array<Recipe> => [
   {
     id: randomUUID(),
     userId,
-    name: "French Dip Sandwiches (demo)",
-    lowercaseName: "french dip sandwiches (demo)",
+    name: "French Dip Sandwiches",
+    lowercaseName: "french dip sandwiches",
     totalTime: "4-10 hrs (crockpot)",
     instructions:
       "Place roast in slow cooker and sprinkle onion soup mix over the roast. Add water and beef broth. Cook on high for 4-6 hours or low for 8-10. Serve on rolls with swiss cheese.",
@@ -37,8 +37,8 @@ export const getRecipes = (userId: string): Array<Recipe> => [
   {
     id: randomUUID(),
     userId,
-    name: "Shepherds Pie (demo)",
-    lowercaseName: "shepherds pie (demo)",
+    name: "Shepherds Pie",
+    lowercaseName: "shepherds pie",
     totalTime: "40 min",
     instructions:
       "Brown ground beef with onion. Add brown sugar, vinegar, tomato soup and mustard. Pour into baking dish and top with mashed potatoes. Sprinkle with grated cheese and bake at 350 for 30 minutes.",
@@ -48,8 +48,8 @@ export const getRecipes = (userId: string): Array<Recipe> => [
   {
     id: randomUUID(),
     userId,
-    name: "Chicken Alfredo (demo)",
-    lowercaseName: "chicken alfredo (demo)",
+    name: "Chicken Alfredo",
+    lowercaseName: "chicken alfredo",
     instructions:
       "Melt butter in large pan. Add garlic and cook for 30 seconds. Whisk in flour and stir for another 30 seconds. Add cream cheese and stir until it starts to melt down. Pour in cream and parmesan and whisk until cream cheese is incorporated. Once the sauce has thickened, season with salt and pepper.\n\nCut chicken into thin pieces. In a shallow dish combine flour, 1 tsp salt and 1 tsp pepper. In another dish beat eggs. In a third dish combine bread crumbs and parmesan. Working with one piece at a time, dredge in flour, then egg, then bread crumb/parmesan mixture. Cover and place in a baking dish and bake at 350 for 50-60 minutes.\n\n(Sausage can also be added to this alfredo for a variation)",
     totalTime: "30 min",
@@ -317,20 +317,20 @@ export const getPantryShelves = (userId: string): Array<PantryShelf> => [
   {
     id: randomUUID(),
     userId,
-    name: "Dairy (demo)",
-    lowercaseName: "dairy (demo)",
+    name: "Dairy",
+    lowercaseName: "dairy",
   },
   {
     id: randomUUID(),
     userId,
-    name: "Fruits (demo)",
-    lowercaseName: "fruits (demo)",
+    name: "Fruits",
+    lowercaseName: "fruits",
   },
   {
     id: randomUUID(),
     userId,
-    name: "Meat (demo)",
-    lowercaseName: "meat (demo)",
+    name: "Meat",
+    lowercaseName: "meat",
   },
 ];
 

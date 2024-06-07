@@ -29,6 +29,13 @@ import { FieldErrors, validateForm } from "~/utils/validation";
 import { requireLoggedInUser } from "~/utils/auth/auth.server";
 import { canChangeRecipe } from "~/utils/abilities.server";
 import { deleteImages, saveRecipeImage } from "~/utils/files/images";
+import {
+  badRequest,
+  badRequestWithMessage,
+  internalServerError,
+  notFound,
+  unauthorized,
+} from "~/utils/route";
 
 import RecipeName from "~/components/recipes/recipe-detail/recipe-name";
 import RecipeTotalTime from "~/components/recipes/recipe-detail/recipe-total-time";
@@ -39,16 +46,16 @@ import { ImageInput } from "~/components/form/Inputs";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const user = await requireLoggedInUser(request);
-  const recipeId = params.recipeId || "";
+  const { recipeId } = params;
+  if (!recipeId) throw badRequest("recipeId");
+
   const recipe = await getRecipeWithIngredients(recipeId);
-  const headers = { "Cache-Control": "max-age=10" };
-  if (!recipe) {
-    throw json({ message: "Recipe not found" }, { status: 404 });
-  }
-  if (recipe.userId !== user.id) {
-    const message = "You are not authorized to view this recipe";
-    throw json({ message }, { status: 401 });
-  }
+  const headers = {
+    "Cache-Control": "max-age=60, stale-while-revalidate=86400",
+  };
+  if (!recipe) throw notFound("Recipe");
+  if (recipe.userId !== user.id)
+    throw unauthorized("You are not authorized to view this recipe");
   return json({ recipe }, { headers });
 };
 
@@ -100,22 +107,20 @@ const createIngredientSchema = z.object({
 const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
 
 export const action: ActionFunction = async ({ request, params }) => {
-  const recipeId = params.recipeId as string; // * from the route
+  const recipeId = params.recipeId;
+  if (!recipeId) throw badRequest("recipeId");
+
   await canChangeRecipe(request, recipeId);
 
   const formData = await request.formData();
   const action = formData.get("_action");
   const image = formData.get("image") as File | null;
 
-  if (action === "saveRecipe" && image) {
+  if (action === "saveRecipe" && image?.size) {
     if (image.size > 2 * 1024 * 1024)
-      throw json(
-        { message: "Image must be smaller than 2MB" },
-        { status: 400 }
-      );
+      throw badRequestWithMessage("Image must be smaller than 2MB");
     const fileName = await saveRecipeImage({ recipeId, image });
-    if (!fileName)
-      throw json({ message: "Error saving image" }, { status: 500 });
+    if (!fileName) throw internalServerError("Error saving image");
     formData.set("imageUrl", fileName);
   }
   if (typeof action === "string" && action.startsWith("deleteIngredient")) {
