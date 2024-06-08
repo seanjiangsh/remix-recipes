@@ -4,8 +4,7 @@ import { createUser, getUserByEmail } from "~/utils/ddb/user/models";
 import { commitSession, getSession } from "~/utils/auth/sessions";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const { searchParams } = url;
+  const { searchParams } = new URL(request.url);
   const email = searchParams.get("email");
   const firstName = searchParams.get("firstName");
   const lastName = searchParams.get("lastName");
