@@ -23,5 +23,5 @@ export const getUserByEmail = async (email: string) => {
   const data = await UserModel.query("email").eq(email).exec();
   const user = data[0];
   if (!user) return;
-  return user.toJSON() as User;
+  return user.toJSON() as User | undefined;
 };
