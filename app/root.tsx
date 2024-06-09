@@ -47,7 +47,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return json({ isLoggedIn: !!user });
   } catch (err) {
     const msg = `Error getting user on root route: ${err}`;
-    fse.appendFileSync("error.log", msg);
+    const dir = "logs";
+    const file = "error.log";
+    await fse.ensureDir(dir);
+    fse.appendFileSync(`${dir}/${file}`, msg);
     console.error(msg);
     return json({ isLoggedIn: false });
   }

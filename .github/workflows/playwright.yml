@@ -48,6 +48,6 @@ jobs:
         with:
           name: artifacts
           path: |
-            playwright-report
-            error.log
+            playwright-report/
+            logs/
           retention-days: 30
