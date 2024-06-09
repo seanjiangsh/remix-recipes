@@ -42,6 +42,12 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const msg = `Testing logging from loader function: ${new Date().toISOString()}`;
+  const dir = "logs";
+  const file = "info.log";
+  await fse.ensureDir(dir);
+  fse.appendFileSync(`${dir}/${file}`, msg);
+
   try {
     const user = await getCurrentUser(request);
     return json({ isLoggedIn: !!user });
