@@ -46,6 +46,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: artifacts
+          path: |
+            playwright-report
+            error.log
           retention-days: 30
