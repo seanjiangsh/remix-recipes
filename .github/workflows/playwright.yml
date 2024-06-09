@@ -24,6 +24,11 @@ jobs:
       - name: Run dev server
         run: npm run dev &
 
+      - name: List all files 1
+        run: |
+          mkdir -p logs
+          ls -al > logs/ls-1.txt
+
       - name: Check server health
         run: |
           for i in {1..30}; do
@@ -35,6 +40,8 @@ jobs:
             sleep 1
           done
           echo "Server did not start within 30 seconds"
+          mkdir -p logs
+          ls -al > logs/ls-2.txt
           exit 1
 
       - name: Install Playwright Browsers
