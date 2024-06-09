@@ -21,6 +21,22 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Run dev server
+        run: npm run dev &
+
+      - name: Check server health
+        run: |
+          for i in {1..30}; do
+            if curl -f http://localhost:3000; then
+              echo "Server is up and running"
+              exit 0
+            fi
+            echo "Server not ready yet"
+            sleep 1
+          done
+          echo "Server did not start within 30 seconds"
+          exit 1
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
