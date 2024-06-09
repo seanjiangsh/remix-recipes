@@ -36,6 +36,7 @@ export default function ShelfName({ shelf }: ShelfNameProps) {
           type="text"
           name="shelfName"
           placeholder="Shelf Name"
+          aria-label="Shelf Name"
           autoComplete="off"
           className="text-2xl font-extrabold"
           defaultValue={name}

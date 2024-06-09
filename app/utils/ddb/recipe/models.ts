@@ -180,6 +180,9 @@ export const deleteRecipe = async (recipeId: string) => {
   const recipe = await getRecipe(recipeId);
   if (!recipe) throw notFound("Recipe");
 
+  const ingredients = await getIngredientsByRecipeId(recipeId);
+  await Promise.all(ingredients.map((i) => deleteIngredient(i.id)));
+
   const deleteTrans = getDeleteRecipeTrans(recipe);
   await dynamoose.transaction([deleteTrans]);
 
