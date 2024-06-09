@@ -22,6 +22,9 @@ jobs:
         run: npm install
 
       - name: Run dev server
+        run: |
+          mkdir -p logs
+          npm run dev > logs/server.log &
         env:
           AUTH_COOKIE_SECRET: ${{ secrets.AUTH_COOKIE_SECRET }}
           MAGIC_LINK_SECRET: ${{ secrets.MAGIC_LINK_SECRET }}
@@ -29,9 +32,6 @@ jobs:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           S3_STATIC_BUCKET: ${{ secrets.S3_STATIC_BUCKET }}
-        run: |
-          mkdir -p logs
-          npm run dev > logs/server.log &
 
       - name: Check server health
         run: |
