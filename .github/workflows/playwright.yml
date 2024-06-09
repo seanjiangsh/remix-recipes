@@ -22,16 +22,22 @@ jobs:
         run: npm install
 
       - name: Run dev server
-        run: |
-          mkdir -p logs
-          npm run dev > logs/server.log &
         env:
           AUTH_COOKIE_SECRET: ${{ secrets.AUTH_COOKIE_SECRET }}
           MAGIC_LINK_SECRET: ${{ secrets.MAGIC_LINK_SECRET }}
-          ORIGIN: http://localhost:3000
+          ORIGIN: ${{ secrets.ORIGIN }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           S3_STATIC_BUCKET: ${{ secrets.S3_STATIC_BUCKET }}
+        run: |
+          echo "AUTH_COOKIE_SECRET=$AUTH_COOKIE_SECRET" > .env
+          echo "MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET" >> .env
+          echo "ORIGIN=$ORIGIN" >> .env
+          echo "BREVO_API_KEY=$BREVO_API_KEY" >> .env
+          echo "AWS_REGION=$AWS_REGION" >> .env
+          echo "S3_STATIC_BUCKET=$S3_STATIC_BUCKET" >> .env
+          mkdir -p logs
+          npm run dev > logs/server.log &
 
       - name: Check server health
         run: |
