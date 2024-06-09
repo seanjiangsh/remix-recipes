@@ -22,7 +22,7 @@ jobs:
         run: npm install
 
       - name: Run dev server
-        run: npm run dev &
+        run: npm run dev > logs/server.log &
 
       - name: List all files 1
         run: |
