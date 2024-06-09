@@ -17,7 +17,6 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import classNames from "classnames";
-import fse from "fs-extra";
 
 import { getCurrentUser } from "~/utils/auth/auth.server";
 
@@ -42,24 +41,8 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const msg = `Testing logging from loader function: ${new Date().toISOString()}`;
-  const dir = "logs";
-  const file = "info.log";
-  await fse.ensureDir(dir);
-  fse.appendFileSync(`${dir}/${file}`, msg);
-
-  try {
-    const user = await getCurrentUser(request);
-    return json({ isLoggedIn: !!user });
-  } catch (err) {
-    const msg = `Error getting user on root route: ${err}`;
-    const dir = "logs";
-    const file = "error.log";
-    await fse.ensureDir(dir);
-    fse.appendFileSync(`${dir}/${file}`, msg);
-    console.error(msg);
-    return json({ isLoggedIn: false });
-  }
+  const user = await getCurrentUser(request);
+  return json({ isLoggedIn: !!user });
 };
 
 export default function Root() {

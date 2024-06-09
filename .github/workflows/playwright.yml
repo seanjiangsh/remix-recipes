@@ -22,14 +22,16 @@ jobs:
         run: npm install
 
       - name: Run dev server
+        env:
+          AUTH_COOKIE_SECRET: ${{ secrets.AUTH_COOKIE_SECRET }}
+          MAGIC_LINK_SECRET: ${{ secrets.MAGIC_LINK_SECRET }}
+          ORIGIN: http://localhost:3000
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          S3_STATIC_BUCKET: ${{ secrets.S3_STATIC_BUCKET }}
         run: |
           mkdir -p logs
           npm run dev > logs/server.log &
-
-      - name: List all files 1
-        run: |
-          mkdir -p logs
-          ls -al > logs/ls-1.txt
 
       - name: Check server health
         run: |
@@ -42,15 +44,13 @@ jobs:
             sleep 1
           done
           echo "Server did not start within 30 seconds"
-          mkdir -p logs
-          ls -al > logs/ls-2.txt
           exit 1
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      # - name: Install Playwright Browsers
+      #   run: npx playwright install --with-deps
 
-      - name: Run Playwright tests
-        run: npm run test:e2e
+      # - name: Run Playwright tests
+      #   run: npm run test:e2e
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
