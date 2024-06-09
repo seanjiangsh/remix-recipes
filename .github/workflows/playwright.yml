@@ -27,7 +27,7 @@ jobs:
       - name: Check server health
         run: |
           for i in {1..30}; do
-            if curl -f http://localhost:3000; then
+            if curl -f -v http://localhost:3000; then
               echo "Server is up and running"
               exit 0
             fi
