@@ -41,8 +41,13 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const user = await getCurrentUser(request);
-  return json({ isLoggedIn: !!user });
+  try {
+    const user = await getCurrentUser(request);
+    return json({ isLoggedIn: !!user });
+  } catch (err) {
+    console.error(`Error getting user on root route: ${err}`);
+    return json({ isLoggedIn: false });
+  }
 };
 
 export default function Root() {

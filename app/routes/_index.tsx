@@ -1,3 +1,3 @@
-import { redirect } from "@remix-run/node";
+import { LoaderFunction, redirect } from "@remix-run/node";
 
-export const loader = () => redirect("/discover");
+export const loader: LoaderFunction = () => redirect("/discover");
