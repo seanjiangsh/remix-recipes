@@ -21,14 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run dev server
-        env:
-          AUTH_COOKIE_SECRET: ${{ secrets.AUTH_COOKIE_SECRET }}
-          MAGIC_LINK_SECRET: ${{ secrets.MAGIC_LINK_SECRET }}
-          ORIGIN: ${{ secrets.ORIGIN }}
-          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          S3_STATIC_BUCKET: ${{ secrets.S3_STATIC_BUCKET }}
+      - name: Create .env file from secrets
         run: |
           echo "AUTH_COOKIE_SECRET=$AUTH_COOKIE_SECRET" > .env
           echo "MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET" >> .env
@@ -36,27 +29,30 @@ jobs:
           echo "BREVO_API_KEY=$BREVO_API_KEY" >> .env
           echo "AWS_REGION=$AWS_REGION" >> .env
           echo "S3_STATIC_BUCKET=$S3_STATIC_BUCKET" >> .env
-          mkdir -p logs
-          npm run dev > logs/server.log &
 
-      - name: Check server health
-        run: |
-          for i in {1..30}; do
-            if curl -f -v http://localhost:3000; then
-              echo "Server is up and running"
-              exit 0
-            fi
-            echo "Server not ready yet"
-            sleep 1
-          done
-          echo "Server did not start within 30 seconds"
-          exit 1
+      # - name: Run dev server
+      #   run: |
+      #     mkdir -p logs
+      #     npm run dev > logs/server.log &
 
-      # - name: Install Playwright Browsers
-      #   run: npx playwright install --with-deps
+      # - name: Check server health
+      #   run: |
+      #     for i in {1..30}; do
+      #       if curl -f -v http://localhost:3000; then
+      #         echo "Server is up and running"
+      #         exit 0
+      #       fi
+      #       echo "Server not ready yet"
+      #       sleep 1
+      #     done
+      #     echo "Server did not start within 30 seconds"
+      #     exit 1
 
-      # - name: Run Playwright tests
-      #   run: npm run test:e2e
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
