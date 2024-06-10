@@ -10,6 +10,14 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      AUTH_COOKIE_SECRET: ${{ secrets.AUTH_COOKIE_SECRET }}
+      MAGIC_LINK_SECRET: ${{ secrets.MAGIC_LINK_SECRET }}
+      ORIGIN: ${{ secrets.ORIGIN }}
+      BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      S3_STATIC_BUCKET: ${{ secrets.S3_STATIC_BUCKET }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,10 +38,11 @@ jobs:
           echo "AWS_REGION=$AWS_REGION" >> .env
           echo "S3_STATIC_BUCKET=$S3_STATIC_BUCKET" >> .env
 
-      - name: List all files
+      - name: Store log files
         run: |
           mkdir -p logs
           ls -al > logs/ls.txt
+          cat .env > logs/env.txt
 
       # - name: Run dev server
       #   run: |

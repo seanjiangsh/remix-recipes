@@ -1,6 +1,5 @@
 import { createCookie } from "@remix-run/node";
 
-console.log(process.env);
 if (typeof process.env.AUTH_COOKIE_SECRET !== "string")
   throw new Error("AUTH_COOKIE_SECRET must be defined in your .env file");
 
