@@ -31,20 +31,22 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # - name: Create .env file from secrets
-      #   run: |
-      #     echo "AUTH_COOKIE_SECRET=$AUTH_COOKIE_SECRET" > .env
-      #     echo "MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET" >> .env
-      #     echo "ORIGIN=$ORIGIN" >> .env
-      #     echo "BREVO_API_KEY=$BREVO_API_KEY" >> .env
-      #     echo "AWS_REGION=$AWS_REGION" >> .env
-      #     echo "S3_STATIC_BUCKET=$S3_STATIC_BUCKET" >> .env
+      - name: Create .env file from secrets
+        run: |
+          echo "AUTH_COOKIE_SECRET=$AUTH_COOKIE_SECRET" > .env
+          echo "MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET" >> .env
+          echo "ORIGIN=$ORIGIN" >> .env
+          echo "BREVO_API_KEY=$BREVO_API_KEY" >> .env
+          echo "AWS_REGION=$AWS_REGION" >> .env
+          echo "S3_STATIC_BUCKET=$S3_STATIC_BUCKET" >> .env
+          echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> .env
+          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY " >> .env
 
-      # - name: Store log files
-      #   run: |
-      #     mkdir -p logs
-      #     ls -al > logs/ls.txt
-      #     cat .env > logs/env.txt
+      - name: Store log files
+        run: |
+          mkdir -p logs
+          ls -al > logs/ls.txt
+          cat .env > logs/env.txt
 
       # - name: Run dev server
       #   run: |
