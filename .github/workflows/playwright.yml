@@ -17,6 +17,8 @@ jobs:
       BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
       S3_STATIC_BUCKET: ${{ secrets.S3_STATIC_BUCKET }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
       - name: Checkout code
@@ -29,20 +31,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Create .env file from secrets
-        run: |
-          echo "AUTH_COOKIE_SECRET=$AUTH_COOKIE_SECRET" > .env
-          echo "MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET" >> .env
-          echo "ORIGIN=$ORIGIN" >> .env
-          echo "BREVO_API_KEY=$BREVO_API_KEY" >> .env
-          echo "AWS_REGION=$AWS_REGION" >> .env
-          echo "S3_STATIC_BUCKET=$S3_STATIC_BUCKET" >> .env
+      # - name: Create .env file from secrets
+      #   run: |
+      #     echo "AUTH_COOKIE_SECRET=$AUTH_COOKIE_SECRET" > .env
+      #     echo "MAGIC_LINK_SECRET=$MAGIC_LINK_SECRET" >> .env
+      #     echo "ORIGIN=$ORIGIN" >> .env
+      #     echo "BREVO_API_KEY=$BREVO_API_KEY" >> .env
+      #     echo "AWS_REGION=$AWS_REGION" >> .env
+      #     echo "S3_STATIC_BUCKET=$S3_STATIC_BUCKET" >> .env
 
-      - name: Store log files
-        run: |
-          mkdir -p logs
-          ls -al > logs/ls.txt
-          cat .env > logs/env.txt
+      # - name: Store log files
+      #   run: |
+      #     mkdir -p logs
+      #     ls -al > logs/ls.txt
+      #     cat .env > logs/env.txt
 
       # - name: Run dev server
       #   run: |
