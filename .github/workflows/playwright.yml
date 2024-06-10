@@ -30,6 +30,11 @@ jobs:
           echo "AWS_REGION=$AWS_REGION" >> .env
           echo "S3_STATIC_BUCKET=$S3_STATIC_BUCKET" >> .env
 
+      - name: List all files
+        run: |
+          mkdir -p logs
+          ls -al > logs/ls.txt
+
       # - name: Run dev server
       #   run: |
       #     mkdir -p logs
