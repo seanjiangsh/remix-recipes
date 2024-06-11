@@ -42,11 +42,11 @@ jobs:
           echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> .env
           echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY " >> .env
 
-      - name: Store log files
-        run: |
-          mkdir -p logs
-          ls -al > logs/ls.txt
-          cat .env > logs/env.txt
+      # - name: Store log files
+      #   run: |
+      #     mkdir -p logs
+      #     ls -al > logs/ls.txt
+      #     cat .env > logs/env.txt
 
       # - name: Run dev server
       #   run: |
