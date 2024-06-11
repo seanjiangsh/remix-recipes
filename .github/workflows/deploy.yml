@@ -24,7 +24,7 @@ jobs:
         run: npm install
 
       - name: Deploy to AWS
-        run: npm run arc:deploy
+        run: npm run deploy
         timeout-minutes: 15 # Set a timeout for this step
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
