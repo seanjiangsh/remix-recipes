@@ -16,19 +16,12 @@ import {
   useLoaderData,
   useRouteError,
 } from "@remix-run/react";
-import classNames from "classnames";
 
 import { getCurrentUser } from "~/utils/auth/auth.server";
 
 import styles from "~/tailwind.css";
-import {
-  DiscoverIcon,
-  LoginIcon,
-  LogoutIcon,
-  RecipeBookIcon,
-  SettingsIcon,
-} from "~/components/icons/icons";
-import NavLink from "~/components/nav-link/root/nav-link";
+import NavBar from "./components/nav/nav-bar";
+import classNames from "classnames";
 
 export const meta: MetaFunction = () => [
   { title: "Remix Recipes" },
@@ -53,43 +46,35 @@ export default function Root() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/_static/favicon.ico" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/_static/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/_static/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/_static/favicon-16x16.png"
+        />
         <Meta />
         <Links />
       </head>
       <body className="md:flex md:h-screen bg-background">
-        <nav
+        <NavBar isLoggedIn={isLoggedIn} />
+        <div
           className={classNames(
-            "bg-primary text-white md:w-16",
-            "flex justify-between md:flex-col"
+            "p-4 w-full",
+            "max-md:mt-14",
+            "md:w-[calc(100%-4rem)] md:ml-16"
           )}
         >
-          <ul className="flex md:flex-col">
-            <NavLink to="discover">
-              <DiscoverIcon />
-            </NavLink>
-            {isLoggedIn && (
-              <NavLink to="app">
-                <RecipeBookIcon />
-              </NavLink>
-            )}
-            <NavLink to="settings">
-              <SettingsIcon />
-            </NavLink>
-          </ul>
-          <ul>
-            {isLoggedIn ? (
-              <NavLink to="logout">
-                <LogoutIcon />
-              </NavLink>
-            ) : (
-              <NavLink to="login">
-                <LoginIcon />
-              </NavLink>
-            )}
-          </ul>
-        </nav>
-        <div className="p-4 w-full md:w-[calc(100%-4rem)]">
           <Outlet />
         </div>
         <ScrollRestoration />

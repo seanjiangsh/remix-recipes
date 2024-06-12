@@ -11,7 +11,7 @@ type NavLinkProps = {
   children: ReactNode;
 };
 
-export default function NavLink(props: NavLinkProps) {
+export default function AppNavLink(props: NavLinkProps) {
   const { to, children } = props;
 
   const navigation = useNavigation();

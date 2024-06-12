@@ -1,15 +1,24 @@
-import { HeadersArgs, LoaderFunctionArgs, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import {
+  ActionFunctionArgs,
+  HeadersArgs,
+  LoaderFunctionArgs,
+  json,
+} from "@remix-run/node";
+import { NavLink, useFetcher, useLoaderData } from "@remix-run/react";
+import { z } from "zod";
 
-import { getRecipeWithIngredients } from "~/utils/ddb/recipe/models";
 import { badRequest, notFound } from "~/utils/route";
-import { getCurrentUser } from "~/utils/auth/auth.server";
+import { getCurrentUser, requireLoggedInUser } from "~/utils/auth/auth.server";
 import { hash } from "~/utils/cryptography.server";
+import { FieldErrors, validateForm } from "~/utils/validation";
+import { addRecipe, getRecipeWithIngredients } from "~/utils/ddb/recipe/models";
 
 import {
   DiscoverRecipeDetails,
   DiscoverRecipeHeader,
 } from "~/components/discover/discover";
+import { PrimaryButton } from "~/components/buttons/buttons";
+import { PlusIcon } from "~/components/icons/icons";
 
 export const headers = ({ loaderHeaders }: HeadersArgs) => {
   return {
@@ -37,16 +46,69 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     "x-page-etag": pageEtag,
     "cache-control": "max-age=60, stale-while-revalidate=86400",
   };
-  return json({ recipe }, { headers });
+  return json({ recipe, user }, { headers });
+};
+
+const addRecipeSchema = z.object({
+  userId: z.string().min(1, "user ID is required"),
+  recipeId: z.string().min(1, "recipe ID is required"),
+});
+const errorFn = (errors: FieldErrors) => json({ errors }, { status: 400 });
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  await requireLoggedInUser(request);
+  const formData = await request.formData();
+  const action = formData.get("_action") as string;
+
+  switch (action) {
+    case "addRecipe": {
+      return validateForm(
+        formData,
+        addRecipeSchema,
+        ({ userId, recipeId }) => addRecipe(userId, recipeId),
+        errorFn
+      );
+    }
+    default:
+      break;
+  }
 };
 
 export default function DiscoverRecipe() {
-  const { recipe } = useLoaderData<typeof loader>();
-  // TODO: add recipe to personal recipes
+  const { recipe, user } = useLoaderData<typeof loader>();
+
+  const addRecipeFetcher = useFetcher();
+  const { formData } = addRecipeFetcher;
+  const isAddingRecipe = formData?.get("_action") === "addRecipe";
+
+  const addRecipe = () =>
+    addRecipeFetcher.submit(
+      { _action: "addRecipe", userId: user.id, recipeId: recipe.id },
+      { method: "post" }
+    );
+
+  const addRecipeButton = (
+    <PrimaryButton isLoading={isAddingRecipe} onClick={addRecipe}>
+      <PlusIcon />
+      <span className="ml-2">
+        {isAddingRecipe ? "Adding Recipe..." : "Add to my Recipe"}
+      </span>
+    </PrimaryButton>
+  );
+
+  const loginToAddButton = (
+    <NavLink to="/login?redirected=true">
+      <PrimaryButton className="">Log in to add recipe</PrimaryButton>
+    </NavLink>
+  );
+
   return (
-    <div className="md:h-[calc(100vh-1rem] m-[-1rem] overflow-auto">
+    <div className="m-[-1rem] overflow-auto">
       <DiscoverRecipeHeader recipe={recipe} />
       <DiscoverRecipeDetails recipe={recipe} />
+      <div className="p-4 pt-0 w-fit max-sm:m-auto">
+        {user ? addRecipeButton : loginToAddButton}
+      </div>
     </div>
   );
 }

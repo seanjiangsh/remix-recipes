@@ -94,6 +94,16 @@ export const createRecipe = async (userId: string) => {
   return recipeModel.toJSON() as Recipe;
 };
 
+export const addRecipe = async (userId: string, recipeId: string) => {
+  const recipe = await getRecipe(recipeId);
+  if (!recipe) throw notFound("Recipe");
+  const id = randomUUID();
+  const createdAt = new Date().toISOString();
+  const newRecipe: Recipe = { ...recipe, id, userId, createdAt };
+  await RecipeModel.create(newRecipe);
+  return newRecipe as Recipe;
+};
+
 const getDeleteRecipeTrans = (recipe: Recipe) => {
   const oldUpdatedAt = recipe.updatedAt;
   if (!oldUpdatedAt) throw new Error("Recipe updatedAt is missing");

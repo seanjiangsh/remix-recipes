@@ -1,6 +1,6 @@
 import { Outlet } from "@remix-run/react";
 
-import NavLink from "~/components/nav-link/app/nav-link";
+import AppNavLink from "~/components/nav/app-nav-link";
 
 type PageLayoutProps = {
   title: string;
@@ -14,9 +14,9 @@ export function PageLayout(props: PageLayoutProps) {
       <h1 className="text-2xl font-bold my-4">{title}</h1>
       <nav className="border-b-2 pb-2 mt-2">
         {links.map(({ to, label }) => (
-          <NavLink key={to} to={to}>
+          <AppNavLink key={to} to={to}>
             {label}
-          </NavLink>
+          </AppNavLink>
         ))}
       </nav>
       <div className="py-4 overflow-y-auto">

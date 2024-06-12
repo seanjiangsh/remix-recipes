@@ -4,6 +4,8 @@ import { User } from "../user/schema";
 import { Recipe, Ingredient } from "../recipe/schema";
 import { PantryShelf, PantryItem } from "../pantry/schema";
 
+const createdAt = new Date().toISOString();
+
 export const createTestUser = (): User => ({
   id: randomUUID(),
   email: "test@test.com",
@@ -22,6 +24,7 @@ export const getRecipes = (userId: string): Array<Recipe> => [
     totalTime: "15 min",
     imageUrl: "Buttermilk Pancakes.jpg",
     mealPlanMultiplier: 0,
+    createdAt,
   },
   {
     id: randomUUID(),
@@ -33,6 +36,7 @@ export const getRecipes = (userId: string): Array<Recipe> => [
       "Place roast in slow cooker and sprinkle onion soup mix over the roast. Add water and beef broth. Cook on high for 4-6 hours or low for 8-10. Serve on rolls with swiss cheese.",
     imageUrl: "French Dip Sandwiches.jpg",
     mealPlanMultiplier: 0,
+    createdAt,
   },
   {
     id: randomUUID(),
@@ -44,6 +48,7 @@ export const getRecipes = (userId: string): Array<Recipe> => [
       "Brown ground beef with onion. Add brown sugar, vinegar, tomato soup and mustard. Pour into baking dish and top with mashed potatoes. Sprinkle with grated cheese and bake at 350 for 30 minutes.",
     imageUrl: "Shepherds Pie.jpg",
     mealPlanMultiplier: 0,
+    createdAt,
   },
   {
     id: randomUUID(),
@@ -55,6 +60,7 @@ export const getRecipes = (userId: string): Array<Recipe> => [
     totalTime: "30 min",
     imageUrl: "Chicken Alfredo.jpg",
     mealPlanMultiplier: 0,
+    createdAt,
   },
 ];
 

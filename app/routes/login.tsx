@@ -1,5 +1,5 @@
-import { ActionFunction, LoaderFunction, json } from "@remix-run/node";
-import { useActionData } from "@remix-run/react";
+import { ActionFunction, LoaderFunctionArgs, json } from "@remix-run/node";
+import { useActionData, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 import { v4 as uuid } from "uuid";
 
@@ -19,9 +19,11 @@ const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
 });
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   await redirectLoggedInUser(request); // * redirect to /app if user is already logged in
-  return null;
+  const url = new URL(request.url);
+  const redirected = !!url.searchParams.get("redirected");
+  return json({ redirected });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -56,8 +58,12 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Login() {
+  const { redirected } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const { email, errors } = actionData || {};
+
+  const redirectedMsg = "Please log in to continue.";
+  const registerMsg = "Don't worry, I won't send you spam. :)";
 
   const loginContent =
     actionData === "ok" ? (
@@ -67,7 +73,9 @@ export default function Login() {
       </div>
     ) : (
       <div>
-        <h1 className="text-3xl mb-8">Remix Recipes</h1>
+        <h1 className="text-3xl mb-4">Remix Recipes</h1>
+        {redirected && <h4 className="text-xl mb-2">{redirectedMsg}</h4>}
+        <h4 className="text-xl mb-4">{registerMsg}</h4>
         <form method="post" className="mx-auto md:w-1/3" action="/login">
           <div className="text-left pb-4">
             <PrimaryInput

@@ -18,7 +18,13 @@ export function DiscoverListItem({ recipe }: DiscoverListItemProps) {
   const { id, name, imageUrl, user } = recipe;
   const { firstName, lastName } = user;
   return (
-    <li key={id} className="shadow-md rounded-md hover:text-primary group">
+    <li
+      key={id}
+      className={classNames(
+        "shadow-md rounded-md border-2 group",
+        "hover:text-primary hover:border-primary"
+      )}
+    >
       <Link to={id} className="flex flex-col h-full">
         <div className="h-48 overflow-hidden">
           <img
@@ -27,12 +33,7 @@ export function DiscoverListItem({ recipe }: DiscoverListItemProps) {
             className="h-full w-full object-cover rounded-t-md"
           />
         </div>
-        <div
-          className={classNames(
-            "p-4 rounded-b-md border-b-2 border-x-2 flex-grow border-background",
-            "group-hover:border-primary"
-          )}
-        >
+        <div className={"p-4 rounded-b-md flex-grow"}>
           <h1 className="font-bold text-xl pb-2">{name}</h1>
           <h2>{`${firstName} ${lastName}`}</h2>
         </div>
@@ -81,10 +82,10 @@ export function DiscoverRecipeDetails({ recipe }: DiscoverRecipeDetailsProps) {
           >{`${ingredient.amount?.trim()} ${ingredient.name.trim()}`}</li>
         ))}
       </ul>
-      <h2 className="text-xl font-bold pb-4">Instructions</h2>
+      <h2 className="text-xl font-bold pb-2">Instructions</h2>
       {instructions.split("\n").map((paragraph, idx) =>
         paragraph === "" ? null : (
-          <p key={idx} className="pb-6">
+          <p key={idx} className="pb-4">
             {paragraph}
           </p>
         )

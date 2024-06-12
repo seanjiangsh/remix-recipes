@@ -13,6 +13,7 @@ type NavLinkProps = {
 
 export default function NavLink(props: NavLinkProps) {
   const { to, children } = props;
+  const title = to.split("/")[0].replace("-", " ");
 
   const navigation = useNavigation();
   const path = useResolvedPath(to); // * URL path utility
@@ -22,7 +23,7 @@ export default function NavLink(props: NavLinkProps) {
 
   return (
     <li className="w-16">
-      <RemixNavLink to={to}>
+      <RemixNavLink to={to} title={title}>
         {({ isActive }) => {
           const className = classNames(
             "py-4 flex justify-center",
