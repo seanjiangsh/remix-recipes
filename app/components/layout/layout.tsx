@@ -10,7 +10,7 @@ type PageLayoutProps = {
 export function PageLayout(props: PageLayoutProps) {
   const { title, links } = props;
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full text-teal-950 dark:text-white">
       <h1 className="text-2xl font-bold my-4">{title}</h1>
       <nav className="border-b-2 pb-2 mt-2">
         {links.map(({ to, label }) => (

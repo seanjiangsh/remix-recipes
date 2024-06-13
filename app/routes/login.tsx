@@ -38,7 +38,7 @@ export const action: ActionFunction = async ({ request }) => {
     session.set("nonce", nonce);
     const headers = {
       "Set-Cookie": await commitSession(session),
-      "Cache-Control": "max-age=60, stale-while-revalidate=86400",
+      "Cache-Control": "max-age=30, stale-while-revalidate=60",
     };
     const link = generateMagicLink(email, nonce);
     try {
@@ -67,12 +67,12 @@ export default function Login() {
 
   const loginContent =
     actionData === "ok" ? (
-      <div>
+      <div className="text-teal-950 dark:text-white">
         <h1 className="text-2xl py-8">Yum!</h1>
         <p>Check your email and follow the instructions to finish log in.</p>
       </div>
     ) : (
-      <div>
+      <div className="text-teal-950 dark:text-white">
         <h1 className="text-3xl mb-4">Remix Recipes</h1>
         {redirected && <h4 className="text-xl mb-2">{redirectedMsg}</h4>}
         <h4 className="text-xl mb-4">{registerMsg}</h4>

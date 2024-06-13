@@ -7,7 +7,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(cookies);
   const headers = {
     "Set-Cookie": await destroySession(session),
-    "Cache-Control": "max-age=60, stale-while-revalidate=86400",
+    "Cache-Control": "max-age=30, stale-while-revalidate=60",
   };
   return json("ok", { headers });
 };

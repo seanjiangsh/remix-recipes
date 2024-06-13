@@ -17,8 +17,8 @@ export default function NavBar(props: NavBarProps) {
   return (
     <nav
       className={classNames(
-        "fixed flex justify-between bg-primary text-white z-10",
-        "top-0 w-full",
+        "fixed flex justify-between top-0 w-full z-10",
+        "bg-primary text-white",
         "md:w-16 md:h-dvh md:flex-col md:left-0"
       )}
     >

@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { SaveIcon } from "~/components/icons/icons";
 import ErrorMessage from "~/components/form/error-message";
 import { CreateShelfItemData, ShelfWithItems } from "./shelf";
+import { Input } from "../form/Inputs";
 
 type ShelfProps = {
   shelf: ShelfWithItems;
@@ -50,7 +51,7 @@ export default function CreatShelfItem(props: ShelfProps) {
       onSubmit={onSubmit}
     >
       <div className="w-full mb-2 peer">
-        <input
+        <Input
           required
           type="text"
           name="itemName"

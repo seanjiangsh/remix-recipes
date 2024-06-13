@@ -12,7 +12,7 @@ export default function SearchBar({ placeholder, className }: SearchBarProps) {
     <Form
       className={classNames(
         "flex border-2 border-gray-300 rounded-md",
-        "focus-within:border-primary",
+        "focus-within:border-primary-light",
         isSearching ? "animate-pulse" : "",
         className
       )}
@@ -26,7 +26,11 @@ export default function SearchBar({ placeholder, className }: SearchBarProps) {
         name="q"
         autoComplete="off"
         placeholder={placeholder}
-        className="w-full py-3 px-2 outline-none rounded-md"
+        className={classNames(
+          "w-full py-3 px-2 outline-none rounded-md",
+          "bg-white dark:bg-teal-800",
+          "placeholder-teal-950 dark:placeholder-white"
+        )}
       />
       {Array.from(searchParams.entries()).map(
         ([name, value], index) =>

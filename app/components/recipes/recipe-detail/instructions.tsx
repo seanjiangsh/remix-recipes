@@ -46,6 +46,8 @@ export default function Instructions(props: InstructionsProps) {
         className={classNames(
           "w-full h-56 rounded-md outline-none",
           "focus:border-2 focus:p-3 focus:border-primary duration-300",
+          "bg-white dark:bg-teal-800",
+          "placeholder-teal-950 dark:placeholder-white",
           !!instructionsError && "border-2 border-red-500 p-3"
         )}
         defaultValue={instructions || ""}

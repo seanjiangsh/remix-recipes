@@ -51,7 +51,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
   const recipe = await getRecipeWithIngredients(recipeId);
   const headers = {
-    "Cache-Control": "max-age=60, stale-while-revalidate=86400",
+    "Cache-Control": "max-age=30, stale-while-revalidate=60",
   };
   if (!recipe) throw notFound("Recipe");
   if (recipe.userId !== user.id)

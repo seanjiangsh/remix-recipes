@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useLocation, useMatches } from "@remix-run/react";
 
+import { settingsCookie } from "~/utils/auth/cookies";
+
 export const useMatchesData = <T>(id: string) => {
   const matches = useMatches();
   const route = useMemo(() => matches.find((m) => m.id === id), [id, matches]);
@@ -32,4 +34,20 @@ export const useBuildSearchParams = () => {
     searchParams.set(name, value);
     return `?${searchParams.toString()}`;
   };
+};
+
+export const getSettingsFromCookie = async (request: Request) => {
+  const cookies = request.headers.get("cookie");
+  const defaultSettings = { color: "green", theme: "light" };
+  try {
+    const settingsValue = await settingsCookie.parse(cookies);
+    if (!settingsValue) return defaultSettings;
+    const { color, theme } = JSON.parse(settingsValue);
+    const colorValue = typeof color === "string" ? color : "green";
+    const themeValue = typeof theme === "string" ? theme : "light";
+    return { color: colorValue, theme: themeValue };
+  } catch (err: any) {
+    console.error(`Error parsing settings cookie: ${err.message}`);
+    return defaultSettings;
+  }
 };

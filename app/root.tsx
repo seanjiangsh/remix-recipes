@@ -16,12 +16,13 @@ import {
   useLoaderData,
   useRouteError,
 } from "@remix-run/react";
+import classNames from "classnames";
 
 import { getCurrentUser } from "~/utils/auth/auth.server";
+import { getSettingsFromCookie } from "./utils/misc";
 
 import styles from "~/tailwind.css";
 import NavBar from "./components/nav/nav-bar";
-import classNames from "classnames";
 
 export const meta: MetaFunction = () => [
   { title: "Remix Recipes" },
@@ -35,14 +36,15 @@ export const links: LinksFunction = () => [
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getCurrentUser(request);
-  return json({ isLoggedIn: !!user });
+  const { theme } = await getSettingsFromCookie(request);
+  return json({ isLoggedIn: !!user, theme });
 };
 
 export default function Root() {
-  const { isLoggedIn } = useLoaderData<typeof loader>();
+  const { isLoggedIn, theme } = useLoaderData<typeof loader>();
 
   return (
-    <html lang="en">
+    <html lang="en" className={theme}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -66,12 +68,12 @@ export default function Root() {
         <Meta />
         <Links />
       </head>
-      <body className="md:flex md:h-screen bg-background">
+      <body className="md:flex md:h-screen bg-white dark:bg-teal-950 overflow-hidden">
         <NavBar isLoggedIn={isLoggedIn} />
         <div
           className={classNames(
-            "p-4 w-full",
-            "max-md:mt-14",
+            "p-4 w-full overflow-auto",
+            "max-md:mt-14 max-md:h-[calc(100dvh-3.5rem)]",
             "md:w-[calc(100%-4rem)] md:ml-16"
           )}
         >

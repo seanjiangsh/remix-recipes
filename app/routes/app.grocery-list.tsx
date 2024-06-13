@@ -1,6 +1,7 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
+import classNames from "classnames";
 
 import { getRecipesWithIngredients } from "~/utils/ddb/recipe/models";
 import {
@@ -92,7 +93,12 @@ const GroceryListItem = ({ item }: { item: GroceryListItem }) => {
 
   return (
     fetcherIdle && (
-      <div className="shadow-md rounded-md p-4 flex">
+      <div
+        className={classNames(
+          "shadow-md rounded-md p-4 flex",
+          "dark:shadow-2xl dark:bg-primary"
+        )}
+      >
         <div className="flex-grow">
           <h1 className="text-sm font-bold mb-2 uppercase">{name}</h1>
           <ul>
@@ -108,7 +114,10 @@ const GroceryListItem = ({ item }: { item: GroceryListItem }) => {
           <button
             name="_action"
             value="checkOffItem"
-            className="hover:text-primary"
+            className={classNames(
+              "hover:text-primary",
+              "hover:dark:text-white dark:text-primary-light"
+            )}
           >
             <CheckCircleIcon />
           </button>

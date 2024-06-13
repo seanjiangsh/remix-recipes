@@ -7,7 +7,12 @@ import { User } from "~/utils/ddb/user/schema";
 
 export function DiscoverGrid({ children }: { children: React.ReactNode }) {
   return (
-    <ul className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <ul
+      className={classNames(
+        "grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
+        "max-md:pb-8"
+      )}
+    >
       {children}
     </ul>
   );
@@ -22,7 +27,7 @@ export function DiscoverListItem({ recipe }: DiscoverListItemProps) {
       key={id}
       className={classNames(
         "shadow-md rounded-md border-2 group",
-        "hover:text-primary hover:border-primary"
+        "hover:text-primary-light hover:border-primary-light"
       )}
     >
       <Link to={id} className="flex flex-col h-full">
@@ -33,7 +38,7 @@ export function DiscoverListItem({ recipe }: DiscoverListItemProps) {
             className="h-full w-full object-cover rounded-t-md"
           />
         </div>
-        <div className={"p-4 rounded-b-md flex-grow"}>
+        <div className="p-4 rounded-b-md flex-grow text-shadow-md">
           <h1 className="font-bold text-xl pb-2">{name}</h1>
           <h2>{`${firstName} ${lastName}`}</h2>
         </div>
@@ -46,7 +51,7 @@ type DiscoverRecipeHeaderProps = { recipe: Recipe };
 export function DiscoverRecipeHeader({ recipe }: DiscoverRecipeHeaderProps) {
   const { name, imageUrl, totalTime } = recipe;
   return (
-    <div className="relative">
+    <div className="relative text-teal-950">
       <img
         src={`/images/${imageUrl}`}
         alt={`recipe named ${name}`}
@@ -55,7 +60,7 @@ export function DiscoverRecipeHeader({ recipe }: DiscoverRecipeHeaderProps) {
       <div
         className={classNames(
           "absolute top-0 left-0 w-full h-full bg-[rgba(255,255,255,0.8)]",
-          "flex flex-col justify-center p-4"
+          "flex flex-col justify-center p-4 text-shadow-md"
         )}
       >
         <h1 className="text-4xl font-bold mb-4">{name}</h1>
@@ -72,7 +77,7 @@ type DiscoverRecipeDetailsProps = { recipe: RecipeWithIngredients };
 export function DiscoverRecipeDetails({ recipe }: DiscoverRecipeDetailsProps) {
   const { ingredients, instructions } = recipe;
   return (
-    <div className="p-4">
+    <div className="p-4 text-teal-950 dark:text-white">
       <h2 className="text-xl font-bold">Ingredients</h2>
       <ul className="py-4">
         {ingredients.map((ingredient) => (

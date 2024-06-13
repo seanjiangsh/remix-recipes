@@ -1,24 +1,24 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
 
-import { themeCookie } from "~/utils/auth/cookies";
+import { getSettingsFromCookie } from "~/utils/misc";
 
-// TODO: make light/dark theme
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const cookies = request.headers.get("cookie");
-  const cookieValue = await themeCookie.parse(cookies);
-  const themeValue = typeof cookieValue === "string" ? cookieValue : "green";
-  const theme = getTheme(themeValue);
+  const settings = await getSettingsFromCookie(request);
+  const color = getColor(settings.color);
+  const { theme } = settings;
   const data = `
     :root {
-      --color-primary: ${theme.colorPrimary};
-      --color-primary-light: ${theme.colorPrimaryLight};
+      --color-primary: ${color.colorPrimary};
+      --color-primary-light: ${color.colorPrimaryLight};
+      --color-text: ${theme === "light" ? "#333" : "#f9f9f9"};
+      --color-background: ${theme === "light" ? "#f9f9f9" : "#121212"};   
     }`;
   const headers = { "content-type": "text/css" };
   const response = new Response(data, { headers });
   return response;
 };
 
-function getTheme(color: string) {
+function getColor(color: string) {
   switch (color) {
     case "red": {
       return {

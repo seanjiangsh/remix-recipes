@@ -10,7 +10,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
     const image = await getImage(imageId);
     if (!image) throw notFound("Image");
     const { mime, buffer } = image;
-    const cacheControl = "max-age=60, stale-while-revalidate=86400";
+    const cacheControl = "max-age=30, stale-while-revalidate=60";
     const headers = {
       "content-type": mime,
       "cache-control": cacheControl,

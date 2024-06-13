@@ -97,11 +97,32 @@ export const createRecipe = async (userId: string) => {
 export const addRecipe = async (userId: string, recipeId: string) => {
   const recipe = await getRecipe(recipeId);
   if (!recipe) throw notFound("Recipe");
+
   const id = randomUUID();
   const createdAt = new Date().toISOString();
   const newRecipe: Recipe = { ...recipe, id, userId, createdAt };
-  await RecipeModel.create(newRecipe);
-  return newRecipe as Recipe;
+  const recipeTrans = RecipeModel.transaction.create(newRecipe);
+
+  const oldIngredients = await getIngredientsByRecipeId(recipeId);
+  const ingredients = oldIngredients.map((oldIngredient) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { createdAt, updatedAt, ...oldIngredientData } = oldIngredient;
+    const id = randomUUID();
+    const recipeId = newRecipe.id;
+    const newIds = { id, recipeId, userId };
+    const ingredient: Ingredient = { ...oldIngredientData, ...newIds };
+    return ingredient;
+  });
+  const ingredientTrans = ingredients.map((ingredient) =>
+    IngredientModel.transaction.create(ingredient)
+  );
+
+  await dynamoose.transaction([recipeTrans, ...ingredientTrans]);
+  const recipeWithIngredients: RecipeWithIngredients = {
+    ...newRecipe,
+    ingredients,
+  };
+  return recipeWithIngredients;
 };
 
 const getDeleteRecipeTrans = (recipe: Recipe) => {

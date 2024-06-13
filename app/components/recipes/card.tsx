@@ -29,8 +29,8 @@ export function Card(props: CardProps) {
     <div
       className={classNames(
         "group flex shadow-md rounded-md border-2",
-        "hover:text-primary hover:border-primary",
-        isActive ? "border-primary text-primary" : "border-white",
+        "hover:text-primary hover:border-primary hover:dark:text-primary-light",
+        isActive ? "border-primary-light text-primary-light" : "border-white",
         isLoading ? "border-gray-500 text-gray-500" : ""
       )}
     >
@@ -42,10 +42,10 @@ export function Card(props: CardProps) {
         />
       </div>
       <div className="p-4 flex-grow">
-        <h3 className="font-semibold mb-1 text-left">
+        <h3 className={classNames("font-semibold mb-1 text-left")}>
           {name}
           {mealPlanMultiplier ? (
-            <span className="text-primary-light ml-1">
+            <span className="text-primary-light dark:text-primary ml-1">
               (x{mealPlanMultiplier})
             </span>
           ) : null}
@@ -55,8 +55,11 @@ export function Card(props: CardProps) {
           className={classNames(
             "flex font-light",
             "group-hover:text-primary-light",
-            isActive ? "text-primary-light" : "text-gray-500",
-            isLoading ? "text-gray-500" : ""
+            "group-hover:dark:text-primary",
+            isActive
+              ? "text-primary-light dark:text-primary"
+              : "text-gray-500 dark:text-gray-300",
+            isLoading ? "text-gray-500 dark:text-gray-300" : ""
           )}
         >
           <TimeIcon />

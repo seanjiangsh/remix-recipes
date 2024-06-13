@@ -35,8 +35,8 @@ export default function ShelfName({ shelf }: ShelfNameProps) {
           required
           type="text"
           name="shelfName"
-          placeholder="Shelf Name"
-          aria-label="Shelf Name"
+          placeholder="New Shelf"
+          aria-label="New Shelf"
           autoComplete="off"
           className="text-2xl font-extrabold"
           defaultValue={name}

@@ -23,7 +23,7 @@ import { PlusIcon } from "~/components/icons/icons";
 export const headers = ({ loaderHeaders }: HeadersArgs) => {
   return {
     etag: loaderHeaders.get("x-page-etag"),
-    "cache-control": "max-age=60, stale-while-revalidate=86400",
+    "cache-control": "max-age=30, stale-while-revalidate=60",
   };
 };
 
@@ -44,7 +44,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const headers = {
     etag,
     "x-page-etag": pageEtag,
-    "cache-control": "max-age=60, stale-while-revalidate=86400",
+    "cache-control": "max-age=30, stale-while-revalidate=60",
   };
   return json({ recipe, user }, { headers });
 };

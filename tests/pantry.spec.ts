@@ -20,7 +20,7 @@ test("test a user do a typical pantry flow", async ({ page }) => {
   await createShelfButton.click();
 
   // * create a shelf and add items then check it
-  const shelfNameInput = page.getByRole("textbox", { name: /shelf name/i });
+  const shelfNameInput = page.getByRole("textbox", { name: /new shelf/i });
   await shelfNameInput.fill("Bob's Dairy Shelf");
 
   const newItemInput = page.getByPlaceholder(/new item/i);

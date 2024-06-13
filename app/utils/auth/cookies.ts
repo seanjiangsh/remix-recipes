@@ -11,4 +11,4 @@ const options = {
 
 export const sessionCookie = createCookie("remix-recipes__session", options);
 
-export const themeCookie = createCookie("remix-recipes__theme");
+export const settingsCookie = createCookie("remix-recipes__settings");
