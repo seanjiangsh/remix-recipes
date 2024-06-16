@@ -10,7 +10,7 @@ export function DiscoverGrid({ children }: { children: React.ReactNode }) {
     <ul
       className={classNames(
         "grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
-        "max-md:pb-8"
+        "pb-8"
       )}
     >
       {children}
