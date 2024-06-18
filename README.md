@@ -43,9 +43,66 @@ This project builds upon the [Remix Bootcamp: Zero to Mastery](https://zerotomas
 
 ## This project utilizes the following technologies:
 
-- [Remix](https://remix.run): A full-stack web framework for building modern JavaScript applications.
-- [Prisma](https://www.prisma.io): A modern database toolkit for TypeScript and Node.js that makes it easy to work with databases.
-- [Magic Link Authentication](https://postmarkapp.com/blog/magic-links): A passwordless authentication method that allows users to log in with a single click using a secure email link.
-- [Brevo](https://brevo.com): A SaaS solution used for sending email for magic link authentication in this project.
-- [Typescript](https://www.typescriptlang.org): A typed superset of JavaScript that compiles to plain JavaScript.
-- Optimistic UI: A technique for providing a smooth user experience by immediately updating the UI optimistically, without waiting for the server response.
+<div >
+  <a href="https://remix.run" target="_blank" rel="noreferrer">
+    <img src="./assets/remix.svg" alt="Remix" height="36"/>
+  </a>
+  <a href="https://tailwindcss.com" target="_blank" rel="noreferrer">
+    <img
+      src="./assets/tailwindcss.png"
+      alt="tailwindcss"
+      height="36"
+    />
+  </a>
+  <a href="https://zod.dev" target="_blank" rel="noreferrer">
+    <img src="./assets/zod.svg" alt="zod" height="36" />
+  </a>
+  <a href="https://aws.amazon.com/dynamodb" target="_blank" rel="noreferrer">
+    <img
+      src="./assets/dynamodb.png"
+      alt="dynamodb"
+      height="36"
+    />
+  </a>
+  <a href="https://dynamoosejs.com" target="_blank" rel="noreferrer">
+    <img src="./assets/dynamoose.png" alt="dynamoose" height="36" />
+  </a>
+  <a href="https://playwright.dev" target="_blank" rel="noreferrer">
+    <img
+      src="./assets/playwright.png"
+      alt="playwright"
+      height="36"
+    />
+  </a>
+  <a href="https://aws.amazon.com/lambda" target="_blank" rel="noreferrer">
+    <img
+      src="./assets/awslambda.svg"
+      alt="aws-lambda"
+      height="36"
+    />
+  </a>
+  <a href="https://www.typescriptlang.org" target="_blank" rel="noreferrer">
+    <img
+      src="./assets/typescript.png"
+      alt="typescript"
+      height="36"
+    />
+  </a>
+  <a
+    href="https://github.com/features/actions"
+    target="_blank"
+    rel="noreferrer"
+  >
+    <img
+      src="./assets/github-actions.svg"
+      alt="github-actions"
+      height="36"
+    />
+  </a>
+</div>
+
+## Thanks to:
+
+- [ZTM](https://zerotomastery.io): Thanks to these outstanding courses, I gained valuable knowledge throughout the journey.
+- Service and platform providers.
+- All individuals who have contributed packages utilized by this project.
